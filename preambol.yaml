@@ -1,0 +1,13 @@
+ds_root: '/media/matteo/T7/Datasets/HyperSpectral/'
+
+datasets: ['PRISMA']
+
+# pansharpening_based_algorithms: ['BDSD', 'GS', 'GSA', 'BT-H', 'PRACS', 'AWLP', 'MTF-GLP', 'MTF-GLP-FS', 'MTF-GLP-HPM', 'MTF-GLP-HPM-H', 'MTF-GLP-HPM-R', 'MF']
+pansharpening_based_algorithms: ['GS']
+
+
+ad_hoc_algorithms: []
+
+save_results: True
+
+save_root: './Results'
