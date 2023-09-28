@@ -3,6 +3,7 @@ from torchvision.transforms import InterpolationMode as Inter
 from torchvision.transforms.functional import resize
 
 from Utils.spectral_tools import LPFilter
+from Utils.imresize_bicubic import imresize
 
 
 def AWLP(ordered_dict):
@@ -18,14 +19,7 @@ def AWLP(ordered_dict):
 
     pan = pan.repeat(1, c, 1, 1)
 
-    pan_lp = resize(
-        resize(pan,
-               [pan.shape[2] // ratio, pan.shape[3] // ratio],
-               interpolation=Inter.BICUBIC,
-               antialias=True),
-        [pan.shape[2], pan.shape[3]],
-        interpolation=Inter.BICUBIC,
-        antialias=True)
+    pan_lp = imresize(imresize(pan, 1 / ratio), ratio)
 
     pan = (pan - torch.mean(pan, dim=(2, 3), keepdim=True)) * (
                 torch.std(ms, dim=(2, 3), keepdim=True) / torch.std(pan_lp, dim=(2, 3),
@@ -35,7 +29,7 @@ def AWLP(ordered_dict):
 
     pan_lpp = []
     for i in range(pan.shape[1]):
-        pan_lpp.append(LPFilter(pan[:, i, None, :, :].float(), ratio))
+        pan_lpp.append(LPFilter(pan[:, i, None, :, :].type(ms.dtype), ratio))
 
     pan_lpp = torch.cat(pan_lpp, dim=1)
 
@@ -44,3 +38,33 @@ def AWLP(ordered_dict):
     fused = details * img_intensity + ms
 
     return fused
+
+
+if __name__ == '__main__':
+    from scipy import io
+    import matplotlib
+    matplotlib.use('QT5Agg')
+    from matplotlib import pyplot as plt
+    import numpy as np
+    from recordclass import recordclass
+    from Utils.interpolator_tools import interp23tap
+    temp = io.loadmat('/home/matteo/Desktop/Datasets/WV3_Adelaide_crops/Adelaide_1_zoom.mat')
+
+    ms_lr = temp['I_MS_LR'].astype(np.float64)
+    ms = interp23tap(ms_lr, 4)
+    pan = temp['I_PAN'].astype(np.float64)
+    ratio = 4
+
+    ms_lr = torch.tensor(np.moveaxis(ms_lr, -1, 0)[None, :, :, :])
+    ms = torch.tensor(np.moveaxis(ms, -1, 0)[None, :, :, :])
+    pan = torch.tensor(pan[None, None, :, :])
+
+    ord_dic = {'ms': ms, 'pan': pan, 'ms_lr': ms_lr, 'ratio': ratio}
+
+    exp_input = recordclass('exp_info', ord_dic.keys())(*ord_dic.values())
+
+    fused = AWLP(exp_input)
+    fused = torch.clip(fused, 0, 2048.0)
+    plt.figure()
+    plt.imshow(fused[0, 0, :, :].detach().cpu().numpy(), cmap='gray', clim=[0, fused.max()])
+    plt.show()
