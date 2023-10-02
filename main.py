@@ -78,15 +78,6 @@ if __name__ == '__main__':
                 with torch.no_grad():
                     fused = method(exp_input)
 
-                from scipy import io
-                import numpy as np
-
-                mat_root_path = '/home/matteo/Desktop/GRSM_FR_Code/Outputs_images/WV3/Adelaide/Adelaide_1_zoom/'
-                mat_counterpart = io.loadmat(os.path.join(mat_root_path, algorithm + '.mat'))['I_MS']
-                mat_counterpart = torch.from_numpy(np.moveaxis(mat_counterpart, -1, 0)[None, :, :, :])
-                error = torch.abs(torch.clip(fused,0,2048) - torch.clip(mat_counterpart,0,2048))
-                print(error.max())
-
                 if experiment_type == 'RR':
                     metrics_values_rr = list(evaluation_rr(fused, gt, ratio=exp_info['ratio']))
                     metrics_values_rr.insert(0, algorithm)
