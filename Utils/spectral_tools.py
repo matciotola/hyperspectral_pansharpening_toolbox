@@ -1,8 +1,8 @@
 import torch
 import numpy as np
-from torch.nn.functional import conv2d, pad
+from torch.nn.functional import conv2d
+from torch.nn.functional import pad
 from torchvision.transforms import InterpolationMode as Inter
-from torchvision.transforms.functional import pad
 
 def mtf_kernel_to_torch(h):
     """
@@ -134,8 +134,11 @@ def nyquist_filter_generator(nyquist_freq, ratio, kernel_size):
         Hd = H / np.max(H)
         h = np.kaiser(kernel_size, 0.5)
         h = np.real(fir_filter_wind(Hd, h))
-        h = np.clip(h, a_min=0, a_max=np.max(h))
-        h = h / np.sum(h)
+        if ratio != 6: # TO DO: Delete for HyperSpectral
+            h = np.clip(h, a_min=0, a_max=np.max(h))
+            h = h / np.sum(h)
+        else:
+            h = np.real(h)
         kernel[:, :, j] = h
 
     return kernel
@@ -317,7 +320,7 @@ def LPFilterPlusDecTorch(img, ratio):
 
     img_lr = indwt2_working(wave_img, 'c')
 
-    img_lr = resize(img_lr, [img_lr.shape[-2] // ratio, img_lr.shape[-1] // ratio], interpolation=Inter.NEAREST)
+    img_lr = resize(img_lr, [img_lr.shape[-2] // ratio, img_lr.shape[-1] // ratio], interpolation=Inter.NEAREST_EXACT)
 
 
     return img_lr
@@ -379,7 +382,7 @@ def gen_mtf_pan(ratio, sensor, kernel_size=41):
 
     fcut = 1 / np.double(ratio)
 
-    alpha = np.sqrt(((kernel_size) * (fcut / 2)) ** 2 / (-2 * np.log(GNyq)))
+    alpha = np.sqrt(((kernel_size-1) * (fcut / 2)) ** 2 / (-2 * np.log(GNyq)))
     H = fspecial_gauss((kernel_size, kernel_size), alpha)
     Hd = H / np.max(H)
     h = np.kaiser(kernel_size, 0.5)
@@ -431,8 +434,8 @@ def ndwt2_working(X, level, filters):
 
 
         if k > 1:
-            cfs = cfs[0][:, 1:, :, :]
-            cfs = [dec, cfs]
+            cfs[0] = cfs[0][:, 1:, :, :]
+            cfs.insert(0, dec)
         else:
             cfs = [dec]
 
@@ -472,6 +475,8 @@ def decFUNC(X, LoD, HiD, dwtEXTM):
 
 
 def wdec1D(X, Lo, Hi, perm, dwtEXTM):
+    from torchvision.transforms.functional import pad as pad_vision
+
     if perm:
         X = X.permute(perm)
 
@@ -487,7 +492,7 @@ def wdec1D(X, Lo, Hi, perm, dwtEXTM):
     if dwtEXTM == 'zpd':
         pass
     elif dwtEXTM in ['sym', 'symh']:
-        X = pad(X, (lf-1, 0, lf, 0), padding_mode='symmetric')
+        X = pad_vision(X, (lf-1, 0, lf, 0), padding_mode='symmetric')
     elif dwtEXTM == 'sp0':
         X = torch.cat(
             (X[:, 0:lf - 1].unsqueeze(1).expand(-1, lf - 1, -1), X, X[:, -lx:].unsqueeze(1).expand(-1, lf - 1, -1)),

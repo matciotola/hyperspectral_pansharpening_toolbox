@@ -1,9 +1,7 @@
 import torch
 
-from torchvision.transforms.functional import resize
-from torchvision.transforms import InterpolationMode as Inter
-
 from Utils.pansharpening_aux_tools import regress
+from Utils.imresize_bicubic import imresize
 
 
 def PRACS(ordered_dict, beta=0.95):
@@ -21,9 +19,11 @@ def PRACS(ordered_dict, beta=0.95):
         ms, dim=(2, 3), keepdim=True)
     ms_hm = torch.clip(ms_hm, 0, ms_hm.max())
 
-    pan_lp = resize(
-        resize(pan, [pan.shape[2] // ratio, pan.shape[3] // ratio], interpolation=Inter.BICUBIC,
-               antialias=True), [pan.shape[2], pan.shape[3]], interpolation=Inter.BICUBIC, antialias=True)
+    # pan_lp = resize(
+    #     resize(pan, [pan.shape[2] // ratio, pan.shape[3] // ratio], interpolation=Inter.BICUBIC,
+    #            antialias=True), [pan.shape[2], pan.shape[3]], interpolation=Inter.BICUBIC, antialias=True)
+
+    pan_lp = imresize(imresize(pan, scale=1 / ratio), scale=ratio)
 
     bb = torch.cat([torch.ones((B, 1, H, W), dtype=ms_hm.dtype, device=ms_hm.device), ms_hm],
                    dim=1)
@@ -48,9 +48,13 @@ def PRACS(ordered_dict, beta=0.95):
 
     img_h = corr_coeffs * pan.repeat(1, C, 1, 1) + (1 - corr_coeffs) * ms_hm
 
-    img_h_lp = resize(
-        resize(img_h, [pan.shape[2] // ratio, pan.shape[3] // ratio], interpolation=Inter.BICUBIC,
-               antialias=True), [pan.shape[2], pan.shape[3]], interpolation=Inter.BICUBIC, antialias=True)
+    # img_h_lp = resize(
+    #     resize(img_h, [pan.shape[2] // ratio, pan.shape[3] // ratio], interpolation=Inter.BICUBIC,
+    #            antialias=True), [pan.shape[2], pan.shape[3]], interpolation=Inter.BICUBIC, antialias=True)
+
+    img_h_lp = imresize(
+        imresize(img_h, scale=1 / ratio), scale=ratio)
+
     img_h_lp_f = torch.flatten(img_h_lp, start_dim=2)
     gamma = []
     for i in range(C):

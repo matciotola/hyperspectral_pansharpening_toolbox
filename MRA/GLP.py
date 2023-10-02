@@ -7,7 +7,7 @@ matplotlib.use('Qt5Agg')
 
 from Utils.spectral_tools import mtf, LPfilterGauss
 from Utils.pansharpening_aux_tools import batch_cov, estimation_alpha
-from Utils.interpolator_tools import ideal_interpolator
+from Utils.interpolator_tools import ideal_interpolator, interp23tap_torch
 
 
 def MTF_GLP(ordered_dict):
@@ -25,11 +25,15 @@ def MTF_GLP(ordered_dict):
                                                                                                    dim=(2, 3),
                                                                                                    keepdim=True)
 
-    pan_lp = mtf(bands_hr.float(), sensor, ratio)
-    pan_lr_lr = resize(pan_lp, [h // ratio, w // ratio], interpolation=Inter.NEAREST_EXACT,
+    pan_lp = mtf(bands_hr, sensor, ratio)
+
+    if ratio == 6:
+        pan_lr = pan_lp
+    else:
+        pan_lr_lr = resize(pan_lp, [h // ratio, w // ratio], interpolation=Inter.NEAREST_EXACT,
                               antialias=False)
-    # pan_lr = interp23tap_torch(pan_lr_lr, ratio)
-    pan_lr = ideal_interpolator(pan_lr_lr, ratio)
+        # pan_lr = interp23tap_torch(pan_lr_lr, ratio)
+        pan_lr = ideal_interpolator(pan_lr_lr, ratio)
 
     fused = ms + bands_hr - pan_lr
 
@@ -93,7 +97,7 @@ def MTF_GLP_HPM(ordered_dict):
                                                                                                    dim=(2, 3),
                                                                                                    keepdim=True)
 
-    bands_hr_lp = mtf(bands_hr.float(), sensor, ratio)
+    bands_hr_lp = mtf(bands_hr, sensor, ratio)
     bands_hr_lr_lr = resize(bands_hr_lp, [h // ratio, w // ratio], interpolation=Inter.NEAREST_EXACT)
     # bands_hr_lr = interp23tap_torch(bands_hr_lr_lr, ratio)
     bands_hr_lr = ideal_interpolator(bands_hr_lr_lr, ratio)
@@ -172,3 +176,32 @@ def MTF_GLP_HPM_R(ordered_dict):
     fused = ms * (bands_hr + cb) / (bands_hr_lr + cb + torch.finfo(ms.dtype).eps)
 
     return fused
+
+
+if __name__ == '__main__':
+    from scipy import io
+    import matplotlib
+    matplotlib.use('TkAgg')
+    from matplotlib import pyplot as plt
+    import numpy as np
+    from recordclass import recordclass
+    from Utils.interpolator_tools import interp23tap
+    temp = io.loadmat('/home/matteo/Desktop/Datasets/WV3_Adelaide_crops/Adelaide_1_zoom.mat')
+
+    ms_lr = temp['I_MS_LR'].astype(np.float64)
+    ms = interp23tap(ms_lr, 4)
+    pan = temp['I_PAN'].astype(np.float64)
+    ratio = 4
+
+    ms_lr = torch.tensor(np.moveaxis(ms_lr, -1, 0)[None, :, :, :])
+    ms = torch.tensor(np.moveaxis(ms, -1, 0)[None, :, :, :])
+    pan = torch.tensor(pan[None, None, :, :])
+
+    ord_dic = {'ms': ms, 'pan': pan, 'ms_lr': ms_lr, 'ratio': ratio, 'dataset': 'WV3'}
+
+    exp_input = recordclass('exp_info', ord_dic.keys())(*ord_dic.values())
+
+    fused = MTF_GLP(exp_input)
+    plt.figure()
+    plt.imshow(fused[0, 0, :, :].detach().numpy(), cmap='gray')
+    plt.show()

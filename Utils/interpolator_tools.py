@@ -182,7 +182,7 @@ def interp_3x_2d(img, N=50):
 
 def ideal_interpolator(img, ratio):
 
-    if ratio == 2:
+    if ratio % 2 == 0:
         img_upsampled = interp23tap_torch(img, ratio)
     else:
         img_upsampled = interp_3x_2d(img)

@@ -3,6 +3,8 @@ from torch.nn.functional import pad
 from torchvision.transforms import InterpolationMode as Inter
 from torchvision.transforms.functional import resize
 
+from Utils.imresize_bicubic import imresize
+
 from Utils.spectral_tools import mtf, mtf_pan
 
 
@@ -12,12 +14,9 @@ def BDSD(ordered_dict):
     ratio = ordered_dict.ratio
 
     ms_lr_lp, ms_lr, pan_lr = prepro_BDSD(ms, pan, ratio, ms.shape[-1], ordered_dict.dataset)
-    fused = []
-    for i in range(ms.shape[1]):
-        gamma = gamma_calculation_BDSD(ms_lr_lp[:, i, None, :, :], ms_lr[:, i, None, :, :], pan_lr, ratio, ms.shape[-1])
-        fused.append(fuse_BDSD(ms[:, i, None, :, :], pan, gamma, ratio, ms.shape[-1]))
 
-    fused = torch.cat(fused, dim=1)
+    gamma = gamma_calculation_BDSD(ms_lr_lp, ms_lr, pan_lr, ratio, ms.shape[-1])
+    fused = fuse_BDSD(ms, pan, gamma, ratio, ms.shape[-1])
 
     return fused
 
@@ -32,14 +31,14 @@ def prepro_BDSD(ms, pan, ratio, block_size, sensor='PRISMA'):
     assert (N % block_size == 0) and (
             M % block_size == 0), f"height and widht of 10m bands must be multiple of the block size"
 
-    ms = ms.float()
-    pan = pan.float()
+    #ms = ms.float()
+    #pan = pan.float()
     starting = ratio // 2
 
     pan_lp = mtf_pan(pan, sensor, ratio)
     pan_lr = pan_lp[:, :, starting::ratio, starting::ratio]
-    ms_lr = resize(ms, [n // ratio, m // ratio], interpolation=Inter.BICUBIC, antialias=True)
-
+    # ms_lr = resize(ms, [n // ratio, m // ratio], interpolation=Inter.BICUBIC, antialias=True)
+    ms_lr = imresize(ms, scale=1 / ratio)
     ms_lr_lp = mtf(ms_lr, sensor, ratio)
 
     return ms_lr_lp, ms_lr, pan_lr
@@ -107,7 +106,7 @@ def estimate_gamma_cube(img, S):
         b = torch.flatten(b, start_dim=1)[:, :, None]
         bd = torch.flatten(bd, start_dim=1)[:, :, None]
         gamma.append(torch.matmul(B, (b - bd)))
-    gamma = torch.vstack(gamma)[:, None, :, :]
+    gamma = torch.cat(gamma, -1)[None, :, :, :]
     gamma = pad(gamma, (0, S - Nb, 0, S - Nb - 1))
 
     return gamma

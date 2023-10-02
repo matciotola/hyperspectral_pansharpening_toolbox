@@ -12,8 +12,8 @@ except:
 def evaluation_rr(out_lr, ms_lr, ratio, flag_cut=True, dim_cut=11, L=16):
 
     if flag_cut:
-        out_lr = out_lr[:, :, dim_cut:-dim_cut, dim_cut:-dim_cut]
-        ms_lr = ms_lr[:, :, dim_cut:-dim_cut, dim_cut:-dim_cut]
+        out_lr = out_lr[:, :, dim_cut-1:-dim_cut, dim_cut-1:-dim_cut]
+        ms_lr = ms_lr[:, :, dim_cut-1:-dim_cut, dim_cut-1:-dim_cut]
 
     out_lr = torch.clip(out_lr, 0, 2 ** L)
 
@@ -26,7 +26,7 @@ def evaluation_rr(out_lr, ms_lr, ratio, flag_cut=True, dim_cut=11, L=16):
     ergas_index, _ = ergas(out_lr, ms_lr)
     sam_index, _ = sam(out_lr, ms_lr)
     q_index = torch.mean(q(out_lr, ms_lr))
-    q2n_index, _ = q2n(out_lr, ms_lr)
+    q2n_index, _ = q2n(out_lr, ms_lr, 128)
 
     return ergas_index.item(), sam_index.item(), q_index.item(), q2n_index.item()
 
@@ -35,7 +35,7 @@ def evaluation_fr(out, pan, ms_lr, ratio, dataset):
 
     sigma = ratio
 
-    if dataset == 'PRISMA':
+    if dataset == 'PRISMA' or dataset == 'WV3':
         starting = 1
     elif dataset == 'Pavia':
         starting = 3

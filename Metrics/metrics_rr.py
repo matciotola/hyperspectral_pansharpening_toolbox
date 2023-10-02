@@ -2,6 +2,7 @@ import torch
 import math
 from torch import nn
 import numpy as np
+from torchvision.transforms import Pad
 
 
 def normalize_block(im):
@@ -143,10 +144,13 @@ class Q2n(nn.Module):
         self.Q_block_size = q_block_size
         self.Q_shift = q_shift
 
-    def forward(self, outputs, labels):
+    def forward(self, outputs, labels, channels=0):
 
         bs, dim3, dim1, dim2 = labels.size()
         _, _, ddim1, ddim2 = outputs.size()
+
+        if channels == 0:
+            channels = math.ceil(math.log2(dim3))
 
         stepx = math.ceil(dim1 / self.Q_shift)
         stepy = math.ceil(dim2 / self.Q_shift)
@@ -158,19 +162,19 @@ class Q2n(nn.Module):
         est1 = (stepx - 1) * self.Q_shift + self.Q_block_size - dim1
         est2 = (stepy - 1) * self.Q_shift + self.Q_block_size - dim2
 
+        outputs = torch.round(outputs)
+        labels = torch.round(labels)
+
         if (est1 != 0) + (est2 != 0) > 0:
-            padding = torch.nn.ReflectionPad2d((0, est1, 0, est2))
+            padding = Pad((0, 0, est1, est2), padding_mode='symmetric')
 
-            reference = padding(labels)
-            fused = padding(outputs)
-
-            outputs = fused.short()
-            labels = reference.short()
+            labels = padding(labels)
+            outputs = padding(outputs)
 
         bs, dim3, dim1, dim2 = labels.size()
 
-        if math.ceil(math.log2(dim3)) - math.log2(dim3) != 0:
-            exp_difference = 2 ** (math.ceil(math.log2(dim3))) - dim3
+        if channels - math.log2(dim3) != 0:
+            exp_difference = channels - dim3
             diff = torch.zeros((bs, exp_difference, dim1, dim2), device=outputs.device, requires_grad=False,
                                dtype=outputs.dtype)
             labels = torch.cat((labels, diff), dim=1)

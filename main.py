@@ -48,31 +48,44 @@ if __name__ == '__main__':
         for path in ds_paths:
             print(path)
             name = path.split(os.sep)[-1].split('.')[0]
-            pan, ms_lr, ms, gt = open_mat(path)
 
-            exp_info = {'ratio': pan.shape[-2] // ms_lr.shape[-2]}
-            exp_info['ms_lr'] = ms_lr
-            exp_info['ms'] = ms
-            exp_info['pan'] = pan
-            exp_info['dataset'] = dataset
 
             metrics_rr = []
             metrics_fr = []
 
-            if gt is None:
-                experiment_type = 'FR'
-            else:
-                experiment_type = 'RR'
 
-            exp_input = recordclass('exp_info', exp_info.keys())(*exp_info.values())
 
             for algorithm in config.pansharpening_based_algorithms:
+
+                pan, ms_lr, ms, gt = open_mat(path)
+
+                exp_info = {'ratio': pan.shape[-2] // ms_lr.shape[-2]}
+                exp_info['ms_lr'] = ms_lr
+                exp_info['ms'] = ms
+                exp_info['pan'] = pan
+                exp_info['dataset'] = dataset
+
+                exp_input = recordclass('exp_info', exp_info.keys())(*exp_info.values())
+
+                if gt is None:
+                    experiment_type = 'FR'
+                else:
+                    experiment_type = 'RR'
 
                 print('Running algorithm: ' + algorithm)
 
                 method = pansharpening_algorithm_dict[algorithm]
                 with torch.no_grad():
                     fused = method(exp_input)
+
+                from scipy import io
+                import numpy as np
+
+                mat_root_path = '/home/matteo/Desktop/GRSM_FR_Code/Outputs_images/WV3/Adelaide/Adelaide_1_zoom/'
+                mat_counterpart = io.loadmat(os.path.join(mat_root_path, algorithm + '.mat'))['I_MS']
+                mat_counterpart = torch.from_numpy(np.moveaxis(mat_counterpart, -1, 0)[None, :, :, :])
+                error = torch.abs(torch.clip(fused,0,2048) - torch.clip(mat_counterpart,0,2048))
+                print(error.max())
 
                 if experiment_type == 'RR':
                     metrics_values_rr = list(evaluation_rr(fused, gt, ratio=exp_info['ratio']))
@@ -95,10 +108,10 @@ if __name__ == '__main__':
                 del fused
                 gc.collect()
 
-            if experiment_type == 'RR':
-                if not os.path.exists(os.path.join(save_root, experiment_type)):
-                    os.makedirs(os.path.join(save_root, experiment_type))
+            if not os.path.exists(os.path.join(save_root, experiment_type)):
+                os.makedirs(os.path.join(save_root, experiment_type))
 
+            if experiment_type == 'RR':
                 with open(os.path.join(save_root, experiment_type, 'Evaluation_RR.csv'), 'w', encoding='UTF8', newline='') as f:
                     writer = csv.DictWriter(f, fieldnames=fieldnames_rr)
                     writer.writeheader()

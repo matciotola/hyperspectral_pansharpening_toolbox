@@ -26,15 +26,15 @@ def MF(ordered_dict):
 
     p = pyr_dec(pan, textse, lev, int_meth)
 
-    p_lp = p[:, :, :, :, lev - 1]
+    p_lp = p[:, :, :, :, - 1]
 
-    fused = ms * (p[:, :, :, :, 0] / (p_lp + 1e-10))
+    fused = ms * (p[:, :, :, :, 0] / (p_lp + torch.finfo(torch.float64).eps))
 
     return fused
 
 
 def pyr_dec(I, textse, lev, int_meth):
-
+    from torchvision.transforms.functional import pad
     p = []
     p.append(torch.unsqueeze(I, -1))
 
@@ -47,11 +47,15 @@ def pyr_dec(I, textse, lev, int_meth):
 
     for i in range(1, lev):
 
-        image_old = image_new
+        image_old = torch.clone(image_new)
         del image_new
 
-        pd = dilation(image_old, textse)
-        pe = erosion(image_old, textse)
+        pd = dilation(image_old, textse, max_val=torch.inf)
+
+        #pe = []
+        # for kk in range(image_old.shape[1]):
+        pe = erosion(image_old, textse, max_val=torch.inf)
+        # pe = torch.cat(pe, dim=1)
 
         rho_minus = image_old - pe
         rho_plus = pd - image_old
@@ -71,8 +75,8 @@ def pyr_dec(I, textse, lev, int_meth):
 
         image_resized_old = image_new
 
-        for ir in range(i, -1, -1):
-            image_resized_new = resize(image_resized_old, sizes[ir], interpolation=int_meth, antialias=False)
+        for ir in range(i-1, -1, -1):
+            image_resized_new = resize(image_resized_old, sizes[ir], interpolation=int_meth, antialias=True)
             image_resized_old = image_resized_new
             del image_resized_new
 
@@ -87,28 +91,28 @@ def pyr_dec(I, textse, lev, int_meth):
 
 if __name__ == '__main__':
     from scipy import io
-    import numpy as np
     import matplotlib
     matplotlib.use('TkAgg')
     from matplotlib import pyplot as plt
+    import numpy as np
+    from recordclass import recordclass
     from Utils.interpolator_tools import interp23tap
     temp = io.loadmat('/home/matteo/Desktop/Datasets/WV3_Adelaide_crops/Adelaide_1_zoom.mat')
 
-    ms = interp23tap(temp['I_MS_LR'].astype(np.float32), 4)
-    pan = temp['I_PAN'].astype(np.float32)
+    ms_lr = temp['I_MS_LR'].astype(np.float64)
+    ms = interp23tap(ms_lr, 4)
+    pan = temp['I_PAN'].astype(np.float64)
+    ratio = 4
 
-    ms = np.moveaxis(ms, -1, 0)
-    ms = torch.from_numpy(ms[None, :, :, :])
-    pan = torch.from_numpy(pan[None, None, :, :])
+    ms_lr = torch.tensor(np.moveaxis(ms_lr, -1, 0)[None, :, :, :])
+    ms = torch.tensor(np.moveaxis(ms, -1, 0)[None, :, :, :])
+    pan = torch.tensor(pan[None, None, :, :])
 
-    fused = MF(ms, pan, 4)
+    ord_dic = {'ms': ms, 'pan': pan, 'ms_lr': ms_lr, 'ratio': ratio, 'dataset': 'WV3'}
+
+    exp_input = recordclass('exp_info', ord_dic.keys())(*ord_dic.values())
+
+    fused = MF(exp_input)
     plt.figure()
-    plt.imshow(fused[0, 0, :, :].numpy(), cmap='gray', clim=[0, 2048])
+    plt.imshow(fused[0, 0, :, :].detach().numpy(), cmap='gray')
     plt.show()
-
-
-    fused = fused.detach().cpu().numpy()
-    fused = np.squeeze(fused)
-    fused = np.moveaxis(fused, 0, -1)
-
-    io.savemat('/home/matteo/Desktop//Adelaide_1_zoom_MF.mat', {'I_MS': fused})
