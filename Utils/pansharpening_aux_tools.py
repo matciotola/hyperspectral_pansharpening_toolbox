@@ -42,3 +42,17 @@ def regress(y, X):
     return b
 
 
+def mldivide(y, X):
+
+    y = y.double()
+    X = X.double()
+
+    Q, R = torch.linalg.qr(X)
+    """
+    p = torch.sum(torch.abs(R.diagonal(dim1=1, dim2=2)) > max(n, ncolX)*eps(R[:,0,0]), dim=1)
+    P = torch.bmm(torch.pinverse(X), Q)
+    P = torch.bmm(P, R)
+    _, perm = torch.max(P, 1)
+    """
+    b = torch.linalg.solve(R, Q.transpose(1, 2) @ y)
+    return b
