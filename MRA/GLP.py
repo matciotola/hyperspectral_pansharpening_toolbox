@@ -1,13 +1,10 @@
 import torch
 from torchvision.transforms.functional import resize
 from torchvision.transforms import InterpolationMode as Inter
-import matplotlib
-
-matplotlib.use('Qt5Agg')
 
 from Utils.spectral_tools import mtf, LPfilterGauss
 from Utils.pansharpening_aux_tools import batch_cov, estimation_alpha
-from Utils.interpolator_tools import ideal_interpolator, interp23tap_torch
+from Utils.interpolator_tools import ideal_interpolator
 
 
 def MTF_GLP(ordered_dict):
