@@ -1,14 +1,11 @@
-train: False
+train: True
 
 gpu_number: '0'
 
-training_img_root: ''
-validation_img_root: ''
-
 # Training settings
 resume: False
-save_weights: False
-save_weights_path: ''
+save_weights: True
+save_weights_path: './weights'
 save_training_stats: False
 
 # Training hyperparameters
