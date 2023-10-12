@@ -28,7 +28,8 @@ def hyperpnn(ordered_dict):
     if not config.train or config.resume:
         if not model_weights_path:
             model_weights_path = os.path.join(os.getcwd(), 'weights', 'HyperPNN.tar')
-        net.load_state_dict(torch.load(model_weights_path))
+        if os.path.exists(model_weights_path):
+            net.load_state_dict(torch.load(model_weights_path))
 
     net = net.to(device)
 
@@ -54,7 +55,7 @@ def hyperpnn(ordered_dict):
         if config.save_training_stats:
             if not os.path.exists('./Stats/HyperPNN'):
                 os.makedirs('./Stats/HyperPNN')
-            io.savemat('./Stats/FUSE/Training_HyperPNN.mat', history)
+            io.savemat('./Stats/HyperPNN/Training_HyperPNN.mat', history)
 
     pan = normalize(pan)
     ms = normalize(ms)
