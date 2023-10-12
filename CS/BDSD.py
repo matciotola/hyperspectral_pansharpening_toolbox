@@ -1,7 +1,5 @@
 import torch
 from torch.nn.functional import pad
-from torchvision.transforms import InterpolationMode as Inter
-from torchvision.transforms.functional import resize
 
 from Utils.imresize_bicubic import imresize
 

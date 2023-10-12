@@ -1,7 +1,7 @@
 import torch
 
 from Utils.spectral_tools import LPFilterPlusDecTorch
-from Utils.pansharpening_aux_tools import batch_cov, estimation_alpha
+from Utils.pansharpening_aux_tools import estimation_alpha
 
 
 def GS(ordered_dict):
