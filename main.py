@@ -17,6 +17,9 @@ from MRA.GLP import MTF_GLP, MTF_GLP_FS, MTF_GLP_HPM, MTF_GLP_HPM_H, MTF_GLP_HPM
 from MRA.AWLP import AWLP
 from MRA.MF import MF
 
+from HySURE.hysure import hysure
+from HyperPNN.HyperPNN import hyperpnn
+
 from Metrics.evaluation import evaluation_rr, evaluation_fr
 
 from Utils.dl_tools import generate_paths
@@ -29,7 +32,9 @@ gdal.UseExceptions()
 pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS,  # Component substitution
                                 'AWLP': AWLP, 'MTF-GLP': MTF_GLP, 'MTF-GLP-FS': MTF_GLP_FS,        # Multi-Resolution analysis
                                 'MTF-GLP-HPM': MTF_GLP_HPM, 'MTF-GLP-HPM-H': MTF_GLP_HPM_H,        # Multi-Resolution analysis
-                                'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF}                          # Multi-Resolution analysis
+                                'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF,                          # Multi-Resolution analysis
+                                'HySURE': hysure, 'HyperPNN': hyperpnn                             # Ad hoc
+                                }
 
 fieldnames_rr = ['Method', 'ERGAS', 'SAM', 'Q', 'Q2n']
 fieldnames_fr = ['Method', 'R-ERGAS', 'R-SAM', 'R-Q', 'D_lambda', 'D_s', 'D_sR', 'D_rho']
