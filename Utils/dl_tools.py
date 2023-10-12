@@ -7,6 +7,14 @@ from recordclass import recordclass
 from Utils.load_save_tools import open_mat
 
 
+def normalize(tensor):
+    return tensor / (2 ** 16)
+
+
+def denormalize(tensor):
+    return tensor * (2 ** 16)
+
+
 def read_yaml(file_path):
     with open(file_path, "r") as f:
         return yaml.safe_load(f)
@@ -28,99 +36,73 @@ def generate_paths(root, dataset):
     return ds_paths
 
 
-class TrainingDataset20m(Dataset):
-    def __init__(self, pan_paths, ms_lr_paths, norm, input_prepro, get_patches, ratio=2, patches_size_lr=33, patch_size_hr=33):
-        super(TrainingDataset20m, self).__init__()
+class TrainingDatasetRR(Dataset):
+    def __init__(self, img_paths, norm):
+        super(TrainingDatasetRR, self).__init__()
 
-        ms_lr = []
         pan = []
+        ms_lr = []
+        ms = []
+        gt = []
 
-        for i in range(len(pan_paths)):
-            pan.append(open_mat(pan_paths[i]))
-            ms_lr.append(open_mat(ms_lr_paths[i]))
+        for i in range(len(img_paths)):
+            pan_single, ms_lr_single, ms_single, gt_single = open_mat(img_paths[i])
+            pan.append(pan_single.float())
+            ms_lr.append(ms_lr_single.float())
+            ms.append(ms_single.float())
+            gt.append(gt_single.float())
 
         pan = torch.cat(pan, 0)
         ms_lr = torch.cat(ms_lr, 0)
+        ms = torch.cat(ms, 0)
+        gt = torch.cat(gt, 0)
 
-        pan_downsampled, ms_downsampled, ms_lr = input_prepro(pan, ms_lr, ratio)
-
-        pan_downsampled = norm(pan_downsampled)
-        ms_downsampled = norm(ms_downsampled)
+        pan = norm(pan)
         ms_lr = norm(ms_lr)
+        ms = norm(ms)
+        gt = norm(gt)
 
-        self.patches_high_lr = get_patches(pan_downsampled, patch_size_hr)
-        self.patches_low_lr = get_patches(ms_downsampled, patches_size_lr)
-        self.patches_low = get_patches(ms_lr, patch_size_hr)
+        self.pan = pan
+        self.ms_lr = ms_lr
+        self.ms = ms
+        self.gt = gt
 
     def __len__(self):
-        return self.patches_high_lr.shape[0]
+        return self.pan.shape[0]
 
     def __getitem__(self, index):
-        return self.patches_high_lr[index], self.patches_low_lr[index], self.patches_low[index]
+        return self.pan[index], self.ms_lr[index], self.ms[index], self.gt[index]
 
 
-class TrainingDataset60m(Dataset):
-    def __init__(self, pan_paths, bands_intermediate_lr_paths, ms_lr_paths, norm, input_prepro,
-                 get_patches, ratio=2, patches_size=33):
-        super(TrainingDataset60m, self).__init__()
+class TrainingDatasetFR(Dataset):
+    def __init__(self, img_paths, norm):
+        super(TrainingDatasetFR, self).__init__()
 
-        ms_lr = []
-        bands_intermediate_lr = []
         pan = []
+        ms_lr = []
+        ms = []
 
-        for i in range(len(pan_paths)):
-            pan.append(open_mat(pan_paths[i]))
-            bands_intermediate_lr.append(open_mat(bands_intermediate_lr_paths[i]))
-            ms_lr.append(open_mat(ms_lr_paths[i]))
+        for i in range(len(img_paths)):
+            pan_single, ms_lr_single, ms_single, _ = open_mat(img_paths[i])
+            pan.append(pan_single.float())
+            ms_lr.append(ms_lr_single.float())
+            ms.append(ms_single.float())
 
         pan = torch.cat(pan, 0)
-        bands_intermediate_lr = torch.cat(bands_intermediate_lr, 0)
         ms_lr = torch.cat(ms_lr, 0)
+        ms = torch.cat(ms, 0)
 
-        pan_downsampled, bands_intermediate_downsampled, ms_downsampled, ms_lr = input_prepro(
-            pan, bands_intermediate_lr, ms_lr, ratio)
-
-        pan_downsampled = norm(pan_downsampled)
-        bands_intermediate_downsampled = norm(bands_intermediate_downsampled)
-        ms_downsampled = norm(ms_downsampled)
+        pan = norm(pan)
         ms_lr = norm(ms_lr)
+        ms = norm(ms)
 
-        self.patches_high_lr = get_patches(pan_downsampled, patches_size)
-        self.patches_intermediate_lr = get_patches(bands_intermediate_downsampled, patches_size)
-        self.patches_low_lr = get_patches(ms_downsampled, patches_size)
-        self.patches_low = get_patches(ms_lr, patches_size)
+        self.pan = pan
+        self.ms_lr = ms_lr
+        self.ms = ms
 
     def __len__(self):
-        return self.patches_high_lr.shape[0]
+        return self.pan.shape[0]
 
     def __getitem__(self, index):
-        return self.patches_high_lr[index], self.patches_intermediate_lr, self.patches_low_lr[index], self.patches_low[
-            index]
+        return self.pan[index], self.ms_lr[index], self.ms[index]
 
-"""
-def get_patches(bands, patches_size=33):
-    print('list_bands for patches: ' + str(len(bands)))
-    patches = []
-
-    _, b, c, r = bands.shape
-    cont = 0
-    for i in range(0, r - patches_size, patches_size):
-        for j in range(0, c - patches_size, patches_size):
-            p = bands[:, :, i:i + patches_size, j:j + patches_size]
-
-            patches.append(p)
-
-            cont += 1
-    patches = torch.cat(patches, dim=0)
-    return patches
-"""
-
-def get_patches(bands, patch_size=33):
-
-    patches = []
-    for i in range(bands.shape[2] // patch_size):
-        for j in range(bands.shape[3] // patch_size):
-            patches.append(bands[:, :, patch_size * i:patch_size * (i + 1), patch_size * j:patch_size * (j + 1)])
-
-    patches = torch.cat(patches, dim=0)
-    return patches
