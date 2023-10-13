@@ -4,7 +4,7 @@ from torch.nn import functional as func
 
 
 class HSpeNet_model(nn.Module):
-    def __init__(self, nbands, padding='same', mode='reflect', bias=True) -> None:
+    def __init__(self, nbands, padding='same', mode='reflect', bias=True):
         super(HSpeNet_model, self).__init__()
 
         self.conv1_2 = nn.Conv2d(1, 16, 3, padding=padding, padding_mode=mode, bias=bias)

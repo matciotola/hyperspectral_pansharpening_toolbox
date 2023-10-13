@@ -106,7 +106,6 @@ def train(device, net, train_loader, config, val_loader=None):
             outputs = net(pan, ms)
 
             loss = criterion(outputs, gt)
-
             loss.backward()
             optim.step()
 

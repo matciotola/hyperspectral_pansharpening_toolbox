@@ -3,7 +3,7 @@ from torch import nn
 from torch.nn import functional as func
 
 class HyperPNN_model(nn.Module):
-    def __init__(self, nbands, padding='same', mode='reflect', bias=True) -> None:
+    def __init__(self, nbands, padding='same', mode='reflect', bias=True):
         super(HyperPNN_model, self).__init__()
         self.conv1 = nn.Conv2d(nbands, 64, 1, padding=padding, padding_mode=mode, bias=bias)
         self.conv2 = nn.Conv2d(64, 64, 1, padding=padding, padding_mode=mode, bias=bias)
