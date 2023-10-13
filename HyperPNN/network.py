@@ -13,7 +13,7 @@ class HyperPNN_model(nn.Module):
         self.conv6 = nn.Conv2d(64, 64, 1, padding=padding, padding_mode=mode, bias=bias)
         self.conv7 = nn.Conv2d(64, nbands, 1, padding=padding, padding_mode=mode, bias=bias)
 
-    def forward(self, hs, pan):
+    def forward(self, pan, hs):
         x = func.relu(self.conv1(hs))
         x = func.relu(self.conv2(x))
 

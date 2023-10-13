@@ -21,7 +21,7 @@ class HSpeNet_model(nn.Module):
 
         self.conv8 = nn.Conv2d(64+16+16+16+16+16+16, nbands, 1, padding=padding, padding_mode=mode, bias=bias)
 
-    def forward(self, hs, pan):
+    def forward(self, pan, hs):
         p = func.relu(self.conv1_2(pan))
         p = func.relu(self.conv2_2(p))
         p = pan - p     #o il contrario
