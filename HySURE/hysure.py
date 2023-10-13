@@ -1,9 +1,6 @@
 import torch
 from Utils.pansharpening_aux_tools import mldivide
-try:
-    from .vca import vca
-except:
-    from vca import vca
+from .vca import vca
 
 def hysure(ordered_dict, intersection=None):
 
