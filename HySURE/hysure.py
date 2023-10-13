@@ -1,17 +1,20 @@
 import torch
 from Utils.pansharpening_aux_tools import mldivide
-from vca import vca
+try:
+    from .vca import vca
+except:
+    from vca import vca
 
 def hysure(ordered_dict, intersection=None):
 
-    ms = torch.clone(ordered_dict.ms)
+    ms_lr = torch.clone(ordered_dict.ms_lr)
     pan = torch.clone(ordered_dict.pan)
     ratio = ordered_dict.ratio
     bs, _, nl, nc = pan.shape
-    bs, nb, nlh, nch = ms.shape
+    bs, nb, nlh, nch = ms_lr.shape
 
     if intersection is None:
-        intersection = torch.arange(0, ms.shape[1]).long()
+        intersection = torch.arange(0, ms_lr.shape[1]).long()
     contigous = torch.clone(intersection)
 
     # Regularization parameters
@@ -27,8 +30,8 @@ def hysure(ordered_dict, intersection=None):
     lambda_m = 1
 
     # Normalize the data
-    max_ms = torch.max(ms)
-    ms = ms / max_ms
+    max_ms = torch.max(ms_lr)
+    ms_lr = ms_lr / max_ms
     pan = pan / max_ms
 
     # Estimate the sensor response
@@ -36,10 +39,10 @@ def hysure(ordered_dict, intersection=None):
     shift = 1
     blur_center = 0
 
-    v, r_est, b_est = sensor_response_estimation(ms, pan, ratio, intersection, contigous, p, lambda_r, lambda_b, hsize_h, hsize_w, shift, blur_center)
+    v, r_est, b_est = sensor_response_estimation(ms_lr, pan, ratio, intersection, contigous, p, lambda_r, lambda_b, hsize_h, hsize_w, shift, blur_center)
 
     # 3. Data Fusion
-    z_im_hat = data_fusion(ms, pan, ratio, r_est, b_est, p, basis_type, lambda_phi, lambda_m)
+    z_im_hat = data_fusion(ms_lr, pan, ratio, r_est, b_est, p, basis_type, lambda_phi, lambda_m)
 
     # Denoise the data with V
     z_hat = im2mat(z_im_hat)
@@ -206,8 +209,8 @@ def sensor_response_estimation(ms, pan, downsample_factor, intersection, contigo
     ymymt = torch.zeros((hsize_h*hsize_w, hsize_h*hsize_w), dtype=ms.dtype, device=ms.device)
     rtyhymt = torch.zeros((bs, 1, hsize_h*hsize_w), dtype=ms.dtype, device=ms.device)
 
-    for idx_h in range((hsize_h - 1) // 2, nl - ((hsize_h - 1) // 2)):
-        for idx_w in range((hsize_w - 1) // 2, nc - ((hsize_w - 1) // 2)):
+    for idx_h in range((hsize_h - 1) // 2, nl - ((hsize_h - 1) // 2) - 1):
+        for idx_w in range((hsize_w - 1) // 2, nc - ((hsize_w - 1) // 2) - 1):
             if mask_im[0, 0, idx_h, idx_w] == 1:
                 if hsize_h % 2 == 0 and hsize_w % 2 == 0:
                     patch = pan[:, :, idx_h - ((hsize_h - 1) // 2):idx_h + ((hsize_h) // 2) + 1, idx_w - ((hsize_w - 1) // 2):idx_w + (hsize_w // 2) + 1]
@@ -366,6 +369,7 @@ def data_fusion(y_him, y_mim, downsampling_factor, R, B, p, basis_type, lambda_p
 if __name__ == '__main__':
     from scipy import io
     import numpy as np
+    from recordclass import recordclass
     import matplotlib
     matplotlib.use('QT5Agg')
 
@@ -380,7 +384,14 @@ if __name__ == '__main__':
     pan = torch.from_numpy(pan[None, None, :, :])
     ratio = 4
 
-    fused = hysure(pan, ms, ratio)
+    exp_info = {'ratio': ratio}
+    exp_info['ms_lr'] = ms
+    exp_info['pan'] = pan
+    # exp_info['dataset'] = 'dataset'
+
+    exp_input = recordclass('exp_info', exp_info.keys())(*exp_info.values())
+
+    fused = hysure(exp_input)
     plt.figure()
     plt.imshow(fused[0, 0, :, :].cpu().numpy(), clim=[0, 1], cmap='gray')
     plt.show()
