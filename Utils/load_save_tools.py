@@ -12,6 +12,7 @@ def open_mat(path, ratio=6):
     pan_np = dic_file['I_PAN'].astype(np.float64)
     ms_lr_np = dic_file['I_MS_LR'].astype(np.float64)
     ms_np = dic_file['I_MS'].astype(np.float64)
+    wavelenghts = dic_file['Wavelengths']
 
     if 'I_GT' in dic_file.keys():
         gt_np = dic_file['I_GT'].astype(np.float64)
@@ -23,8 +24,9 @@ def open_mat(path, ratio=6):
     ms_lr = torch.from_numpy(np.moveaxis(ms_lr_np, -1, 0)[None, :, :, :])
     pan = torch.from_numpy(pan_np[None, None, :, :])
     ms = torch.from_numpy(np.moveaxis(ms_np, -1, 0)[None, :, :, :])
+    wavelenghts = torch.from_numpy(dic_file['Wavelengths']).float()
 
-    return pan, ms_lr, ms, gt
+    return pan, ms_lr, ms, gt, wavelenghts
 
 
 def save_mat(image, path):
