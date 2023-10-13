@@ -20,6 +20,7 @@ from MRA.MF import MF
 from HySURE.HySURE import HySURE
 from HyperPNN.HyperPNN import HyperPNN
 from HSpeNet.HSpeNet import HSpeNet
+from R_PNN.R_PNN import R_PNN
 
 from Metrics.evaluation import evaluation_rr, evaluation_fr
 
@@ -34,7 +35,8 @@ pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H
                                 'AWLP': AWLP, 'MTF-GLP': MTF_GLP, 'MTF-GLP-FS': MTF_GLP_FS,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM': MTF_GLP_HPM, 'MTF-GLP-HPM-H': MTF_GLP_HPM_H,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF,  # Multi-Resolution analysis
-                                'HySURE': HySURE, 'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet  # Ad hoc
+                                'HySURE': HySURE, 'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet,  # Ad hoc
+                                'R-PNN': R_PNN
                                 }
 
 fieldnames_rr = ['Method', 'ERGAS', 'SAM', 'Q', 'Q2n']
@@ -54,12 +56,13 @@ if __name__ == '__main__':
         for path in ds_paths:
             print(path)
             name = path.split(os.sep)[-1].split('.')[0]
-            pan, ms_lr, ms, gt = open_mat(path)
+            pan, ms_lr, ms, gt, wavelenghts = open_mat(path)
 
             exp_info = {'ratio': pan.shape[-2] // ms_lr.shape[-2]}
             exp_info['ms_lr'] = ms_lr
             exp_info['ms'] = ms
             exp_info['pan'] = pan
+            exp_info['wavelenghts'] = wavelenghts
             exp_info['dataset'] = dataset
             exp_info['name'] = name
             exp_info['root'] = config.ds_root
