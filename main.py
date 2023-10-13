@@ -79,8 +79,8 @@ if __name__ == '__main__':
                 print('Running algorithm: ' + algorithm)
 
                 method = pansharpening_algorithm_dict[algorithm]
-                with torch.no_grad():
-                    fused = method(exp_input)
+
+                fused = method(exp_input)
 
                 if experiment_type == 'RR':
                     metrics_values_rr = list(evaluation_rr(fused, torch.clone(gt), ratio=exp_info['ratio']))
