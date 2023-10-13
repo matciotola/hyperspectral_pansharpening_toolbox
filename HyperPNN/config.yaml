@@ -7,7 +7,7 @@ training_img_root: ''
 # Training settings
 resume: False
 save_weights: True
-save_weights_path: './weights'
+save_weights_path: 'weights'
 save_training_stats: False
 
 # Training hyperparameters
