@@ -1,5 +1,6 @@
 import os
 from scipy import io
+import inspect
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -13,7 +14,8 @@ from Utils.dl_tools import open_config, generate_paths, TrainingDatasetRR, norma
 
 def HSpeNet(ordered_dict):
 
-    config_path = os.path.join(os.getcwd(), 'config.yaml')
+    config_path = os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), 'config.yaml')
+
 
     config = open_config(config_path)
     os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu_number
