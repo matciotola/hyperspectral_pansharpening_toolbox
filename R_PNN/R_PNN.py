@@ -178,7 +178,7 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
     pan = torch.clone(pan).to(device)
     wl = ordered_dict.wavelenghts
 
-    criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61), ordered_dict.ratio, device).to(device)
+    criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61, nbands=1), ordered_dict.ratio, device).to(device)
     criterion_struct = StructuralLoss(ordered_dict.ratio, device)
     optim = torch.optim.Adam(net.parameters(), lr=config.learning_rate, betas=(config.beta_1, config.beta_2))
 
