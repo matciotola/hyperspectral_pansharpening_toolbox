@@ -84,7 +84,7 @@ def R_PNN(ordered_dict):
 
 def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
-    criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.sensor, kernel_size=61), ordered_dict.ratio, device).to(device)
+    criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61), ordered_dict.ratio, device).to(device)
     criterion_struct = StructuralLoss(ordered_dict.ratio, device)
     optim = torch.optim.Adam(net.parameters(), lr=config.learning_rate, betas=(config.beta_1, config.beta_2))
 
@@ -145,7 +145,7 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
                     ms_lr = ms_lr[:, 0:1, :, :].to(device)
 
                     inp = torch.cat([ms, pan], dim=1)
-                    threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.sensor, device, config.semi_width)
+                    threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.dataset, device, config.semi_width)
 
                     outputs = net(inp)
 
@@ -178,7 +178,7 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
     pan = torch.clone(pan).to(device)
     wl = ordered_dict.wavelenghts
 
-    criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.sensor, kernel_size=61), ordered_dict.ratio, device).to(device)
+    criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61), ordered_dict.ratio, device).to(device)
     criterion_struct = StructuralLoss(ordered_dict.ratio, device)
     optim = torch.optim.Adam(net.parameters(), lr=config.learning_rate, betas=(config.beta_1, config.beta_2))
 
@@ -196,7 +196,7 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
 
         # Aux data generation
         inp = torch.cat([band, pan], dim=1)
-        threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.sensor, device, config.semi_width)
+        threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.dataset, device, config.semi_width)
 
         if wl[band] > 700:
             alpha = config.alpha_2
