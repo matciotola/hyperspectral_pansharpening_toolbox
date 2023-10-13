@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     for dataset in config.datasets:
 
-        ds_paths = generate_paths(config.ds_root, dataset)
+        ds_paths = generate_paths(config.ds_root, dataset, 'Test')
 
         for path in ds_paths:
             print(path)

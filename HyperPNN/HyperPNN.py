@@ -34,12 +34,16 @@ def HyperPNN(ordered_dict):
     net = net.to(device)
 
     if config.train:
-        train_paths = generate_paths(config.training_img_root, 'Training')
+        if config.training_img_root is None:
+            training_img_root = os.path.join(ordered_dict.root, ordered_dict.dataset)
+        else:
+            training_img_root = config.training_img_root
+        train_paths = generate_paths(training_img_root, 'Training')
         ds_train = TrainingDatasetRR(train_paths, normalize)
         train_loader = DataLoader(ds_train, batch_size=config.batch_size, shuffle=True)
 
-        if len(config.validation_img_names) != 0:
-            val_paths = generate_paths(config.training_img_root, 'Validation')
+        if config.validation:
+            val_paths = generate_paths(training_img_root, 'Validation')
             ds_val = TrainingDatasetRR(val_paths, normalize)
             val_loader = DataLoader(ds_val, batch_size=config.batch_size, shuffle=False)
         else:

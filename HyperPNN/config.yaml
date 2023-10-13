@@ -1,4 +1,5 @@
 train: True
+validation: True
 
 gpu_number: '0'
 

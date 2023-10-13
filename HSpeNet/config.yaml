@@ -1,6 +1,8 @@
 train: True
+validation: False
 
 gpu_number: '0'
+training_img_root: ''
 
 # Training settings
 resume: False
