@@ -29,7 +29,7 @@ def HyperPNN(ordered_dict):
 
     if not config.train or config.resume:
         if not model_weights_path:
-            model_weights_path = os.path.join(os.getcwd(), 'weights', 'HyperPNN.tar')
+            model_weights_path = os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), 'weights', 'HyperPNN.tar')
         if os.path.exists(model_weights_path):
             net.load_state_dict(torch.load(model_weights_path))
 
@@ -37,15 +37,15 @@ def HyperPNN(ordered_dict):
 
     if config.train:
         if config.training_img_root is None:
-            training_img_root = os.path.join(ordered_dict.root, ordered_dict.dataset)
+            training_img_root = ordered_dict.root
         else:
             training_img_root = config.training_img_root
-        train_paths = generate_paths(training_img_root, 'Training')
+        train_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Training')
         ds_train = TrainingDatasetRR(train_paths, normalize)
         train_loader = DataLoader(ds_train, batch_size=config.batch_size, shuffle=True)
 
         if config.validation:
-            val_paths = generate_paths(training_img_root, 'Validation')
+            val_paths = generate_paths(training_img_root,  ordered_dict.dataset, 'Validation')
             ds_val = TrainingDatasetRR(val_paths, normalize)
             val_loader = DataLoader(ds_val, batch_size=config.batch_size, shuffle=False)
         else:
