@@ -54,24 +54,21 @@ if __name__ == '__main__':
         for path in ds_paths:
             print(path)
             name = path.split(os.sep)[-1].split('.')[0]
+            pan, ms_lr, ms, gt = open_mat(path)
 
+            exp_info = {'ratio': pan.shape[-2] // ms_lr.shape[-2]}
+            exp_info['ms_lr'] = ms_lr
+            exp_info['ms'] = ms
+            exp_info['pan'] = pan
+            exp_info['dataset'] = dataset
+            exp_info['name'] = name
+
+            exp_input = recordclass('exp_info', exp_info.keys())(*exp_info.values())
 
             metrics_rr = []
             metrics_fr = []
 
-
-
             for algorithm in config.pansharpening_based_algorithms:
-
-                pan, ms_lr, ms, gt = open_mat(path)
-
-                exp_info = {'ratio': pan.shape[-2] // ms_lr.shape[-2]}
-                exp_info['ms_lr'] = ms_lr
-                exp_info['ms'] = ms
-                exp_info['pan'] = pan
-                exp_info['dataset'] = dataset
-
-                exp_input = recordclass('exp_info', exp_info.keys())(*exp_info.values())
 
                 if gt is None:
                     experiment_type = 'FR'
@@ -85,13 +82,13 @@ if __name__ == '__main__':
                     fused = method(exp_input)
 
                 if experiment_type == 'RR':
-                    metrics_values_rr = list(evaluation_rr(fused, gt, ratio=exp_info['ratio']))
+                    metrics_values_rr = list(evaluation_rr(fused, torch.clone(gt), ratio=exp_info['ratio']))
                     metrics_values_rr.insert(0, algorithm)
                     metrics_values_rr_dict = dict(zip(fieldnames_rr, metrics_values_rr))
                     print(metrics_values_rr_dict)
                     metrics_rr.append(metrics_values_rr_dict)
                 else:
-                    metrics_values_fr = list(evaluation_fr(fused, pan, ms_lr, ratio=exp_info['ratio'], dataset=exp_info['dataset']))
+                    metrics_values_fr = list(evaluation_fr(fused, torch.clone(pan), torch.clone(ms_lr), ratio=exp_info['ratio'], dataset=exp_info['dataset']))
                     metrics_values_fr.insert(0, algorithm)
                     metrics_values_fr_dict = dict(zip(fieldnames_fr, metrics_values_fr))
                     print(metrics_values_fr_dict)
