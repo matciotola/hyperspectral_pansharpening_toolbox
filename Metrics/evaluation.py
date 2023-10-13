@@ -1,12 +1,9 @@
 import torch
 import torch.nn.functional as F
 from Utils.spectral_tools import gen_mtf, mtf_kernel_to_torch
-try:
-    import metrics_rr as rr
-    import metrics_fr as fr
-except:
-    from Metrics import metrics_rr as rr
-    from Metrics import metrics_fr as fr
+
+from . import metrics_rr as rr
+from . import metrics_fr as fr
 
 
 def evaluation_rr(out_lr, ms_lr, ratio, flag_cut=True, dim_cut=11, L=16):
