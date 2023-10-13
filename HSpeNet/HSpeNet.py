@@ -69,7 +69,7 @@ def hspenet(ordered_dict):
     ms = ms.to(device)
     net.eval()
     with torch.no_grad():
-        fused = net(ms, pan)
+        fused = net(pan, ms)
 
     fused = denormalize(fused)
     torch.cuda.empty_cache()
