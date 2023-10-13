@@ -84,7 +84,7 @@ def R_PNN(ordered_dict):
 
 def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
-    criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61), ordered_dict.ratio, device).to(device)
+    criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61, nbands=1), ordered_dict.ratio, device).to(device)
     criterion_struct = StructuralLoss(ordered_dict.ratio, device)
     optim = torch.optim.Adam(net.parameters(), lr=config.learning_rate, betas=(config.beta_1, config.beta_2))
 
