@@ -60,9 +60,9 @@ def HSpeNet(ordered_dict):
             torch.save(net.state_dict(), config.save_weights_path)
 
         if config.save_training_stats:
-            if not os.path.exists('./Stats/HSpeNet'):
-                os.makedirs('./Stats/HSpeNet')
-            io.savemat('./Stats/HSpeNet/Training_HyperPNN.mat', history)
+            if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), 'Stats', 'HSpeNet')):
+                os.makedirs(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), 'Stats', 'HSpeNet'))
+            io.savemat(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), 'Stats', 'HSpeNet', 'Training_HSpeNet.mat'), history)
 
     pan = normalize(pan)
     ms = normalize(ms)
