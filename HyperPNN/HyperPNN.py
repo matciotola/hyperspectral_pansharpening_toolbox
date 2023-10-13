@@ -12,7 +12,7 @@ from Utils.dl_tools import open_config, generate_paths, TrainingDatasetRR, norma
 
 def HyperPNN(ordered_dict):
 
-    config_path = 'config.yaml'
+    config_path = os.path.join(os.getcwd(), 'config.yaml')
 
     config = open_config(config_path)
     os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu_number
