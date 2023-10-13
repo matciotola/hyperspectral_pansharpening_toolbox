@@ -62,6 +62,7 @@ if __name__ == '__main__':
             exp_info['pan'] = pan
             exp_info['dataset'] = dataset
             exp_info['name'] = name
+            exp_info['root'] = config.ds_root
 
             exp_input = recordclass('exp_info', exp_info.keys())(*exp_info.values())
 
