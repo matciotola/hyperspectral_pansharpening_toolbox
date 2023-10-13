@@ -11,7 +11,7 @@ from .loss import SAMLoss
 from Utils.dl_tools import open_config, generate_paths, TrainingDatasetRR, normalize, denormalize
 
 
-def hspenet(ordered_dict):
+def HSpeNet(ordered_dict):
 
     config_path = 'config.yaml'
 
