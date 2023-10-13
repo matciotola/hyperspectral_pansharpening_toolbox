@@ -21,8 +21,8 @@ def HSpeNet(ordered_dict):
     os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu_number
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    pan = torch.clone(ordered_dict.pan)
-    ms = torch.clone(ordered_dict.ms)
+    pan = torch.clone(ordered_dict.pan).float()
+    ms = torch.clone(ordered_dict.ms).float()
 
     model_weights_path = config.model_weights_path
 
@@ -75,7 +75,7 @@ def HSpeNet(ordered_dict):
 
     fused = denormalize(fused)
     torch.cuda.empty_cache()
-    return fused.detach().cpu()
+    return fused.detach().cpu().double()
 
 
 def train(device, net, train_loader, config, val_loader=None):
