@@ -2,7 +2,7 @@ import torch
 from Utils.pansharpening_aux_tools import mldivide
 from .vca import vca
 
-def hysure(ordered_dict, intersection=None):
+def HySURE(ordered_dict, intersection=None):
 
     ms_lr = torch.clone(ordered_dict.ms_lr)
     pan = torch.clone(ordered_dict.pan)
@@ -388,7 +388,7 @@ if __name__ == '__main__':
 
     exp_input = recordclass('exp_info', exp_info.keys())(*exp_info.values())
 
-    fused = hysure(exp_input)
+    fused = HySURE(exp_input)
     plt.figure()
     plt.imshow(fused[0, 0, :, :].cpu().numpy(), clim=[0, 1], cmap='gray')
     plt.show()

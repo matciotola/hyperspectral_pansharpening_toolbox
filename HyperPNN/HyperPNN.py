@@ -10,7 +10,7 @@ from .network import HyperPNN_model
 from Utils.dl_tools import open_config, generate_paths, TrainingDatasetRR, normalize, denormalize
 
 
-def hyperpnn(ordered_dict):
+def HyperPNN(ordered_dict):
 
     config_path = 'config.yaml'
 
