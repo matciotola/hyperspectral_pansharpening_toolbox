@@ -55,9 +55,9 @@ def HSpeNet(ordered_dict):
         net, history = train(device, net, train_loader, config, val_loader)
 
         if config.save_weights:
-            if not os.path.exists(config.save_weights_path):
-                os.makedirs(config.save_weights_path)
-            torch.save(net.state_dict(), config.save_weights_path)
+            if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), config.save_weights_path)):
+                os.makedirs(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), config.save_weights_path))
+            torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), config.save_weights_path, 'HSpeNet.tar'))
 
         if config.save_training_stats:
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), 'Stats', 'HSpeNet')):
