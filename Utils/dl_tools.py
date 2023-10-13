@@ -46,7 +46,7 @@ class TrainingDatasetRR(Dataset):
         gt = []
 
         for i in range(len(img_paths)):
-            pan_single, ms_lr_single, ms_single, gt_single = open_mat(img_paths[i])
+            pan_single, ms_lr_single, ms_single, gt_single, _ = open_mat(img_paths[i])
             pan.append(pan_single.float())
             ms_lr.append(ms_lr_single.float())
             ms.append(ms_single.float())
@@ -83,7 +83,7 @@ class TrainingDatasetFR(Dataset):
         ms = []
 
         for i in range(len(img_paths)):
-            pan_single, ms_lr_single, ms_single, _ = open_mat(img_paths[i])
+            pan_single, ms_lr_single, ms_single, _, _ = open_mat(img_paths[i])
             pan.append(pan_single.float())
             ms_lr.append(ms_lr_single.float())
             ms.append(ms_single.float())

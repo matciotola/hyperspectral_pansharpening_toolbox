@@ -4,7 +4,7 @@ import numpy as np
 from Utils.imresize_bicubic import imresize
 # from Utils.interpolator_tools import interp23tap
 
-def open_mat(path, ratio=6):
+def open_mat(path):
     # Open .mat file
     dic_file = io.loadmat(path)
 
