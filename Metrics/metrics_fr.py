@@ -3,9 +3,9 @@ import torch.nn.functional as F
 from torch import nn
 
 
-import Metrics.metrics_rr as mt
+from . import metrics_rr as mt
 from Utils.spectral_tools import gen_mtf, mtf_kernel_to_torch
-from Metrics.cross_correlation import xcorr_torch
+from .cross_correlation import xcorr_torch
 from Utils.imresize_bicubic import imresize as resize
 
 def downgrade(img, kernel, ratio):
