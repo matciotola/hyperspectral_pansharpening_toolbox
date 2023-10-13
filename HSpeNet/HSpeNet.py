@@ -52,7 +52,7 @@ def HSpeNet(ordered_dict):
         else:
             val_loader = None
 
-        net, history = train(device, net, train_loader, config, val_loader)
+        history = train(device, net, train_loader, config, val_loader)
 
         if config.save_weights:
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), config.save_weights_path)):
@@ -157,4 +157,4 @@ def train(device, net, train_loader, config, val_loader=None):
 
     history = {'loss_mse': history_loss_mse, 'loss_sam': history_loss_sam, 'val_loss_mse': history_val_loss_mse, 'val_loss_sam': history_val_loss_sam}
 
-    return net, history
+    return history
