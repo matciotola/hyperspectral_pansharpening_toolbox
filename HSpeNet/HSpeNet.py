@@ -37,7 +37,7 @@ def HSpeNet(ordered_dict):
     net = net.to(device)
 
     if config.train:
-        if config.training_img_root is None:
+        if config.training_img_root == '':
             training_img_root = ordered_dict.root
         else:
             training_img_root = config.training_img_root
