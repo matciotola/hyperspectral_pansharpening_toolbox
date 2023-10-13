@@ -116,7 +116,7 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
             # Aux data generation
 
             inp = torch.cat([ms, pan], dim=1)
-            threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.sensor, device, config.semi_width)
+            threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.dataset, device, config.semi_width)
 
             outputs = net(inp)
 
