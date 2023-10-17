@@ -60,15 +60,14 @@ class StructuralLoss(nn.Module):
         self.device = device
 
     def forward(self, outputs, labels, xcorr_thr):
-        x_corr = torch.clamp(ccorr(outputs, labels, self.scale, self.device), min=-1)
-        d_rho = 1.0 - x_corr
+        X_corr = torch.clamp(ccorr(outputs, labels, self.scale, self.device), min=-1)
+        X = 1.0 - X_corr
 
         with torch.no_grad():
-            d_rho = torch.mean(d_rho)
+            Lxcorr_no_weights = torch.mean(X)
 
-        worst = d_rho.gt(xcorr_thr)
-        d_rho_with_threshold = d_rho * worst
+        worst = X.gt(xcorr_thr)
+        Y = X * worst
+        Lxcorr = torch.mean(Y)
 
-        d_rho_with_threshold = torch.mean(d_rho_with_threshold)
-
-        return d_rho_with_threshold, d_rho.item()
+        return Lxcorr, Lxcorr_no_weights.item()

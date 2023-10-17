@@ -86,7 +86,7 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
     criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61, nbands=1), ordered_dict.ratio, device).to(device)
     criterion_struct = StructuralLoss(ordered_dict.ratio, device)
-    optim = torch.optim.Adam(net.parameters(), lr=config.learning_rate, betas=(config.beta_1, config.beta_2))
+    optim = torch.optim.Adam(net.parameters(), lr=config.learning_rate)
 
     history_loss_spec = []
     history_loss_struct = []
@@ -180,7 +180,7 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
 
     criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61, nbands=1), ordered_dict.ratio, device).to(device)
     criterion_struct = StructuralLoss(ordered_dict.ratio, device)
-    optim = torch.optim.Adam(net.parameters(), lr=config.learning_rate, betas=(config.beta_1, config.beta_2))
+    optim = torch.optim.Adam(net.parameters(), lr=config.learning_rate)
 
     history_loss_spec = []
     history_loss_struct = []
@@ -205,9 +205,9 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
             ft_epochs = config.first_iter
         else:
             ft_epochs = int(min(((wl[band_number] - wl[band_number - 1]) // 10 + 1) * config.epoch_nm, config.sat_val))
-
+        min_loss = torch.inf
+        print('Band {} / {}'.format(band_number + 1, ft_epochs))
         pbar = tqdm(range(ft_epochs))
-        print('Band {} / {}'.format(band_number + 1 , ms.shape[1]))
 
         for epoch in pbar:
 
@@ -232,9 +232,15 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
             history_loss_spec.append(running_loss_spec)
             history_loss_struct.append(running_loss_struct)
 
+            if loss.item() < min_loss:
+                min_loss = loss.item()
+                if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'temp')):
+                    os.makedirs(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'temp'))
+                torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'temp', 'R-PNN_best_model.tar'))
+
             pbar.set_postfix(
                 {'Spec Loss': running_loss_spec, 'Struct Loss': running_loss_struct})
-
+        net.load_state_dict(torch.load(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'temp', 'R-PNN_best_model.tar')))
         fused.append(net(inp).detach().cpu())
 
     fused = torch.cat(fused, 1)

@@ -12,10 +12,8 @@ save_training_stats: False
 
 # Training hyperparameters
 learning_rate: 0.00001
-beta_1: 0.9
-beta_2: 0.999
-epochs: 20000
-batch_size: 128
+epochs: 200
+batch_size: 4
 semi_width: 18
 model_weights_path: ''
 

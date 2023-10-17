@@ -27,8 +27,8 @@ def xcorr_torch(img_1, img_2, half_width, device):
     """
     w = ceil(half_width)
     ep = 1e-20
-    img_1 = img_1.type(torch.DoubleTensor)
-    img_2 = img_2.type(torch.DoubleTensor)
+    img_1 = img_1.double()
+    img_2 = img_2.double()
 
     img_1 = img_1.to(device)
     img_2 = img_2.to(device)

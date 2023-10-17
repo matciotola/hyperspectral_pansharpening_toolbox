@@ -31,8 +31,8 @@ def local_corr_mask(img_in, ratio, sensor, device, kernel=8):
 
         """
 
-    I_PAN = torch.unsqueeze(img_in[:, -1, :, :], dim=1)
-    I_MS = img_in[:, :-1, :, :]
+    I_PAN = torch.clone(torch.unsqueeze(img_in[:, -1, :, :], dim=1))
+    I_MS = torch.clone(img_in[:, :-1, :, :])
 
     MTF_kern = gen_mtf(ratio, sensor)[:, :, 0]
     MTF_kern = np.expand_dims(MTF_kern, axis=(0, 1))
@@ -55,4 +55,4 @@ def local_corr_mask(img_in, ratio, sensor, device, kernel=8):
     mask = xcorr_torch(I_PAN, I_MS, kernel, device)
     mask = 1.0 - mask
 
-    return mask
+    return mask.float()
