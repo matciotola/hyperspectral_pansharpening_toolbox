@@ -165,7 +165,7 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
 
         pbar.set_postfix(
-            {'Loss': loss.item(), 'Spec Loss': running_loss_spec, 'Struct Loss': running_loss_struct, 'Val Spec Loss': running_val_loss_spec, 'Val Struct Loss': running_val_loss_struct})
+            {'Spec Loss': running_loss_spec, 'Struct Loss': running_loss_struct, 'Val Spec Loss': running_val_loss_spec, 'Val Struct Loss': running_val_loss_struct})
 
     history = {'loss_spec': history_loss_spec, 'loss_struct': history_loss_struct, 'val_loss_spec': history_val_loss_spec, 'val_loss_struct': history_val_loss_struct}
 
