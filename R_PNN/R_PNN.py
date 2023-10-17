@@ -53,7 +53,7 @@ def R_PNN(ordered_dict):
         else:
             val_loader = None
 
-        net, history = train(device, net, train_loader, config, ordered_dict, val_loader)
+        history = train(device, net, train_loader, config, ordered_dict, val_loader)
 
         if config.save_weights:
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), config.save_weights_path)):
@@ -109,19 +109,19 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
             optim.zero_grad()
 
             pan, ms_lr, ms = data
-            pan = pan.to(device)
-            ms = ms[:, 0:1, :, :].to(device)
-            ms_lr = ms_lr[:, 0:1, :, :].to(device)
+            pan_band = pan.to(device)
+            ms_band = ms[:, 0:1, :, :].to(device)
+            ms_lr_band = ms_lr[:, 0:1, :, :].to(device)
 
             # Aux data generation
 
-            inp = torch.cat([ms, pan], dim=1)
+            inp = torch.cat([ms_band, pan_band], dim=1)
             threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.dataset, device, config.semi_width)
 
             outputs = net(inp)
 
-            loss_spec = criterion_spec(outputs, ms_lr)
-            loss_struct, loss_struct_without_threshold = criterion_struct(outputs, pan, threshold)
+            loss_spec = criterion_spec(outputs, ms_lr_band)
+            loss_struct, loss_struct_without_threshold = criterion_struct(outputs, pan_band, threshold)
 
             loss = loss_spec + config.alpha_1 * loss_struct
 
@@ -139,7 +139,7 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
             net.eval()
             with torch.no_grad():
                 for i, data in enumerate(val_loader):
-                    pan, _, ms = data
+                    pan, ms_lr, ms = data
                     pan = pan.to(device)
                     ms = ms[:, 0:1, :, :].to(device)
                     ms_lr = ms_lr[:, 0:1, :, :].to(device)
@@ -165,11 +165,11 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
 
         pbar.set_postfix(
-            {'Spec Loss': running_loss_spec, 'Struct Loss': running_loss_struct, 'Val Spec Loss': running_val_loss_spec, 'Val Struct Loss': running_val_loss_struct})
+            {'Loss': loss.item(), 'Spec Loss': running_loss_spec, 'Struct Loss': running_loss_struct, 'Val Spec Loss': running_val_loss_spec, 'Val Struct Loss': running_val_loss_struct})
 
     history = {'loss_spec': history_loss_spec, 'loss_struct': history_loss_struct, 'val_loss_spec': history_val_loss_spec, 'val_loss_struct': history_val_loss_struct}
 
-    return net, history
+    return history
 
 
 def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordered_dict):
