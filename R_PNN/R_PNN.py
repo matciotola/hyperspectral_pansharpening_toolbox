@@ -61,9 +61,9 @@ def R_PNN(ordered_dict):
             torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), config.save_weights_path, 'R-PNN.tar'))
 
         if config.save_training_stats:
-            if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'HSpeNet')):
-                os.makedirs(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'HSpeNet'))
-            io.savemat(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'HSpeNet', 'Training_R-PNN.mat'), history)
+            if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN')):
+                os.makedirs(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN'))
+            io.savemat(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN', 'Training_R-PNN.mat'), history)
 
     pan = normalize(pan)
     ms = normalize(ms)
@@ -72,9 +72,9 @@ def R_PNN(ordered_dict):
     net.eval()
     fused, ta_history = target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordered_dict)
 
-    if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'HSpeNet')):
-        os.makedirs(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'HSpeNet'))
-    io.savemat(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'HSpeNet', 'Target_Adaptation_R-PNN_{}.mat'.format(ordered_dict.name)),
+    if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN')):
+        os.makedirs(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN'))
+    io.savemat(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN', 'Target_Adaptation_R-PNN_{}.mat'.format(ordered_dict.name)),
                ta_history)
 
     fused = denormalize(fused)
@@ -110,17 +110,17 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
             pan, ms_lr, ms = data
             pan_band = pan.to(device)
-            ms_band = ms[:, 0:1, :, :].to(device)
-            ms_lr_band = ms_lr[:, 0:1, :, :].to(device)
+            band = ms[:, 0:1, :, :].to(device)
+            band_lr = ms_lr[:, 0:1, :, :].to(device)
 
             # Aux data generation
 
-            inp = torch.cat([ms_band, pan_band], dim=1)
+            inp = torch.cat([band, pan_band], dim=1)
             threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.dataset, device, config.semi_width)
 
             outputs = net(inp)
 
-            loss_spec = criterion_spec(outputs, ms_lr_band)
+            loss_spec = criterion_spec(outputs, band_lr)
             loss_struct, loss_struct_without_threshold = criterion_struct(outputs, pan_band, threshold)
 
             loss = loss_spec + config.alpha_1 * loss_struct
@@ -211,7 +211,7 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
 
         for epoch in pbar:
 
-            pbar.set_description('Epoch %d/%d' % (epoch + 1, config.epochs))
+            pbar.set_description('Epoch %d/%d' % (epoch + 1, ft_epochs))
 
             net.train()
             optim.zero_grad()
