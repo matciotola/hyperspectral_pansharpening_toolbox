@@ -24,6 +24,7 @@ alpha_2: 0.25
 
 first_iter: 20
 epoch_nm: 15
+sat_val: 80
 
 
 

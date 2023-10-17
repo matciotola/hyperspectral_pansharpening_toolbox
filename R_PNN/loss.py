@@ -19,6 +19,8 @@ class SpectralLoss(nn.Module):
         # Conversion of filters in Tensor
         self.pad = floor((kernel.shape[0] - 1) / 2)
 
+        self.cut_border = kernel.shape[0] // 2 // ratio
+
         kernel = np.moveaxis(kernel, -1, 0)
         kernel = np.expand_dims(kernel, axis=1)
 
@@ -41,7 +43,7 @@ class SpectralLoss(nn.Module):
         outputs = self.depthconv(outputs)
         outputs = outputs[:, :, 3::self.ratio, 3::self.ratio]
 
-        loss_value = self.loss(outputs, labels)
+        loss_value = self.loss(outputs, labels[:, :, self.cut_border:-self.cut_border, self.cut_border:-self.cut_border])
 
         return loss_value
 

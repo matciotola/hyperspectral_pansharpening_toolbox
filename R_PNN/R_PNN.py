@@ -198,13 +198,13 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
         inp = torch.cat([band, pan], dim=1)
         threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.dataset, device, config.semi_width)
 
-        if wl[band] > 700:
+        if wl[band_number] > 700:
             alpha = config.alpha_2
 
         if band_number == 0:
             ft_epochs = config.first_iter
         else:
-            ft_epochs = min(((wl[band_number] - wl[band_number - 1]) // 10 + 1) * config.epoch_nm, config.sat_val)
+            ft_epochs = int(min(((wl[band_number] - wl[band_number - 1]) // 10 + 1) * config.epoch_nm, config.sat_val))
 
         pbar = tqdm(range(ft_epochs))
         print('Band {} / {}'.format(band_number + 1 , ms.shape[1]))
