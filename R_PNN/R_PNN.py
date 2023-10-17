@@ -206,7 +206,7 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
         else:
             ft_epochs = int(min(((wl[band_number] - wl[band_number - 1]) // 10 + 1) * config.epoch_nm, config.sat_val))
         min_loss = torch.inf
-        print('Band {} / {}'.format(band_number + 1, ft_epochs))
+        print('Band {} / {}'.format(band_number + 1, ms.shape[1]))
         pbar = tqdm(range(ft_epochs))
 
         for epoch in pbar:
