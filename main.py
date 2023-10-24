@@ -21,6 +21,7 @@ from HySURE.HySURE import HySURE
 from HyperPNN.HyperPNN import HyperPNN
 from HSpeNet.HSpeNet import HSpeNet
 from R_PNN.R_PNN import R_PNN
+from PCA_Z_PNN.PCA_Z_PNN import PCA_Z_PNN
 
 from Metrics.evaluation import evaluation_rr, evaluation_fr
 
@@ -36,7 +37,7 @@ pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H
                                 'MTF-GLP-HPM': MTF_GLP_HPM, 'MTF-GLP-HPM-H': MTF_GLP_HPM_H,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF,  # Multi-Resolution analysis
                                 'HySURE': HySURE, 'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet,  # Ad hoc
-                                'R-PNN': R_PNN
+                                'R-PNN': R_PNN, 'PCA-Z-PNN': PCA_Z_PNN
                                 }
 
 fieldnames_rr = ['Method', 'ERGAS', 'SAM', 'Q', 'Q2n']
