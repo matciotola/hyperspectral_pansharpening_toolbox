@@ -1,21 +1,19 @@
-import os
-from scipy import io
-import torch
 import inspect
-from tqdm import tqdm
+import os
 
-from .network import PCA_Z_PNN_model
-from .loss import SpectralLoss, StructuralLoss
-from .aux import local_corr_mask, pca, inverse_pca, normalize, denormalize
+import torch
+from scipy import io
+from skimage.transform import rescale
+from tqdm import tqdm
 
 from Utils.dl_tools import open_config
 from Utils.spectral_tools import gen_mtf
+from .aux import local_corr_mask, pca, inverse_pca, normalize, denormalize
+from .loss import SpectralLoss, StructuralLoss
+from .network import PCA_Z_PNN_model
 
-from Utils.imresize_bicubic import imresize
-from skimage.transform import rescale
 
 def PCA_Z_PNN(ordered_dict):
-
     config_path = os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'config.yaml')
 
     config = open_config(config_path)
@@ -23,7 +21,6 @@ def PCA_Z_PNN(ordered_dict):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     pan = torch.clone(ordered_dict.pan).float()
-    ms = torch.clone(ordered_dict.ms).float()
     ms_lr = torch.clone(ordered_dict.ms_lr).float()
 
     pan = normalize(pan, nbands=1, nbits=16)
@@ -31,21 +28,24 @@ def PCA_Z_PNN(ordered_dict):
 
     if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'Stats', 'PCA-Z-PNN')):
         os.makedirs(os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'Stats', 'PCA-Z-PNN'))
-    io.savemat(os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'Stats', 'PCA-Z-PNN', 'Target_Adaptation_PCA-Z-PNN_{}.mat'.format(ordered_dict.name)),
+    io.savemat(os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'Stats', 'PCA-Z-PNN',
+                            'Target_Adaptation_PCA-Z-PNN_{}.mat'.format(ordered_dict.name)),
                ta_history)
 
     torch.cuda.empty_cache()
     return fused.detach().cpu().double()
 
-def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
 
+def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
     pan = torch.clone(pan).to(device)
     wl = ordered_dict.wavelenghts
 
     num_blocks = config.num_blocks
     n_components = config.n_components
 
-    criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61, nbands=n_components), ordered_dict.ratio, device).to(device)
+    criterion_spec = SpectralLoss(
+        gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61, nbands=n_components), ordered_dict.ratio,
+        device).to(device)
     criterion_struct = StructuralLoss(ordered_dict.ratio, device).to(device)
 
     last_wl = config.last_wl
@@ -67,7 +67,6 @@ def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
     band_blocks.append(ms_lr[:, :band_rgb + 1, :, :])
     band_blocks.append(ms_lr[:, band_rgb:, :, :])
 
-
     # for block in band_blocks:
     for block_index in range(num_blocks):
 
@@ -77,7 +76,8 @@ def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
 
         ms_lr_pca, W, mu = pca(band_blocks[block_index])
 
-        ms_pca = torch.tensor(rescale(torch.squeeze(ms_lr_pca).numpy(), ordered_dict.ratio, order=3, channel_axis=0))[None, :, :, :]
+        ms_pca = torch.tensor(rescale(torch.squeeze(ms_lr_pca).numpy(), ordered_dict.ratio, order=3, channel_axis=0))[
+                 None, :, :, :]
         spec_ref_exp = normalize(ms_pca[:, :n_components, :, :], nbands=ms_pca.shape[1], nbits=16).to(device)
         spec_ref = normalize(ms_lr_pca[:, :n_components, :, :], nbands=ms_pca.shape[1], nbits=16).to(device)
 
@@ -106,7 +106,8 @@ def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
             outputs = net(inp)
 
             loss_spec = criterion_spec(outputs, spec_ref)
-            loss_struct, loss_struct_without_threshold = criterion_struct(outputs[:,:1,:,:], pan, threshold[:,:1,:,:])
+            loss_struct, loss_struct_without_threshold = criterion_struct(outputs[:, :1, :, :], pan,
+                                                                          threshold[:, :1, :, :])
 
             loss = loss_spec + alpha * loss_struct
 
