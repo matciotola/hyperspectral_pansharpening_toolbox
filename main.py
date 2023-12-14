@@ -47,6 +47,9 @@ fieldnames_fr = ['Method', 'R-ERGAS', 'R-SAM', 'R-Q', 'D_lambda', 'D_s', 'D_sR',
 if __name__ == '__main__':
     from Utils.dl_tools import open_config
 
+    os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     config_path = 'preambol.yaml'
     config = open_config(config_path)
 
@@ -87,13 +90,13 @@ if __name__ == '__main__':
                 fused = method(exp_input)
 
                 if experiment_type == 'RR':
-                    metrics_values_rr = list(evaluation_rr(fused, torch.clone(gt), ratio=exp_info['ratio']))
+                    metrics_values_rr = list(evaluation_rr(fused.to(device), torch.clone(gt).to(device), ratio=exp_info['ratio']))
                     metrics_values_rr.insert(0, algorithm)
                     metrics_values_rr_dict = dict(zip(fieldnames_rr, metrics_values_rr))
                     print(metrics_values_rr_dict)
                     metrics_rr.append(metrics_values_rr_dict)
                 else:
-                    metrics_values_fr = list(evaluation_fr(fused, torch.clone(pan), torch.clone(ms_lr), ratio=exp_info['ratio'], dataset=exp_info['dataset']))
+                    metrics_values_fr = list(evaluation_fr(fused.to(device), torch.clone(pan).to(device), torch.clone(ms_lr).to(device), ratio=exp_info['ratio'], dataset=exp_info['dataset']))
                     metrics_values_fr.insert(0, algorithm)
                     metrics_values_fr_dict = dict(zip(fieldnames_fr, metrics_values_fr))
                     print(metrics_values_fr_dict)
