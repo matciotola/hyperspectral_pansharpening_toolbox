@@ -12,6 +12,8 @@ from .aux import local_corr_mask
 from Utils.dl_tools import open_config, generate_paths, TrainingDatasetFR, normalize, denormalize
 from Utils.spectral_tools import gen_mtf
 
+from torch import nn
+
 
 def R_PNN(ordered_dict):
 
@@ -25,15 +27,18 @@ def R_PNN(ordered_dict):
     ms = torch.clone(ordered_dict.ms).float()
     ms_lr = torch.clone(ordered_dict.ms_lr)
 
-    model_weights_path = config.model_weights_path
+    custom_train_weights_path = config.custom_train_weights_path
+    default_train_weights_path = config.default_train_weights_path
 
     net = R_PNN_model()
 
     if not config.train or config.resume:
-        if not model_weights_path:
-            model_weights_path = os.path.join(os.getcwd(), 'weights', 'R-PNN.tar')
-        if os.path.exists(model_weights_path):
-            net.load_state_dict(torch.load(model_weights_path))
+        #if not custom_weights_path:
+        #    model_weights_path = os.path.join(os.getcwd(), 'weights', 'R-PNN.tar')
+        if os.path.exists(custom_train_weights_path):
+            net.load_state_dict(torch.load(custom_train_weights_path))
+        else:
+            net.load_state_dict(torch.load(default_train_weights_path))
 
     net = net.to(device)
 
@@ -78,6 +83,9 @@ def R_PNN(ordered_dict):
                ta_history)
 
     fused = denormalize(fused)
+    fused = torch.round(fused)
+    fused = torch.clip(fused, min=0, max=2**16)
+
     torch.cuda.empty_cache()
     return fused.detach().cpu().double()
 
@@ -92,6 +100,12 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
     history_loss_struct = []
     history_val_loss_spec = []
     history_val_loss_struct = []
+
+    net_scope = config.net_scope
+    ms_scope = config.ms_scope
+
+    min_loss = torch.inf
+    train_weights_path = config.custom_train_weights_path
 
     pbar = tqdm(range(config.epochs))
 
@@ -120,8 +134,9 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
             outputs = net(inp)
 
-            loss_spec = criterion_spec(outputs, band_lr)
-            loss_struct, loss_struct_without_threshold = criterion_struct(outputs, pan_band, threshold)
+            loss_spec = criterion_spec(outputs, band_lr[:, :, ms_scope:-ms_scope, ms_scope:-ms_scope])
+            loss_struct, loss_struct_without_threshold = criterion_struct(outputs, pan_band[:, :, net_scope:-net_scope, net_scope:-net_scope],
+                                                                          threshold[:, :, net_scope:-net_scope, net_scope:-net_scope])
 
             loss = loss_spec + config.alpha_1 * loss_struct
 
@@ -149,14 +164,25 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
                     outputs = net(inp)
 
-                    val_loss_spec = criterion_spec(outputs, ms_lr)
-                    _, val_loss_struct_without_threshold = criterion_struct(outputs, pan, threshold)
+                    val_loss_spec = criterion_spec(outputs, ms_lr[:, :, ms_scope:-ms_scope, ms_scope:-ms_scope])
+                    _, val_loss_struct_without_threshold = criterion_struct(outputs,
+                                                                            pan[:, :, net_scope:-net_scope, net_scope:-net_scope],
+                                                                            threshold[:, :, net_scope:-net_scope, net_scope:-net_scope])
 
                     running_val_loss_spec += val_loss_spec.item()
                     running_val_loss_struct += val_loss_struct_without_threshold
 
             running_val_loss_spec = running_val_loss_spec / len(val_loader)
             running_val_loss_struct = running_val_loss_struct / len(val_loader)
+
+            if running_val_loss_spec + config.alpha_1 * running_val_loss_struct < min_loss:
+                min_loss = running_val_loss_spec + config.alpha_1 * running_val_loss_struct
+                torch.save(net.state_dict(), train_weights_path)
+
+        else:
+            if running_loss_spec + config.alpha_1 * running_loss_struct < min_loss:
+                min_loss = running_loss_spec + config.alpha_1 * running_loss_struct
+                torch.save(net.state_dict(), train_weights_path)
 
         history_loss_spec.append(running_loss_spec)
         history_loss_struct.append(running_loss_struct)
@@ -166,6 +192,8 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
         pbar.set_postfix(
             {'Spec Loss': running_loss_spec, 'Struct Loss': running_loss_struct, 'Val Spec Loss': running_val_loss_spec, 'Val Struct Loss': running_val_loss_struct})
+
+    net.load_state_dict(torch.load(train_weights_path))
 
     history = {'loss_spec': history_loss_spec, 'loss_struct': history_loss_struct, 'val_loss_spec': history_val_loss_spec, 'val_loss_struct': history_val_loss_struct}
 
@@ -189,6 +217,9 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
 
     fused = []
 
+    net_scope = config.net_scope
+    pad = nn.ReflectionPad2d(net_scope)
+
     for band_number in range(ms.shape[1]):
 
         band = ms[:, band_number:band_number + 1, :, :].to(device)
@@ -196,6 +227,8 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
 
         # Aux data generation
         inp = torch.cat([band, pan], dim=1)
+        inp = pad(inp)
+
         threshold = local_corr_mask(inp, ordered_dict.ratio, ordered_dict.dataset, device, config.semi_width)
 
         if wl[band_number] > 700:
@@ -204,7 +237,7 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
         if band_number == 0:
             ft_epochs = config.first_iter
         else:
-            ft_epochs = int(min(((wl[band_number] - wl[band_number - 1]) // 10 + 1) * config.epoch_nm, config.sat_val))
+            ft_epochs = int(min(((wl[band_number].item() - wl[band_number - 1].item()) // 10 + 1) * config.epoch_nm, config.sat_val))
         min_loss = torch.inf
         print('Band {} / {}'.format(band_number + 1, ms.shape[1]))
         pbar = tqdm(range(ft_epochs))
@@ -219,7 +252,9 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
             outputs = net(inp)
 
             loss_spec = criterion_spec(outputs, band_lr)
-            loss_struct, loss_struct_without_threshold = criterion_struct(outputs, pan, threshold)
+            loss_struct, loss_struct_without_threshold = criterion_struct(outputs,
+                                                                          pan,
+                                                                          threshold[:, :, net_scope:-net_scope, net_scope:-net_scope])
 
             loss = loss_spec + alpha * loss_struct
 
@@ -244,6 +279,7 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
         fused.append(net(inp).detach().cpu())
 
     fused = torch.cat(fused, 1)
+
     history = {'loss_spec': history_loss_spec, 'loss_struct': history_loss_struct}
 
     return fused, history

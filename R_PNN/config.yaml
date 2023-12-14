@@ -1,7 +1,7 @@
-train: True
+train: False
 validation: False
 
-gpu_number: '0'
+gpu_number: '3'
 training_img_root: ''
 
 # Training settings
@@ -12,10 +12,13 @@ save_training_stats: False
 
 # Training hyperparameters
 learning_rate: 0.00001
+beta_1: 0.9
+beta_2: 0.999
 epochs: 200
 batch_size: 4
 semi_width: 18
-model_weights_path: ''
+default_train_weights_path: 'R_PNN/weights/default_train_R-PNN.tar'
+custom_train_weights_path: 'R_PNN/weights/custom_train_R-PNN.tar'
 
 alpha_1: 0.5
 alpha_2: 0.25
@@ -23,6 +26,9 @@ alpha_2: 0.25
 first_iter: 20
 epoch_nm: 15
 sat_val: 80
+
+net_scope: 6
+ms_scope: 1
 
 
 
