@@ -1,20 +1,20 @@
-train: True
-validation: False
+#train: True
+#validation: False
 
-gpu_number: '2'
-training_img_root: ''
+gpu_number: '0'
+#training_img_root: ''
 
 # Training settings
-resume: False
-save_weights: True
-save_weights_path: 'weights'
-save_training_stats: False
+#resume: False
+#save_weights: True
+#save_weights_path: 'weights'
+#save_training_stats: False
 
-# Training hyperparameters
+# Hyperparameters
 learning_rate: 0.00005
 beta_1: 0.9
 beta_2: 0.999
-epochs: 2000
+epochs: 1000
 batch_size: 128
 semi_width: 18
 model_weights_path: ''
@@ -24,6 +24,8 @@ alpha_2: 0.25
 
 last_wl: 770
 
+num_blocks: 2    # Number of hyperspectral blocks
+n_components: 4  # Number of principal components to extract
 
 
 

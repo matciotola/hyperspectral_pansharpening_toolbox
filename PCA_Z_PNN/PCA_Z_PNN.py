@@ -2,15 +2,13 @@ import os
 from scipy import io
 import torch
 import inspect
-from torch.utils.data import DataLoader
 from tqdm import tqdm
-import torchvision
 
 from .network import PCA_Z_PNN_model
 from .loss import SpectralLoss, StructuralLoss
 from .aux import local_corr_mask, pca, inverse_pca, normalize, denormalize
 
-from Utils.dl_tools import open_config, generate_paths, TrainingDatasetFR
+from Utils.dl_tools import open_config
 from Utils.spectral_tools import gen_mtf
 
 from Utils.imresize_bicubic import imresize
@@ -36,7 +34,6 @@ def PCA_Z_PNN(ordered_dict):
     io.savemat(os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'Stats', 'PCA-Z-PNN', 'Target_Adaptation_PCA-Z-PNN_{}.mat'.format(ordered_dict.name)),
                ta_history)
 
-    #fused = denormalize(fused)
     torch.cuda.empty_cache()
     return fused.detach().cpu().double()
 
@@ -45,9 +42,8 @@ def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
     pan = torch.clone(pan).to(device)
     wl = ordered_dict.wavelenghts
 
-    num_blocks = 2    # Number of hyperspectral blocks
-    n_components = 4  # Number of principal components to extract
-    ratio = 6         # Ratio of the sensor
+    num_blocks = config.num_blocks
+    n_components = config.n_components
 
     criterion_spec = SpectralLoss(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, kernel_size=61, nbands=n_components), ordered_dict.ratio, device).to(device)
     criterion_struct = StructuralLoss(ordered_dict.ratio, device).to(device)
@@ -61,8 +57,6 @@ def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
     epochs = config.epochs
 
     fused = []
-
-    # ms_lr_reshaped = torch.reshape(ms_lr, (1, nbands, nrows * ncols))
 
     band_blocks = []
 
@@ -81,13 +75,13 @@ def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
         optim = torch.optim.Adam(net.parameters(), lr=config.learning_rate, betas=(config.beta_1, config.beta_2))
         net.train()
 
-        #block = band_blocks[block_number]
-
         ms_lr_pca, W, mu = pca(band_blocks[block_index])
-        # ms_pca = imresize(ms_lr_pca, ratio)
-        ms_pca = torch.tensor(rescale(torch.squeeze(ms_lr_pca).numpy(), ratio, order=3, channel_axis=0))[None, :, :, :]
+
+        ms_pca = torch.tensor(rescale(torch.squeeze(ms_lr_pca).numpy(), ordered_dict.ratio, order=3, channel_axis=0))[None, :, :, :]
         spec_ref_exp = normalize(ms_pca[:, :n_components, :, :], nbands=ms_pca.shape[1], nbits=16).to(device)
         spec_ref = normalize(ms_lr_pca[:, :n_components, :, :], nbands=ms_pca.shape[1], nbits=16).to(device)
+
+        min_loss = torch.inf
 
         inp = torch.cat([spec_ref_exp, pan], dim=1)
 
@@ -98,9 +92,9 @@ def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
         if block_index == 1:
             alpha = config.alpha_2
 
+        print('Block index {} / {}'.format(block_index + 1, num_blocks))
 
         pbar = tqdm(range(epochs))
-        print('block_index {} / {}'.format(block_index + 1, num_blocks))
 
         for epoch in pbar:
 
@@ -112,7 +106,7 @@ def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
             outputs = net(inp)
 
             loss_spec = criterion_spec(outputs, spec_ref)
-            loss_struct, loss_struct_without_threshold = criterion_struct(outputs, pan, threshold)
+            loss_struct, loss_struct_without_threshold = criterion_struct(outputs[:,:1,:,:], pan, threshold[:,:1,:,:])
 
             loss = loss_spec + alpha * loss_struct
 
@@ -125,10 +119,20 @@ def target_adaptation_and_prediction(device, ms_lr, pan, config, ordered_dict):
             history_loss_spec.append(running_loss_spec)
             history_loss_struct.append(running_loss_struct)
 
+            if loss.item() < min_loss:
+                min_loss = loss.item()
+                if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'temp')):
+                    os.makedirs(os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'temp'))
+                torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'temp',
+                                                          'PCA-Z-PNN_best_model.tar'))
+
             pbar.set_postfix(
                 {'Spec Loss': running_loss_spec, 'Struct Loss': running_loss_struct})
 
         net.eval()
+        net.load_state_dict(
+            torch.load(
+                os.path.join(os.path.dirname(inspect.getfile(PCA_Z_PNN_model)), 'temp', 'PCA-Z-PNN_best_model.tar')))
 
         ms_pca[:, :n_components, :, :] = denormalize(net(inp), nbands=ms_pca.shape[1], nbits=16)
         fused_block = inverse_pca(ms_pca, W, mu)

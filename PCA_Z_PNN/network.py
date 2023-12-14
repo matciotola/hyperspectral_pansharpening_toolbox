@@ -1,6 +1,7 @@
 from torch import nn
 from torch.nn import functional as func
 
+
 class PCA_Z_PNN_model(nn.Module):
     def __init__(self, nbands, padding='same', padding_mode='reflect', bias=True) -> None:
         super(PCA_Z_PNN_model, self).__init__()
