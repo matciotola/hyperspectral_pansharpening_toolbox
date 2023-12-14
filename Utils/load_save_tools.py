@@ -12,7 +12,6 @@ def open_mat(path):
     pan_np = dic_file['I_PAN'].astype(np.float64)
     ms_lr_np = dic_file['I_MS_LR'].astype(np.float64)
     ms_np = dic_file['I_MS'].astype(np.float64)
-    wavelenghts = dic_file['Wavelengths']
 
     if 'I_GT' in dic_file.keys():
         gt_np = dic_file['I_GT'].astype(np.float64)
