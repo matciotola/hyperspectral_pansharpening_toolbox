@@ -174,7 +174,7 @@ class Q2n(nn.Module):
         bs, dim3, dim1, dim2 = labels.size()
 
         if channels - math.log2(dim3) != 0:
-            exp_difference = channels - int(math.log2(dim3))
+            exp_difference = channels - dim3
             diff = torch.zeros((bs, exp_difference, dim1, dim2), device=outputs.device, requires_grad=False,
                                dtype=outputs.dtype)
             labels = torch.cat((labels, diff), dim=1)
