@@ -58,7 +58,7 @@ def evaluation_fr(out, pan, ms_lr, ratio, dataset):
     ergas_index, _ = ergas(out_lr, ms_lr)
     sam_index, _ = sam(out_lr, ms_lr)
     q_index = torch.mean(q(out_lr, ms_lr))
-    q2n_index, _ = q2n(out_lr, ms_lr)
+    q2n_index, _ = q2n(out_lr, ms_lr, 128)
     d_lambda_index = 1 - q2n_index
 
     # Spatial Assessment

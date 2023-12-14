@@ -2,9 +2,9 @@ ds_root: '/media/matteo/T7/Datasets/HyperSpectral/'
 
 datasets: ['PRISMA']
 
-# pansharpening_based_algorithms: ['BDSD', 'GS', 'GSA', 'BT-H', 'PRACS', 'AWLP', 'MTF-GLP', 'MTF-GLP-FS', 'MTF-GLP-HPM', 'MTF-GLP-HPM-H', 'MTF-GLP-HPM-R', 'MF', 'HySURE', 'HyperPNN', 'HSpeNet', 'R-PNN']
-# pansharpening_based_algorithms: ['GS', 'GSA', 'AWLP', 'MTF-GLP', 'MF']
-pansharpening_based_algorithms: ['HyperPNN']
+# pansharpening_based_algorithms: ['BDSD', 'GS', 'GSA', 'BT-H', 'PRACS', 'AWLP', 'MTF-GLP', 'MTF-GLP-FS', 'MTF-GLP-HPM', 'MTF-GLP-HPM-H', 'MTF-GLP-HPM-R', 'MF', 'HySURE', 'HyperPNN', 'HSpeNet', 'R-PNN', 'PCA-Z-PNN']
+pansharpening_based_algorithms: ['GS', 'GSA', 'AWLP', 'MTF-GLP', 'MF']
+# pansharpening_based_algorithms: ['PCA-Z-PNN']
 
 
 ad_hoc_algorithms: []

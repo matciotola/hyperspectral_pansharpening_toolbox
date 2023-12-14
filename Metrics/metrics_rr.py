@@ -150,7 +150,7 @@ class Q2n(nn.Module):
         _, _, ddim1, ddim2 = outputs.size()
 
         if channels == 0:
-            channels = math.ceil(math.log2(dim3))
+            channels = 2 ** math.ceil(math.log2(dim3))
 
         stepx = math.ceil(dim1 / self.Q_shift)
         stepy = math.ceil(dim2 / self.Q_shift)
@@ -174,7 +174,7 @@ class Q2n(nn.Module):
         bs, dim3, dim1, dim2 = labels.size()
 
         if channels - math.log2(dim3) != 0:
-            exp_difference = channels - dim3
+            exp_difference = channels - math.log2(dim3)
             diff = torch.zeros((bs, exp_difference, dim1, dim2), device=outputs.device, requires_grad=False,
                                dtype=outputs.dtype)
             labels = torch.cat((labels, diff), dim=1)
