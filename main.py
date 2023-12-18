@@ -2,8 +2,6 @@ import os
 import torch
 import numpy as np
 
-from osgeo import gdal
-
 import gc
 from recordclass import recordclass
 
@@ -29,8 +27,6 @@ from Utils.dl_tools import generate_paths
 from Utils.load_save_tools import open_mat
 from Utils import load_save_tools as ut
 
-
-gdal.UseExceptions()
 
 pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS,  # Component substitution
                                 'AWLP': AWLP, 'MTF-GLP': MTF_GLP, 'MTF-GLP-FS': MTF_GLP_FS,  # Multi-Resolution analysis

@@ -360,37 +360,3 @@ def data_fusion(y_him, y_mim, downsampling_factor, R, B, p, basis_type, lambda_p
     z_im_hat = mat2im(z_hat, nl, nc, p)
 
     return z_im_hat
-
-
-    # Define and initialize variables
-if __name__ == '__main__':
-    from scipy import io
-    import numpy as np
-    from recordclass import recordclass
-    import matplotlib
-    matplotlib.use('QT5Agg')
-
-    from matplotlib import pyplot as plt
-
-    temp = io.loadmat('/home/matteo/Desktop/HySure-master/demos/Pavia.mat')
-
-    ms = temp['Yhim'].astype(np.float64)
-    ms = np.moveaxis(ms, -1, 0)
-    ms = torch.from_numpy(ms[None, :, :, :])
-    pan = temp['Ymim'].astype(np.float64)
-    pan = torch.from_numpy(pan[None, None, :, :])
-    ratio = 4
-
-    exp_info = {'ratio': ratio}
-    exp_info['ms_lr'] = ms
-    exp_info['pan'] = pan
-    # exp_info['dataset'] = 'dataset'
-
-    exp_input = recordclass('exp_info', exp_info.keys())(*exp_info.values())
-
-    fused = HySURE(exp_input)
-    plt.figure()
-    plt.imshow(fused[0, 0, :, :].cpu().numpy(), clim=[0, 1], cmap='gray')
-    plt.show()
-
-
