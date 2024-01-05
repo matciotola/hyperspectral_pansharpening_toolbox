@@ -37,7 +37,7 @@ pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H
                                 }
 
 fieldnames_rr = ['Method', 'ERGAS', 'SAM', 'Q', 'Q2n']
-fieldnames_fr = ['Method', 'R-ERGAS', 'R-SAM', 'R-Q', 'D_lambda', 'D_s', 'D_sR', 'D_rho']
+fieldnames_fr = ['Method', 'R-ERGAS', 'R-SAM', 'D_lambda_V', 'D_lambda_K', 'D_s', 'D_sR', 'D_rho']
 
 
 if __name__ == '__main__':
@@ -98,7 +98,7 @@ if __name__ == '__main__':
                     save_root = os.path.join(config.save_root, dataset, name)
                     if not os.path.exists(save_root):
                         os.makedirs(save_root)
-                    ut.save_mat(np.squeeze(fused.numpy(), axis=0), os.path.join(save_root, algorithm + '.mat'))
+                    ut.save_mat(np.round(np.squeeze(fused.numpy(), axis=0)).astype(np.uint16), os.path.join(save_root, algorithm + '.mat'))
 
                 del fused
                 gc.collect()
