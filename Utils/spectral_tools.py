@@ -161,16 +161,8 @@ def gen_mtf(ratio, sensor='none', kernel_size=41, nbands=3):
         """
     GNyq = []
 
-    if sensor == 'S2-10':
-        GNyq = [0.275, 0.28, 0.25, 0.24]
-    elif sensor == 'S2-10-PAN':
-        GNyq = [0.26125] * nbands
-    elif sensor == 'S2-20':
-        GNyq = [0.365, 0.33, 0.34, 0.32, 0.205, 0.235]
-    elif sensor == 'S2-60':
-        GNyq = [0.3175, 0.295, 0.30]
-    elif sensor == 'S2-60_bis':
-        GNyq = [0.3175, 0.295]
+    if sensor == 'PRISMA':
+        GNyq = [0.3] * nbands
     elif sensor == 'WV3':
         GNyq = [0.325, 0.355, 0.360, 0.350, 0.365, 0.360, 0.335, 0.315] ## TO REMOVE
     else:
@@ -367,14 +359,8 @@ def gen_mtf_pan(ratio, sensor, kernel_size=41):
         """
     GNyq = []
 
-    if sensor == 'QB':
-        GNyq = np.asarray([0.15])
-    elif (sensor == 'Ikonos') or (sensor == 'IKONOS'):
-        GNyq = np.asarray([0.17])
-    elif (sensor == 'GeoEye1') or (sensor == 'GE1'):
-        GNyq = np.asarray([0.16])
-    elif sensor == 'WV2':
-        GNyq = np.asarray([0.11])
+    if sensor == 'PRISMA':
+        GNyq = np.asarray([0.2]) # https://www.asi.it/wp-content/uploads/2021/02/PRISMA-Mission-Status-v1f-1.pdf
     elif sensor == 'WV3':
         GNyq = np.asarray([0.14])
     else:
