@@ -1,0 +1,27 @@
+train: True
+validation: False
+
+gpu_number: '0'
+training_img_root: ''
+
+# Training settings
+resume: False
+save_weights: False
+save_weights_path: 'weights'
+save_training_stats: False
+
+# Training hyperparameters
+learning_rate: 0.0001
+beta_1: 0.9
+beta_2: 0.999
+weight_decay: 0
+epochs: 5000
+batch_size: 32
+model_weights_path: ''
+
+
+
+
+
+
+
