@@ -57,6 +57,7 @@ if __name__ == '__main__':
             print(path)
             name = path.split(os.sep)[-1].split('.')[0]
             pan, ms_lr, ms, gt, wavelenghts = open_mat(path)
+            save_root = os.path.join(config.save_root, dataset, name)
 
             exp_info = {'ratio': pan.shape[-2] // ms_lr.shape[-2]}
             exp_info['ms_lr'] = ms_lr
@@ -98,7 +99,6 @@ if __name__ == '__main__':
                     print(metrics_values_fr_dict)
                     metrics_fr.append(metrics_values_fr_dict)
                 if config.save_results:
-                    save_root = os.path.join(config.save_root, dataset, name)
                     if not os.path.exists(save_root):
                         os.makedirs(save_root)
                     ut.save_mat(np.round(np.squeeze(fused.numpy(), axis=0)).astype(np.uint16), os.path.join(save_root, algorithm + '.mat'))
