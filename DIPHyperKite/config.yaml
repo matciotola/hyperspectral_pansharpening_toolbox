@@ -1,0 +1,45 @@
+gpu_number: '0'
+model_weights_path: ''
+
+training_img_root: ''
+
+
+# DHP Training hyperparameters
+dhp_learning_rate: 0.001
+beta_1: 0.9
+beta_2: 0.999
+epochs: 1500
+step_size: 1300
+gamma: 0.1
+alpha: 0.6
+reg_noise_std: 0.03
+
+input_depth: 32
+
+# Downsampler Training hyperparameters
+factor: 6
+kernel_type: 'lanczos2'
+phase: 0.5
+
+# Training settings
+
+train: True
+validation: False
+resume: False
+save_weights: True
+save_weights_path: 'weights'
+save_training_stats: False
+
+# Kite Training hyperparameters
+
+kite_learning_rate: 0.001
+weight_decay: 0.0001
+kite_step_size: 1000
+kite_gamma: 0.1
+kite_epochs: 2500
+batch_size: 4
+
+
+
+
+
