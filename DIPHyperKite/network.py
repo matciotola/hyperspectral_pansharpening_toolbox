@@ -103,13 +103,13 @@ class DIP (nn.Module):
         self.down_4 = DownSample(num_channels_down_list[2], num_channels_down_list[3], kernel_size_down)
         self.down_5 = DownSample(num_channels_down_list[3], num_channels_down_list[4], kernel_size_down)
 
-        self.skip_1 = Skip(num_inputs, num_channels_skip_list[0], kernel_size_skip)
+        self.skip_1 = Skip(num_channels_down_list[0], num_channels_skip_list[0], kernel_size_skip)
         self.skip_2 = Skip(num_channels_down_list[0], num_channels_skip_list[1], kernel_size_skip)
         self.skip_3 = Skip(num_channels_down_list[1], num_channels_skip_list[2], kernel_size_skip)
         self.skip_4 = Skip(num_channels_down_list[2], num_channels_skip_list[3], kernel_size_skip)
         self.skip_5 = Skip(num_channels_down_list[3], num_channels_skip_list[4], kernel_size_skip)
 
-        self.up_0 = nn.Upsample(scale_factor=2, mode='bilinear')
+        # self.up_0 = nn.Upsample(scale_factor=2, mode='bilinear')
 
         self.up_1 = UpSample(num_channels_down_list[-1] + num_channels_skip_list[-1], num_channels_up_list[-1], kernel_size_up)
         self.up_2 = UpSample(num_channels_up_list[-1] + num_channels_skip_list[3], num_channels_up_list[-2], kernel_size_up)
@@ -122,7 +122,7 @@ class DIP (nn.Module):
     def forward(self, inputs):
 
         x1 = self.down_1(inputs)
-        s1 = self.skip_1(inputs)
+        s1 = self.skip_1(x1)
 
         x2 = self.down_2(x1)
         s2 = self.skip_2(x2)
@@ -136,7 +136,7 @@ class DIP (nn.Module):
         x5 = self.down_5(x4)
         s5 = self.skip_5(x5)
 
-        x = self.up_1(adjust_shapes_and_cat([self.up_0(x5), s5]))
+        x = self.up_1(adjust_shapes_and_cat([x5, s5]))
         x = self.up_2(adjust_shapes_and_cat([x, s4]))
         x = self.up_3(adjust_shapes_and_cat([x, s3]))
         x = self.up_4(adjust_shapes_and_cat([x, s2]))
@@ -291,9 +291,9 @@ class Downsampler(nn.Module):
         else:
             p = 1
 
-        downsampler = nn.Conv2d(n_planes, n_planes, kernel_size=self.kernel.shape, stride=factor, padding=p)
+        downsampler = nn.Conv2d(n_planes, n_planes, kernel_size=self.kernel.shape, stride=factor, padding=p, bias=False)
+        downsampler.weight.requires_grad = False
         downsampler.weight.data[:] = 0
-        downsampler.bias.data[:] = 0
 
         kernel_torch = torch.from_numpy(self.kernel)
         for i in range(n_planes):
