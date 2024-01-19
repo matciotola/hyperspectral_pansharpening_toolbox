@@ -15,7 +15,7 @@ from MRA.GLP import MTF_GLP, MTF_GLP_FS, MTF_GLP_HPM, MTF_GLP_HPM_H, MTF_GLP_HPM
 from MRA.AWLP import AWLP
 from MRA.MF import MF
 
-from HySURE.HySURE import HySURE
+from Bayesian.HySURE import HySURE
 from HyperPNN.HyperPNN import HyperPNN
 from HSpeNet.HSpeNet import HSpeNet
 from R_PNN.R_PNN import R_PNN
