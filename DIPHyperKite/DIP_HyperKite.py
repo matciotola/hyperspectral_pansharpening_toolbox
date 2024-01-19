@@ -47,8 +47,6 @@ def DIP_HyperKite(ordered_dict):
         train_loader = DataLoader(ds_train, batch_size=1, shuffle=False)
         prior_images = prior_execution(device, train_loader, config)
 
-        io.savemat('./priors.mat', {'I_MS': prior_images})
-
         ds_train = TrainingDatasetKite(train_paths, prior_images, normalize)
         train_loader = DataLoader(ds_train, batch_size=config.batch_size, shuffle=True)
 
@@ -144,13 +142,9 @@ def prior_execution(device, train_loader, config):
         pan, ms_lr, _, _ = data
         pan = pan.to(device)
         ms_lr = ms_lr.to(device)
-        # gt = gt.to(device)
         spectral_bands_number = ms_lr.shape[1]
 
         net_input = get_noise(config.input_depth, (pan.shape[3], pan.shape[2])).type(pan.dtype)
-
-        net_input_saved = torch.clone(net_input.detach())
-        noise = torch.clone(net_input.detach())
 
         net = DIP(config.input_depth, spectral_bands_number).to(device)
         pan_network = PanPredictionNetwork(spectral_bands_number).to(device)
@@ -166,12 +160,9 @@ def prior_execution(device, train_loader, config):
 
         net.train()
         pan_network.train()
-        downsampler.train()
+        # downsampler.train()
 
         for epoch in range(config.epochs):
-
-            # if config.reg_noise_std > 0:
-            #     net_input = net_input_saved + (noise.normal_() * config.reg_noise_std)
 
             optim.zero_grad()
 
@@ -196,7 +187,7 @@ def prior_execution(device, train_loader, config):
     prior_hs = torch.cat(prior_hs, 0)
     prior_hs = torch.clip(prior_hs, 0, 1)
 
-    del final_outputs_hr, net_input, net_input_saved, noise, net, pan_network, downsampler
+    del final_outputs_hr, net_input, net, pan_network, downsampler
     gc.collect()
     torch.cuda.empty_cache()
 
