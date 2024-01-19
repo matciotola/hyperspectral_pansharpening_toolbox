@@ -1,0 +1,33 @@
+gpu_number: '0'
+model_weights_path: ''
+
+training_img_root: ''
+
+
+# DHP Training hyperparameters
+dhp_learning_rate: 0.01
+beta_1: 0.9
+beta_2: 0.999
+epochs: 10000
+
+
+# Training settings
+
+train: True
+validation: False
+resume: False
+save_weights: True
+save_weights_path: 'weights'
+save_training_stats: False
+
+
+# DARN Training hyperparameters
+
+darn_learning_rate: 0.001
+darn_epochs: 1500
+batch_size: 64
+
+
+
+
+
