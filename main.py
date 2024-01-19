@@ -34,7 +34,7 @@ pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H
                                 'AWLP': AWLP, 'MTF-GLP': MTF_GLP, 'MTF-GLP-FS': MTF_GLP_FS,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM': MTF_GLP_HPM, 'MTF-GLP-HPM-H': MTF_GLP_HPM_H,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF,  # Multi-Resolution analysis
-                                'HySURE': HySURE, 'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet,  # Ad hoc
+                                'Bayesian': HySURE, 'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet,  # Ad hoc
                                 'R-PNN': R_PNN, 'PCA-Z-PNN': PCA_Z_PNN, 'DIP-HyperKite': DIP_HyperKite,
                                 'Hyper-DSNet': HyperDSNet  # Ad hoc
                                 }
