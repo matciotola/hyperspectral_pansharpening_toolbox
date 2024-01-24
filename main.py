@@ -15,6 +15,7 @@ from MRA.GLP import MTF_GLP, MTF_GLP_FS, MTF_GLP_HPM, MTF_GLP_HPM_H, MTF_GLP_HPM
 from MRA.AWLP import AWLP
 from MRA.MF import MF
 
+from Bayesian.Bayesian import BayesianNaive, BayesianSparse
 from Bayesian.HySURE import HySURE
 from HyperPNN.HyperPNN import HyperPNN
 from HSpeNet.HSpeNet import HSpeNet
@@ -38,9 +39,10 @@ pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H
                                 'AWLP': AWLP, 'MTF-GLP': MTF_GLP, 'MTF-GLP-FS': MTF_GLP_FS,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM': MTF_GLP_HPM, 'MTF-GLP-HPM-H': MTF_GLP_HPM_H,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF,  # Multi-Resolution analysis
-                                'HySURE': HySURE, 'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet,  # Ad hoc
-                                'R-PNN': R_PNN, 'PCA-Z-PNN': PCA_Z_PNN, 'DIP-HyperKite': DIP_HyperKite,
-                                'Hyper-DSNet': HyperDSNet, 'DHP-DARN': DHP_Darn  # Ad hoc
+                                'BayesianNaive': BayesianNaive, 'BayesianSparse': BayesianSparse, 'HySURE': HySURE, # Model Optimization
+                                'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet,  # Deep Learning Supervised
+                                'DIP-HyperKite': DIP_HyperKite, 'Hyper-DSNet': HyperDSNet, 'DHP-DARN': DHP_Darn,  # Deep Learning Supervised
+                                'R-PNN': R_PNN, 'PCA-Z-PNN': PCA_Z_PNN # Deep Learning Unsupervised
                                 }
 
 fieldnames_rr = ['Method', 'ERGAS', 'SAM', 'Q', 'Q2n']
