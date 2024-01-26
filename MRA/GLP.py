@@ -99,8 +99,7 @@ def MTF_GLP_HPM(ordered_dict):
     # bands_hr_lr = interp23tap_torch(bands_hr_lr_lr, ratio)
     bands_hr_lr = ideal_interpolator(bands_hr_lr_lr, ratio)
 
-    fused = ms * (bands_hr / (bands_hr_lr + torch.finfo(ms.dtype).eps))
-
+    fused = ms * torch.clip((bands_hr / (bands_hr_lr + torch.finfo(ms.dtype).eps)), 0, 10.0)
     return fused
 
 
@@ -183,22 +182,23 @@ if __name__ == '__main__':
     import numpy as np
     from recordclass import recordclass
     from Utils.interpolator_tools import interp23tap
-    temp = io.loadmat('/home/matteo/Desktop/Datasets/WV3_Adelaide_crops/Adelaide_1_zoom.mat')
+    # temp = io.loadmat('/home/matteo/Desktop/Datasets/WV3_Adelaide_crops/Adelaide_1_zoom.mat')
+    temp = io.loadmat('/home/matteo/Desktop/RR1_Barcelona.mat')
 
     ms_lr = temp['I_MS_LR'].astype(np.float64)
-    ms = interp23tap(ms_lr, 4)
+    ms = temp['I_MS'].astype(np.float64)
     pan = temp['I_PAN'].astype(np.float64)
-    ratio = 4
+    ratio = 6
 
     ms_lr = torch.tensor(np.moveaxis(ms_lr, -1, 0)[None, :, :, :])
     ms = torch.tensor(np.moveaxis(ms, -1, 0)[None, :, :, :])
     pan = torch.tensor(pan[None, None, :, :])
 
-    ord_dic = {'ms': ms, 'pan': pan, 'ms_lr': ms_lr, 'ratio': ratio, 'dataset': 'WV3'}
+    ord_dic = {'ms': ms, 'pan': pan, 'ms_lr': ms_lr, 'ratio': ratio, 'dataset': 'PRISMA'}
 
     exp_input = recordclass('exp_info', ord_dic.keys())(*ord_dic.values())
 
-    fused = MTF_GLP(exp_input)
+    fused = MTF_GLP_HPM(exp_input)
     plt.figure()
     plt.imshow(fused[0, 0, :, :].detach().numpy(), cmap='gray')
     plt.show()
