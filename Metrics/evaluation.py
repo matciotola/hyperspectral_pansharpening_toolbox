@@ -23,7 +23,7 @@ def evaluation_rr(out_lr, ms_lr, ratio, flag_cut=True, dim_cut=11, L=16):
     ergas_index, _ = ergas(out_lr, ms_lr)
     sam_index, _ = sam(out_lr, ms_lr)
     q_index = torch.mean(q(out_lr, ms_lr))
-    q2n_index, _ = q2n(out_lr, ms_lr, 128)
+    q2n_index, _ = q2n(out_lr, ms_lr)
 
     return ergas_index.item(), sam_index.item(), q_index.item(), q2n_index.item()
 
@@ -58,7 +58,7 @@ def evaluation_fr_old(out, pan, ms_lr, ratio, dataset):
     ergas_index, _ = ergas(out_lr, ms_lr)
     sam_index, _ = sam(out_lr, ms_lr)
     q_index = torch.mean(q(out_lr, ms_lr))
-    q2n_index, _ = q2n(out_lr, ms_lr, 128)
+    q2n_index, _ = q2n(out_lr, ms_lr)
     d_lambda_index = 1 - q2n_index
 
     # Spatial Assessment
@@ -110,7 +110,7 @@ def evaluation_fr(out, pan, ms_lr, ms, ratio, dataset):
     ergas_index, _ = ergas(out_lr, ms_lr)
     sam_index, _ = sam(out_lr, ms_lr)
     q_index = torch.mean(q(out_lp, ms))
-    q2n_index, _ = q2n(out_lr, ms_lr, 128)
+    q2n_index, _ = q2n(out_lr, ms_lr)
     d_lambda_index = 1 - q_index
     d_lambda_khan_index = 1 - q2n_index
 
