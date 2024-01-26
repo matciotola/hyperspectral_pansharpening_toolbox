@@ -57,12 +57,12 @@ def HSpeNet(ordered_dict):
         if config.save_weights:
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), config.save_weights_path)):
                 os.makedirs(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), config.save_weights_path))
-            torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), config.save_weights_path, 'HSpeNet.tar'))
+            torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), config.save_weights_path, ordered_dict.dataset + '.tar'))
 
         if config.save_training_stats:
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), 'Stats', 'HSpeNet')):
                 os.makedirs(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), 'Stats', 'HSpeNet'))
-            io.savemat(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), 'Stats', 'HSpeNet', 'Training_HSpeNet.mat'), history)
+            io.savemat(os.path.join(os.path.dirname(inspect.getfile(HSpeNet_model)), 'Stats', 'HSpeNet', 'Training_HSpeNet_' + ordered_dict.dataset +' .mat'), history)
 
     pan = normalize(pan)
     ms = normalize(ms)

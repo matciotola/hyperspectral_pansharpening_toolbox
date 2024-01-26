@@ -144,7 +144,7 @@ def prior_execution(device, train_loader, config, ordered_dict):
         net_input = net_input.to(device)
 
         net = DHP(ms_lr.shape[1]).to(device)
-        downsampler = Downsampler(mtf_kernel_to_torch(gen_mtf(ordered_dict.ratio, ordered_dict.dataset, 9, ms_lr.shape[1])), ordered_dict.ratio).to(device)
+        downsampler = Downsampler(mtf_kernel_to_torch(gen_mtf(ordered_dict.ratio, ordered_dict.sensor, 9, ms_lr.shape[1])), ordered_dict.ratio).to(device)
 
         optim = torch.optim.Adam(
             net.parameters(),

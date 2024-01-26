@@ -29,7 +29,7 @@ def DIP_HyperKite(ordered_dict):
     if not config.train or config.resume:
         if not model_weights_path:
             model_weights_path = os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'weights',
-                                              'KiteNetwork.tar')
+                                              ordered_dict.dataset + '.tar')
         if os.path.exists(model_weights_path):
             net.load_state_dict(torch.load(model_weights_path))
     else:
@@ -77,7 +77,7 @@ def DIP_HyperKite(ordered_dict):
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Stats', 'HyperKite')):
                 os.makedirs(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Stats', 'HyperKite'))
             io.savemat(
-                os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Stats', 'HyperKite', 'Training_HyperKite.mat'),
+                os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Stats', 'HyperKite', 'Training_HyperKite_' + ordered_dict.dataset + ' .mat'),
                 history)
 
     pan = normalize(pan)

@@ -29,7 +29,7 @@ def HyperDSNet(ordered_dict):
 
     if not config.train or config.resume:
         if not model_weights_path:
-            model_weights_path = os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), 'weights', 'Hyper_DSNet.tar')
+            model_weights_path = os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), 'weights', ordered_dict.dataset + '.tar')
         if os.path.exists(model_weights_path):
             net.load_state_dict(torch.load(model_weights_path))
 
@@ -56,12 +56,12 @@ def HyperDSNet(ordered_dict):
         if config.save_weights:
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), config.save_weights_path)):
                 os.makedirs(os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), config.save_weights_path))
-            torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), config.save_weights_path, 'Hyper_DSNet.tar'))
+            torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), config.save_weights_path, ordered_dict.dataset + '.tar'))
 
         if config.save_training_stats:
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), 'Stats', 'Hyper_DSNet')):
                 os.makedirs(os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), 'Stats', 'Hyper_DSNet'))
-            io.savemat(os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), 'Stats', 'Hyper_DSNet', 'Training_Hyper_DSNet.mat'), history)
+            io.savemat(os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), 'Stats', 'Hyper_DSNet', 'Training_Hyper_DSNet_' + ordered_dict.dataset +'.mat'), history)
 
     pan = normalize(pan)
     ms = normalize(ms)

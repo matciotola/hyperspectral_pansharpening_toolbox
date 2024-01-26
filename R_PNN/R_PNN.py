@@ -27,18 +27,15 @@ def R_PNN(ordered_dict):
     ms = torch.clone(ordered_dict.ms).float()
     ms_lr = torch.clone(ordered_dict.ms_lr)
 
-    custom_train_weights_path = config.custom_train_weights_path
-    default_train_weights_path = config.default_train_weights_path
+    model_weights_path = config.model_weights_path
 
     net = R_PNN_model()
 
     if not config.train or config.resume:
-        #if not custom_weights_path:
-        #    model_weights_path = os.path.join(os.getcwd(), 'weights', 'R-PNN.tar')
-        if os.path.exists(custom_train_weights_path):
-            net.load_state_dict(torch.load(custom_train_weights_path))
-        else:
-            net.load_state_dict(torch.load(default_train_weights_path))
+        if not model_weights_path:
+            model_weights_path = os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'weights', ordered_dict.dataset + '.tar')
+        if os.path.exists(model_weights_path):
+            net.load_state_dict(torch.load(model_weights_path))
 
     net = net.to(device)
 
@@ -63,12 +60,12 @@ def R_PNN(ordered_dict):
         if config.save_weights:
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), config.save_weights_path)):
                 os.makedirs(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), config.save_weights_path))
-            torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), config.save_weights_path, 'R-PNN.tar'))
+            torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), config.save_weights_path, ordered_dict.dataset +'.tar'))
 
         if config.save_training_stats:
             if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN')):
                 os.makedirs(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN'))
-            io.savemat(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN', 'Training_R-PNN.mat'), history)
+            io.savemat(os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'Stats', 'R-PNN', 'Training_R-PNN_'+ ordered_dict.dataset + '.mat'), history)
 
     pan = normalize(pan)
     ms = normalize(ms)
