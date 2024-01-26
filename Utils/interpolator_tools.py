@@ -172,7 +172,7 @@ def interp_3x_1d(img, N=50):
     return y
 
 
-def interp_3x_2d(img, N=50):
+def interp_3x_2d(img, N=30):
 
     z = interp_3x_1d(img, N)
     z = interp_3x_1d(z.transpose(2, 3), N)
