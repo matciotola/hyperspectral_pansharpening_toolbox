@@ -11,7 +11,7 @@ def BDSD(ordered_dict):
     pan = torch.clone(ordered_dict.pan)
     ratio = ordered_dict.ratio
 
-    ms_lr_lp, ms_lr, pan_lr = prepro_BDSD(ms, pan, ratio, ms.shape[-1], ordered_dict.dataset)
+    ms_lr_lp, ms_lr, pan_lr = prepro_BDSD(ms, pan, ratio, ms.shape[-1], ordered_dict.sensor)
 
     gamma = gamma_calculation_BDSD(ms_lr_lp, ms_lr, pan_lr, ratio, ms.shape[-1])
     fused = fuse_BDSD(ms, pan, gamma, ratio, ms.shape[-1])

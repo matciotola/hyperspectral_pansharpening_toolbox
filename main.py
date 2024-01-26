@@ -34,7 +34,6 @@ from Utils import load_save_tools as ut
 
 
 # TODO: Insert self.overlap for Bayesian, HySURE methods and for metrics calculation
-# TODO: Add self.sensor beyond self.dataset
 
 pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS,  # Component substitution
                                 'AWLP': AWLP, 'MTF-GLP': MTF_GLP, 'MTF-GLP-FS': MTF_GLP_FS,  # Multi-Resolution analysis
@@ -73,6 +72,7 @@ if __name__ == '__main__':
             exp_info['pan'] = pan
             exp_info['wavelenghts'] = wavelenghts
             exp_info['dataset'] = dataset
+            exp_info['sensor'] = config.sensor
             exp_info['name'] = name
             exp_info['root'] = config.ds_root
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
                     print(metrics_values_rr_dict)
                     metrics_rr.append(metrics_values_rr_dict)
                 else:
-                    metrics_values_fr = list(evaluation_fr(fused, torch.clone(pan), torch.clone(ms_lr), ratio=exp_info['ratio'], dataset=exp_info['dataset']))
+                    metrics_values_fr = list(evaluation_fr(fused, torch.clone(pan), torch.clone(ms_lr), ratio=exp_info['ratio'], sensor=exp_info['sensor']))
                     metrics_values_fr.insert(0, algorithm)
                     metrics_values_fr_dict = dict(zip(fieldnames_fr, metrics_values_fr))
                     print(metrics_values_fr_dict)

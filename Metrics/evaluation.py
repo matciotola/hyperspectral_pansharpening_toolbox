@@ -28,18 +28,18 @@ def evaluation_rr(out_lr, ms_lr, ratio, flag_cut=True, dim_cut=11, L=16):
     return ergas_index.item(), sam_index.item(), q_index.item(), q2n_index.item()
 
 
-def evaluation_fr_old(out, pan, ms_lr, ratio, dataset):
+def evaluation_fr_old(out, pan, ms_lr, ratio, sensor):
 
     sigma = ratio
 
-    if dataset == 'PRISMA' or dataset == 'WV3':
+    if sensor == 'PRISMA' or sensor == 'WV3':
         starting = 1
-    elif dataset == 'Pavia':
+    elif sensor == 'Pavia':
         starting = 3
     else:
         starting = 3
 
-    kernel = mtf_kernel_to_torch(gen_mtf(ratio, dataset, nbands=out.shape[1]))
+    kernel = mtf_kernel_to_torch(gen_mtf(ratio, sensor, nbands=out.shape[1]))
 
     out_lp = F.conv2d(out, kernel.type(out.dtype).to(out.device), padding='same', groups=out.shape[1])
 
@@ -76,18 +76,18 @@ def evaluation_fr_old(out, pan, ms_lr, ratio, dataset):
             )
 
 
-def evaluation_fr(out, pan, ms_lr, ms, ratio, dataset):
+def evaluation_fr(out, pan, ms_lr, ms, ratio, sensor):
 
     sigma = ratio
 
-    if dataset == 'PRISMA' or dataset == 'WV3':
+    if sensor == 'PRISMA' or sensor == 'WV3':
         starting = 1
-    elif dataset == 'Pavia':
+    elif sensor == 'Pavia':
         starting = 3
     else:
         starting = 3
 
-    kernel = mtf_kernel_to_torch(gen_mtf(ratio, dataset, nbands=out.shape[1]))
+    kernel = mtf_kernel_to_torch(gen_mtf(ratio, sensor, nbands=out.shape[1]))
 
     filter = torch.nn.Conv2d(out.shape[1], out.shape[1], kernel_size=kernel.shape[2], groups=out.shape[1], padding='same', padding_mode='replicate', bias=False)
     filter.weight = torch.nn.Parameter(kernel.type(out.dtype).to(out.device))

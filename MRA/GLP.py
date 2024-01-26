@@ -10,7 +10,7 @@ from Utils.interpolator_tools import ideal_interpolator
 def MTF_GLP(ordered_dict):
     ms = torch.clone(ordered_dict.ms)
     pan = torch.clone(ordered_dict.pan)
-    sensor = ordered_dict.dataset
+    sensor = ordered_dict.sensor
     ratio = ordered_dict.ratio
 
     bs, c, h, w = ms.shape
@@ -40,8 +40,7 @@ def MTF_GLP(ordered_dict):
 def MTF_GLP_FS(ordered_dict):
     ms = torch.clone(ordered_dict.ms)
     pan = torch.clone(ordered_dict.pan)
-    # sensor = ordered_dict.sensor
-    sensor = ordered_dict.dataset
+    sensor = ordered_dict.sensor
     ratio = ordered_dict.ratio
 
     bs, c, h, w = ms.shape
@@ -80,8 +79,7 @@ def MTF_GLP_FS(ordered_dict):
 def MTF_GLP_HPM(ordered_dict):
     ms = torch.clone(ordered_dict.ms)
     pan = torch.clone(ordered_dict.pan)
-    # sensor = ordered_dict.sensor
-    sensor = ordered_dict.dataset
+    sensor = ordered_dict.sensor
     ratio = ordered_dict.ratio
 
     bs, c, h, w = ms.shape
@@ -106,8 +104,7 @@ def MTF_GLP_HPM(ordered_dict):
 def MTF_GLP_HPM_H(ordered_dict, decimation=True):
     ms = torch.clone(ordered_dict.ms)
     pan = torch.clone(ordered_dict.pan)
-    # sensor = ordered_dict.sensor
-    sensor = ordered_dict.dataset
+    sensor = ordered_dict.sensor
     ratio = ordered_dict.ratio
 
     bs, c, h, w = ms.shape
@@ -146,8 +143,7 @@ def MTF_GLP_HPM_H(ordered_dict, decimation=True):
 def MTF_GLP_HPM_R(ordered_dict):
     ms = torch.clone(ordered_dict.ms)
     pan = torch.clone(ordered_dict.pan)
-    # sensor = ordered_dict.sensor
-    sensor = ordered_dict.dataset
+    sensor = ordered_dict.sensor
     ratio = ordered_dict.ratio
 
     bs, c, h, w = ms.shape

@@ -1,13 +1,15 @@
 ds_root: '/media/matteo/T7/Datasets/HyperSpectral/'
 
 datasets: ['PRISMA']
+sensor: 'PRISMA'
 
-pansharpening_based_algorithms: ['BDSD', 'GS', 'GSA', 'BT-H', 'PRACS', 'AWLP',
+# pansharpening_based_algorithms: ['BDSD', 'GS', 'GSA', 'BT-H', 'PRACS', 'AWLP',
                                  'MTF-GLP', 'MTF-GLP-FS', 'MTF-GLP-HPM', 'MTF-GLP-HPM-H', 'MTF-GLP-HPM-R', 'MF',
                                  'BayesianSparse', 'BayesianNaive', 'HySURE',
                                  'HyperPNN', 'HSpeNet', 'DIP-HyperKite', 'DHP-DARN', 'Hyper-DSNet'
                                  'R-PNN', 'PCA-Z-PNN']
-
+# pansharpening_based_algorithms: ['GS', 'GSA', 'AWLP', 'MTF-GLP', 'MF']
+pansharpening_based_algorithms: ['BayesianSparse', 'BayesianNaive']
 
 
 ad_hoc_algorithms: []

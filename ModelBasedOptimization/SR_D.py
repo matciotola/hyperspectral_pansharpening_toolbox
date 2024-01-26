@@ -11,7 +11,7 @@ def SR_D(ordered_dict, ts=7, ol=4, n_atoms=10):
     ms = torch.clone(ordered_dict.ms)
     pan = torch.clone(ordered_dict.pan)
     ratio = ordered_dict.ratio
-    sensor = ordered_dict.dataset
+    sensor = ordered_dict.sensor
 
     # equalization
 

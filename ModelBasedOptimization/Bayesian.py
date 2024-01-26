@@ -13,7 +13,7 @@ def BayesianNaive(ordered_dict):
     overlap = torch.arange(0, 32).float()  # ordered_dict.overlap
     ratio = ordered_dict.ratio
 
-    blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.dataset, 15, 1).squeeze()).type(ms_lr.dtype).to(ms_lr.device)
+    blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.sensor, 15, 1).squeeze()).type(ms_lr.dtype).to(ms_lr.device)
     fused = BayesianMethod(ms_lr, pan, overlap, ratio, blur_kernel, 'Gaussian')
 
     return fused
@@ -25,7 +25,7 @@ def BayesianSparse(ordered_dict):
     overlap = torch.arange(0, 32).float()  # ordered_dict.overlap
     ratio = ordered_dict.ratio
 
-    blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.dataset, 15, 1).squeeze()).type(ms_lr.dtype).to(ms_lr.device)
+    blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.sensor, 15, 1).squeeze()).type(ms_lr.dtype).to(ms_lr.device)
 
     fused = BayesianMethod(ms_lr, pan, overlap, ratio, blur_kernel, 'Sparse')
 
