@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from Utils.pansharpening_aux_tools import mldivide
-from Utils.spectral_tools import gen_mtf
+from Utils.spectral_tools import gen_mtf, fspecial_gauss
 import torchvision.transforms.functional as tf
 from scipy.interpolate import RectBivariateSpline
 import math
@@ -10,11 +10,10 @@ import math
 def BayesianNaive(ordered_dict):
     ms_lr = ordered_dict.ms_lr
     pan = ordered_dict.pan
-    overlap = torch.arange(0, 41).float()  # ordered_dict.overlap
+    overlap = torch.arange(0, 32).float()  # ordered_dict.overlap
     ratio = ordered_dict.ratio
 
-    blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.dataset, 9, 1).squeeze()).type(ms.dtype).to(ms.device)
-
+    blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.dataset, 15, 1).squeeze()).type(ms_lr.dtype).to(ms_lr.device)
     fused = BayesianMethod(ms_lr, pan, overlap, ratio, blur_kernel, 'Gaussian')
 
     return fused
@@ -23,10 +22,10 @@ def BayesianNaive(ordered_dict):
 def BayesianSparse(ordered_dict):
     ms_lr = ordered_dict.ms_lr
     pan = ordered_dict.pan
-    overlap = torch.arange(0, 41).float()  # ordered_dict.overlap
+    overlap = torch.arange(0, 32).float()  # ordered_dict.overlap
     ratio = ordered_dict.ratio
 
-    blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.dataset, 9, 1).squeeze()).type(ms_lr.dtype).to(ms_lr.device)
+    blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.dataset, 15, 1).squeeze()).type(ms_lr.dtype).to(ms_lr.device)
 
     fused = BayesianMethod(ms_lr, pan, overlap, ratio, blur_kernel, 'Sparse')
 
@@ -38,9 +37,6 @@ def BayesianMethod(ms_lr, pan, overlap, ratio, blur_kernel, prior):
     xm = torch.clone(pan)
 
     overlap = torch.clone(overlap)
-
-
-
 
     l_pan = int(overlap[-1].item()) + 1
 
@@ -553,24 +549,38 @@ def id_hs_sub(x_dh):
 if __name__ == '__main__':
     import scipy.io as io
     import numpy as np
-
-    temp = io.loadmat('/home/matteo/Desktop/hyperspectral_toolbox/Methods/bayesfusion/data.mat')
-
-    pan = torch.from_numpy(temp['I_PAN']).unsqueeze(0).unsqueeze(0)
-    ms = torch.from_numpy(np.moveaxis(temp['I_HS'], -1, 0)).unsqueeze(0)
-
-    overlap = torch.arange(0, 41).float()
-
-    fused = BayesianMethod(ms, pan, overlap)
-
+    from Utils.spectral_tools import fspecial_gauss
     import matplotlib
     matplotlib.use('Qt5Agg')
 
     from matplotlib import pyplot as plt
 
-    plt.figure()
-    plt.imshow(fused[0,0,:,:].numpy(), cmap='gray')
+    # temp = io.loadmat('/home/matteo/Desktop/hyperspectral_toolbox/Methods/bayesfusion/data.mat')
+    temp = io.loadmat('/home/matteo/Desktop/20200124105146_002.mat')
+    #ref = torch.from_numpy(np.moveaxis(io.loadmat('/home/matteo/Desktop/hyperspectral_toolbox/Demo/ref.mat')['I_REF'].astype(np.float32), -1, 0)[None, :, :, :]).double()
+
+    pan = torch.from_numpy(temp['I_PAN'].astype(np.float64)).unsqueeze(0).unsqueeze(0)
+    ms = torch.from_numpy(np.moveaxis(temp['I_MS_LR'].astype(np.float64), -1, 0)).unsqueeze(0)
+    ref = torch.from_numpy(np.moveaxis(temp['I_GT'].astype(np.float64), -1, 0)).unsqueeze(0)
+    pan_1 = torch.mean(ref[:, :32, :, :], dim=1, keepdim=True)
+    overlap = torch.arange(0, 32).float()
+    ratio = 6
+    # kernel = torch.from_numpy(fspecial_gauss((9,9), (1/(2*(2.7725887)/ratio**2))**0.5))
+    # kernel = torch.from_numpy(fspecial_gauss((9, 9), 0.3))
+    kernel = torch.from_numpy(gen_mtf(ratio, 'PRISMA', 15, 1).squeeze()).type(ms.dtype).to(ms.device)
+    fused = BayesianMethod(ms, pan, overlap, ratio, kernel, 'Gaussian')
+
+    from Metrics.metrics_rr import ERGAS, SAM
+
+    erg = ERGAS(ratio)(fused, ref)
+    sam = SAM()(fused, ref)
 
     plt.figure()
-    plt.imshow(ms[0,0,:,:].numpy(), cmap='gray')
+    plt.imshow(ms[0,40,:,:].numpy(), cmap='gray', clim = (ref[0,0,:,:].min(), ref[0,0,:,:].max()))
+
+    plt.figure()
+    plt.imshow(ref[0,40,:,:].numpy(), cmap='gray', clim = (ref[0,0,:,:].min(), ref[0,0,:,:].max()))
+
+    plt.figure()
+    plt.imshow(fused[0,40,:,:].numpy(), cmap='gray', clim = (ref[0,0,:,:].min(), ref[0,0,:,:].max()))
     plt.show()
