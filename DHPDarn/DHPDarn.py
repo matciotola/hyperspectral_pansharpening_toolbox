@@ -42,7 +42,7 @@ def DHP_Darn(ordered_dict):
             training_img_root = ordered_dict.root
         else:
             training_img_root = config.training_img_root
-        train_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Training')
+        train_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Training', 'Reduced_Resolution')
         ds_train = TrainingDatasetRR(train_paths, normalize)
         train_loader = DataLoader(ds_train, batch_size=1, shuffle=False)
         prior_images = prior_execution(device, train_loader, config, ordered_dict)
@@ -51,7 +51,7 @@ def DHP_Darn(ordered_dict):
         train_loader = DataLoader(ds_train, batch_size=config.batch_size, shuffle=True)
 
         if config.validation:
-            val_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Validation')
+            val_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Validation', 'Reduced_Resolution')
             ds_val = TrainingDatasetRR(val_paths, normalize)
             val_loader = DataLoader(ds_val, batch_size=1, shuffle=False)
 
@@ -96,36 +96,9 @@ def DHP_Darn(ordered_dict):
     torch.cuda.empty_cache()
 
     with torch.no_grad():
-        gc.collect()
-        torch.cuda.empty_cache()
-        outputs_patches = []
-        kc, kh, kw = prior.shape[1] + 1, 180, 180  # kernel size
-        dc, dh, dw = prior.shape[1] + 1, 180, 180  # stride
-        patches = torch.cat([prior.cpu(), pan.cpu()], 1).unfold(1, kc, dc).unfold(2, kh, dh).unfold(3, kw, dw)
-        unfold_shape = list(patches.shape)
-        patches = patches.contiguous().view(-1, kc, kh, kw).to(device)
+        fused = net(pan.to(device), prior.to(device))
 
-        patches = torch.nn.functional.pad(patches, (6, 6, 6, 6), mode='reflect')
-
-        prior_patches = patches[:, :-1, :, :]
-        pan_patches = patches[:, -1, :, :].unsqueeze(1)
-
-        for i in range(prior_patches.shape[0]):
-            patch = net(pan_patches[i:i+1, :, :, :].to(device), prior_patches[i:i+1, :, :, :].to(device))
-            outputs_patches.append(patch.detach().cpu())
-
-        # Image reconstruction
-        outputs_patches = torch.cat(outputs_patches, 0)
-        outputs_patches = outputs_patches[:, :, 6:-6, 6:-6]
-        unfold_shape[4] = unfold_shape[4] - 1
-        fused = outputs_patches.view(unfold_shape)
-        output_c = unfold_shape[1] * unfold_shape[4]
-        output_h = unfold_shape[2] * unfold_shape[5]
-        output_w = unfold_shape[3] * unfold_shape[6]
-        fused = fused.permute(0, 1, 4, 2, 5, 3, 6).contiguous()
-        fused = fused.view(1, output_c, output_h, output_w)
-
-    fused = denormalize(torch.clip(fused,0, 1))
+    fused = denormalize(torch.clip(fused, 0, 1))
     return fused.detach().cpu().double()
 
 
@@ -220,7 +193,7 @@ def train_darn(device, net, train_loader, config, val_loader=None):
             net.eval()
             with torch.no_grad():
                 for i, data in enumerate(val_loader):
-                    pan, _, priors, gt = data
+                    pan, priors, gt = data
                     pan = pan.to(device)
                     priors = priors.to(device)
                     gt = gt.to(device)
