@@ -6,7 +6,6 @@ class SAMLoss(nn.Module):
     def __init__(self, reduction='mean'):
         super(SAMLoss, self).__init__()
         self.reduction = reduction
-        self.pi = np.pi
         self.eps = 1e-8
 
     def forward(self, outputs, labels):
