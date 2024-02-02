@@ -71,6 +71,7 @@ if __name__ == '__main__':
             exp_info['ms'] = ms
             exp_info['pan'] = pan
             exp_info['wavelenghts'] = wavelenghts
+            exp_info['overlap'] = overlap
             exp_info['dataset'] = dataset
             exp_info['sensor'] = config.sensor
             exp_info['name'] = name
