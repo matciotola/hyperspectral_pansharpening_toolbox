@@ -16,6 +16,7 @@ from MRA.AWLP import AWLP
 from MRA.MF import MF
 
 from ModelBasedOptimization.SR_D import SR_D
+from ModelBasedOptimization.TV import TV
 from ModelBasedOptimization.Bayesian import BayesianNaive, BayesianSparse
 from ModelBasedOptimization.HySURE import HySURE
 from HyperPNN.HyperPNN import HyperPNN
@@ -33,13 +34,11 @@ from Utils.load_save_tools import open_mat
 from Utils import load_save_tools as ut
 
 
-# TODO: Insert self.overlap for Bayesian, HySURE methods and for metrics calculation
-
 pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS,  # Component substitution
                                 'AWLP': AWLP, 'MTF-GLP': MTF_GLP, 'MTF-GLP-FS': MTF_GLP_FS,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM': MTF_GLP_HPM, 'MTF-GLP-HPM-H': MTF_GLP_HPM_H,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF,  # Multi-Resolution analysis
-                                'SR-D': SR_D,   # Model-Based Optimization
+                                'SR-D': SR_D, 'TV': TV,  # Model-Based Optimization
                                 'BayesianNaive': BayesianNaive, 'BayesianSparse': BayesianSparse, 'HySURE': HySURE, # Model-Based Optimization
                                 'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet,  # Deep Learning Supervised
                                 'DIP-HyperKite': DIP_HyperKite, 'Hyper-DSNet': HyperDSNet, 'DHP-DARN': DHP_Darn,  # Deep Learning Supervised
