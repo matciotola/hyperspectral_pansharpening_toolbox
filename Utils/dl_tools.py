@@ -25,13 +25,13 @@ def open_config(file_path):
     return recordclass('config', yaml_file.keys())(*yaml_file.values())
 
 
-def generate_paths(root, dataset, type):
+def generate_paths(root, dataset, type, resolution):
 
     ds_paths = []
-    names = sorted(next(os.walk(os.path.join(root, dataset, type)))[2])
+    names = sorted(next(os.walk(os.path.join(root, dataset, type, resolution)))[2])
 
     for name in names:
-        ds_paths.append(os.path.join(root, dataset, type, name))
+        ds_paths.append(os.path.join(root, dataset, type, resolution, name))
 
     return ds_paths
 
