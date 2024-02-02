@@ -234,12 +234,13 @@ def train_kite(device, net, train_loader, config, val_loader=None):
             running_loss += loss.item()
 
         running_loss = running_loss / len(train_loader)
+        scheduler.step()
 
         if val_loader is not None:
             net.eval()
             with torch.no_grad():
                 for i, data in enumerate(val_loader):
-                    pan, _, priors, gt = data
+                    pan, priors, gt = data
                     pan = pan.to(device)
                     priors = priors.to(device)
                     gt = gt.to(device)
