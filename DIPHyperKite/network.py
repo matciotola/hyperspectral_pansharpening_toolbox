@@ -189,19 +189,19 @@ class KiteNetwork(nn.Module):
         x = torch.cat((pan, ms), dim=1)
 
         # ENCODER
-        out = self.relu(self.ebn1(self.encoder1(x)))
-        t1 = out
+        t1 = self.relu(self.ebn1(self.encoder1(x)))
 
         out = func.interpolate(out, scale_factor=(2, 2), mode='bilinear')
         out = self.relu(self.ebn2(self.encoder2(out)))
         t2 = out
+        out = func.interpolate(t1, scale_factor=(2, 2), mode='bilinear')
 
-        out = func.interpolate(out, scale_factor=(2, 2), mode='bilinear')
-        out = self.relu(self.ebn3(self.encoder3(out)))
-        t3 = out
+
+        out = func.interpolate(t2, scale_factor=(2, 2), mode='bilinear')
+        t3 = self.relu(self.ebn3(self.encoder3(out)))
 
         # BOTTLENECK
-        out = func.interpolate(out, scale_factor=(2, 2), mode='bilinear')
+        out = func.interpolate(t3, scale_factor=(2, 2), mode='bilinear')
         out = self.relu(self.endec_bn(self.endec_conv(out)))
 
         # DECODER
