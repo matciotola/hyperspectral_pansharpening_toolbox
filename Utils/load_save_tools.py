@@ -24,8 +24,9 @@ def open_mat(path):
     pan = torch.from_numpy(pan_np[None, None, :, :])
     ms = torch.from_numpy(np.moveaxis(ms_np, -1, 0)[None, :, :, :])
     wavelenghts = torch.squeeze(torch.from_numpy(dic_file['wavelengths']).float())
+    overlap = torch.arange(0, dic_file['overlap'].item())
 
-    return pan, ms_lr, ms, gt, wavelenghts
+    return pan, ms_lr, ms, gt, wavelenghts, overlap
 
 
 def save_mat(image, path):

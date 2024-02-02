@@ -12,7 +12,7 @@ class TrainingDatasetKite(Dataset):
         gt = []
 
         for i in range(len(img_paths)):
-            pan_single, _, _, gt_single, _ = open_mat(img_paths[i])
+            pan_single, _, _, gt_single, _, _ = open_mat(img_paths[i])
             pan.append(pan_single.float())
             gt.append(gt_single.float())
 
