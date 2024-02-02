@@ -3,6 +3,9 @@ model_weights_path: ''
 
 training_img_root: ''
 
+load_prior: True
+save_prior: True
+
 
 # DHP Training hyperparameters
 dhp_learning_rate: 0.001
