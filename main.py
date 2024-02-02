@@ -63,7 +63,7 @@ if __name__ == '__main__':
         for path in ds_paths:
             print(path)
             name = path.split(os.sep)[-1].split('.')[0]
-            pan, ms_lr, ms, gt, wavelenghts = open_mat(path)
+            pan, ms_lr, ms, gt, wavelenghts, overlap = open_mat(path)
             save_root = os.path.join(config.save_root, dataset, name)
 
             exp_info = {'ratio': pan.shape[-2] // ms_lr.shape[-2]}
