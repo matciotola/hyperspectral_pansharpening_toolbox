@@ -43,9 +43,23 @@ def DIP_HyperKite(ordered_dict):
         else:
             training_img_root = config.training_img_root
         train_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Training', 'Reduced_Resolution')
-        ds_train = TrainingDatasetRR(train_paths, normalize)
-        train_loader = DataLoader(ds_train, batch_size=1, shuffle=False)
-        prior_images = prior_execution(device, train_loader, config)
+
+        prior_loaded_flag = False
+        if config.load_prior:
+            if os.path.exists(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors', ordered_dict.dataset + '.tar')):
+                prior_images = torch.load(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors', ordered_dict.dataset + '.tar'))
+                if prior_images.shape[0] == len(train_paths):
+                    print('Priors loaded')
+                    prior_loaded_flag = True
+        if not prior_loaded_flag:
+            ds_train = TrainingDatasetRR(train_paths, normalize)
+            train_loader = DataLoader(ds_train, batch_size=1, shuffle=False)
+            prior_images = prior_execution(device, train_loader, config)
+
+        if config.save_priors:
+            if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors')):
+                os.makedirs(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors'))
+            torch.save(prior_images, os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors', ordered_dict.dataset + '.tar'))
 
         ds_train = TrainingDatasetKite(train_paths, prior_images, normalize)
         train_loader = DataLoader(ds_train, batch_size=config.batch_size, shuffle=True)
@@ -99,13 +113,13 @@ def DIP_HyperKite(ordered_dict):
         gc.collect()
         torch.cuda.empty_cache()
         outputs_patches = []
-        kc, kh, kw = prior.shape[1] + 1, 180, 180  # kernel size
-        dc, dh, dw = prior.shape[1] + 1, 180, 180  # stride
+        kc, kh, kw = prior.shape[1] + 1, 240, 240  # kernel size
+        dc, dh, dw = prior.shape[1] + 1, 240, 240  # stride
         patches = torch.cat([prior.cpu(), pan.cpu()], 1).unfold(1, kc, dc).unfold(2, kh, dh).unfold(3, kw, dw)
         unfold_shape = list(patches.shape)
         patches = patches.contiguous().view(-1, kc, kh, kw).to(device)
 
-        patches = torch.nn.functional.pad(patches, (6, 6, 6, 6), mode='reflect')
+        # patches = torch.nn.functional.pad(patches, (6, 6, 6, 6), mode='reflect')
 
         prior_patches = patches[:, :-1, :, :]
         pan_patches = patches[:, -1, :, :].unsqueeze(1)
@@ -116,7 +130,7 @@ def DIP_HyperKite(ordered_dict):
 
         # Image reconstruction
         outputs_patches = torch.cat(outputs_patches, 0)
-        outputs_patches = outputs_patches[:, :, 6:-6, 6:-6]
+        # outputs_patches = outputs_patches[:, :, 6:-6, 6:-6]
         unfold_shape[4] = unfold_shape[4] - 1
         fused = outputs_patches.view(unfold_shape)
         output_c = unfold_shape[1] * unfold_shape[4]
@@ -125,7 +139,7 @@ def DIP_HyperKite(ordered_dict):
         fused = fused.permute(0, 1, 4, 2, 5, 3, 6).contiguous()
         fused = fused.view(1, output_c, output_h, output_w)
 
-    fused = denormalize(torch.clip(fused,0, 1))
+    fused = denormalize(torch.clip(fused, 0, 1))
     return fused.detach().cpu().double()
 
 
@@ -160,7 +174,6 @@ def prior_execution(device, train_loader, config):
 
         net.train()
         pan_network.train()
-        # downsampler.train()
 
         for epoch in range(config.epochs):
 
@@ -229,7 +242,6 @@ def train_kite(device, net, train_loader, config, val_loader=None):
 
             loss.backward()
             optim.step()
-            scheduler.step()
 
             running_loss += loss.item()
 

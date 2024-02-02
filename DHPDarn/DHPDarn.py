@@ -43,9 +43,26 @@ def DHP_Darn(ordered_dict):
         else:
             training_img_root = config.training_img_root
         train_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Training', 'Reduced_Resolution')
-        ds_train = TrainingDatasetRR(train_paths, normalize)
-        train_loader = DataLoader(ds_train, batch_size=1, shuffle=False)
-        prior_images = prior_execution(device, train_loader, config, ordered_dict)
+
+        prior_loaded_flag = False
+        if config.load_prior:
+            if os.path.exists(os.path.join(os.path.dirname(inspect.getfile(DHP)), 'Priors',
+                                           ordered_dict.dataset + '.tar')):
+                prior_images = torch.load(os.path.join(os.path.dirname(inspect.getfile(DHP)), 'Priors',
+                                                       ordered_dict.dataset + '.tar'))
+                if prior_images.shape[0] == len(train_paths):
+                    print('Priors loaded')
+                    prior_loaded_flag = True
+        if not prior_loaded_flag:
+            ds_train = TrainingDatasetRR(train_paths, normalize)
+            train_loader = DataLoader(ds_train, batch_size=1, shuffle=False)
+            prior_images = prior_execution(device, train_loader, config)
+
+        if config.save_priors:
+            if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(DHP)), 'Priors')):
+                os.makedirs(os.path.join(os.path.dirname(inspect.getfile(DHP)), 'Priors'))
+            torch.save(prior_images, os.path.join(os.path.dirname(inspect.getfile(DHP)), 'Priors',
+                                                  ordered_dict.dataset + '.tar'))
 
         ds_train = TrainingDatasetDarn(train_paths, prior_images, normalize)
         train_loader = DataLoader(ds_train, batch_size=config.batch_size, shuffle=True)
