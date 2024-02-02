@@ -191,10 +191,8 @@ class KiteNetwork(nn.Module):
         # ENCODER
         t1 = self.relu(self.ebn1(self.encoder1(x)))
 
-        out = func.interpolate(out, scale_factor=(2, 2), mode='bilinear')
-        out = self.relu(self.ebn2(self.encoder2(out)))
-        t2 = out
         out = func.interpolate(t1, scale_factor=(2, 2), mode='bilinear')
+        t2 = self.relu(self.ebn2(self.encoder2(out)))
 
 
         out = func.interpolate(t2, scale_factor=(2, 2), mode='bilinear')
