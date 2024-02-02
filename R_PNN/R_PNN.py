@@ -101,9 +101,6 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
     net_scope = config.net_scope
     ms_scope = config.ms_scope
 
-    min_loss = torch.inf
-    train_weights_path = config.custom_train_weights_path
-
     pbar = tqdm(range(config.epochs))
 
     for epoch in pbar:
@@ -172,15 +169,6 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
             running_val_loss_spec = running_val_loss_spec / len(val_loader)
             running_val_loss_struct = running_val_loss_struct / len(val_loader)
 
-            if running_val_loss_spec + config.alpha_1 * running_val_loss_struct < min_loss:
-                min_loss = running_val_loss_spec + config.alpha_1 * running_val_loss_struct
-                torch.save(net.state_dict(), train_weights_path)
-
-        else:
-            if running_loss_spec + config.alpha_1 * running_loss_struct < min_loss:
-                min_loss = running_loss_spec + config.alpha_1 * running_loss_struct
-                torch.save(net.state_dict(), train_weights_path)
-
         history_loss_spec.append(running_loss_spec)
         history_loss_struct.append(running_loss_struct)
         history_val_loss_spec.append(running_val_loss_spec)
@@ -190,7 +178,6 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
         pbar.set_postfix(
             {'Spec Loss': running_loss_spec, 'Struct Loss': running_loss_struct, 'Val Spec Loss': running_val_loss_spec, 'Val Struct Loss': running_val_loss_struct})
 
-    net.load_state_dict(torch.load(train_weights_path))
 
     history = {'loss_spec': history_loss_spec, 'loss_struct': history_loss_struct, 'val_loss_spec': history_val_loss_spec, 'val_loss_struct': history_val_loss_struct}
 
