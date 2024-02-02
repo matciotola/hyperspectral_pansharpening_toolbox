@@ -23,7 +23,7 @@ def open_mat(path):
     ms_lr = torch.from_numpy(np.moveaxis(ms_lr_np, -1, 0)[None, :, :, :])
     pan = torch.from_numpy(pan_np[None, None, :, :])
     ms = torch.from_numpy(np.moveaxis(ms_np, -1, 0)[None, :, :, :])
-    wavelenghts = torch.from_numpy(dic_file['Wavelengths']).float()
+    wavelenghts = torch.squeeze(torch.from_numpy(dic_file['wavelengths']).float())
 
     return pan, ms_lr, ms, gt, wavelenghts
 
