@@ -40,12 +40,12 @@ def HyperPNN(ordered_dict):
             training_img_root = ordered_dict.root
         else:
             training_img_root = config.training_img_root
-        train_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Training')
+        train_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Training', 'Reduced_Resolution')
         ds_train = TrainingDatasetRR(train_paths, normalize)
         train_loader = DataLoader(ds_train, batch_size=config.batch_size, shuffle=True)
 
         if config.validation:
-            val_paths = generate_paths(training_img_root,  ordered_dict.dataset, 'Validation')
+            val_paths = generate_paths(training_img_root,  ordered_dict.dataset, 'Validation', 'Reduced_Resolution')
             ds_val = TrainingDatasetRR(val_paths, normalize)
             val_loader = DataLoader(ds_val, batch_size=config.batch_size, shuffle=False)
         else:
