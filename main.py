@@ -57,6 +57,9 @@ if __name__ == '__main__':
     config = open_config(config_path)
 
     for dataset in config.datasets:
+        ds_paths = []
+        for experiment_folder in config.experiment_folders:
+            ds_paths += generate_paths(config.ds_root, dataset, 'Test', experiment_folder)
 
         ds_paths = generate_paths(config.ds_root, dataset, 'Test')
 
