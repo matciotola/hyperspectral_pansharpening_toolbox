@@ -1,10 +1,10 @@
-gpu_number: '0'
+gpu_number: '3'
 model_weights_path: ''
 
 training_img_root: ''
 
-load_prior: True
-save_prior: True
+load_priors: True
+save_priors: True
 
 # DHP Training hyperparameters
 dhp_learning_rate: 0.01
@@ -16,11 +16,11 @@ epochs: 10000
 # Training settings
 
 train: True
-validation: False
+validation: True
 resume: False
 save_weights: True
 save_weights_path: 'weights'
-save_training_stats: False
+save_training_stats: True
 
 
 # DARN Training hyperparameters

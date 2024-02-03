@@ -45,7 +45,7 @@ def DIP_HyperKite(ordered_dict):
         train_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Training', 'Reduced_Resolution')
 
         prior_loaded_flag = False
-        if config.load_prior:
+        if config.load_priors:
             if os.path.exists(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors', ordered_dict.dataset + '.tar')):
                 prior_images = torch.load(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors', ordered_dict.dataset + '.tar'))
                 if prior_images.shape[0] == len(train_paths):
@@ -65,13 +65,28 @@ def DIP_HyperKite(ordered_dict):
         train_loader = DataLoader(ds_train, batch_size=config.batch_size, shuffle=True)
 
         if config.validation:
-            val_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Validation', 'Reduced_Resolution')
-            ds_val = TrainingDatasetRR(val_paths, normalize)
-            val_loader = DataLoader(ds_val, batch_size=1, shuffle=False)
+            val_prior_loaded_flag = False
+            if config.load_priors:
+                val_paths = generate_paths(training_img_root, ordered_dict.dataset, 'Validation', 'Reduced_Resolution')
+                if os.path.exists(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors',
+                                               ordered_dict.dataset + '.tar')):
+                    val_prior_images = torch.load(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors',
+                                                           'Val_' + ordered_dict.dataset + '.tar'))
+                    if val_prior_images.shape[0] == len(val_paths):
+                        print('Priors loaded')
+                        val_prior_loaded_flag = True
+            if not val_prior_loaded_flag:
+                ds_val = TrainingDatasetRR(val_paths, normalize)
+                val_loader = DataLoader(ds_val, batch_size=1, shuffle=False)
+                val_prior_images = prior_execution(device, val_loader, config)
 
-            prior_images_val = prior_execution(device, val_loader, config)
+            if config.save_priors:
+                if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors')):
+                    os.makedirs(os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors'))
+                torch.save(val_prior_images, os.path.join(os.path.dirname(inspect.getfile(KiteNetwork)), 'Priors',
+                                                      'Val_' + ordered_dict.dataset + '.tar'))
 
-            ds_val = TrainingDatasetKite(val_paths, prior_images_val, normalize)
+            ds_val = TrainingDatasetKite(val_paths, val_prior_images, normalize)
             val_loader = DataLoader(ds_val, batch_size=config.batch_size, shuffle=False)
 
         else:

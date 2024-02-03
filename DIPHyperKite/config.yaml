@@ -3,8 +3,8 @@ model_weights_path: ''
 
 training_img_root: ''
 
-load_prior: True
-save_prior: True
+load_priors: True
+save_priors: True
 
 
 # DHP Training hyperparameters
@@ -40,7 +40,7 @@ weight_decay: 0.0001
 kite_step_size: 1000
 kite_gamma: 0.1
 kite_epochs: 2500
-batch_size: 4
+batch_size: 2
 
 
 
