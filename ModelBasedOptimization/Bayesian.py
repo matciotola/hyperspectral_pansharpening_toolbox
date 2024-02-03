@@ -10,7 +10,7 @@ import math
 def BayesianNaive(ordered_dict):
     ms_lr = ordered_dict.ms_lr
     pan = ordered_dict.pan
-    overlap = torch.arange(0, 32).float()  # ordered_dict.overlap
+    overlap = ordered_dict.overlap.long()
     ratio = ordered_dict.ratio
 
     blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.sensor, 15, 1).squeeze()).type(ms_lr.dtype).to(ms_lr.device)
@@ -22,7 +22,7 @@ def BayesianNaive(ordered_dict):
 def BayesianSparse(ordered_dict):
     ms_lr = ordered_dict.ms_lr
     pan = ordered_dict.pan
-    overlap = torch.arange(0, 32).float()  # ordered_dict.overlap
+    overlap = ordered_dict.overlap.long()
     ratio = ordered_dict.ratio
 
     blur_kernel = torch.from_numpy(gen_mtf(ratio, ordered_dict.sensor, 15, 1).squeeze()).type(ms_lr.dtype).to(ms_lr.device)
@@ -50,8 +50,8 @@ def BayesianMethod(ms_lr, pan, overlap, ratio, blur_kernel, prior):
 
     # Noise variances
 
-    ch_inv = torch.eye(n_hs, dtype=xh.dtype).repeat(bs,1,1)
-    cm_inv = torch.eye(n_ms, dtype=xh.dtype).repeat(bs,1,1)
+    ch_inv = torch.eye(n_hs, dtype=xh.dtype).repeat(bs, 1, 1)
+    cm_inv = torch.eye(n_ms, dtype=xh.dtype).repeat(bs, 1, 1)
 
     # Subspace identification
 
