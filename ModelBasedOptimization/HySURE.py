@@ -1,8 +1,8 @@
 import torch
 from Utils.pansharpening_aux_tools import mldivide
-from .vca import vca
+from .aux import vca
 
-def HySURE(ordered_dict, intersection=None):
+def HySURE(ordered_dict):
 
     ms_lr = torch.clone(ordered_dict.ms_lr)
     pan = torch.clone(ordered_dict.pan)
@@ -10,8 +10,7 @@ def HySURE(ordered_dict, intersection=None):
     bs, _, nl, nc = pan.shape
     bs, nb, nlh, nch = ms_lr.shape
 
-    if intersection is None:
-        intersection = torch.arange(0, ms_lr.shape[1]).long()
+    intersection = ordered_dict.overlap.long()
     contigous = torch.clone(intersection)
 
     # Regularization parameters
@@ -143,7 +142,7 @@ def sensor_response_estimation(ms, pan, downsample_factor, intersection, contigo
 
     # Estimate R on the blurred data
 
-    R = torch.zeros((l), dtype=ms.dtype, device=ms.device)
+    R = torch.zeros((bs, 1 ,l), dtype=ms.dtype, device=ms.device)
 
     no_hs_bands = len(intersection)
     col_aux = torch.zeros((no_hs_bands - 1), dtype=ms.dtype, device=ms.device)
@@ -161,7 +160,7 @@ def sensor_response_estimation(ms, pan, downsample_factor, intersection, contigo
     ddt = d.T @ d
     to_inv = torch.bmm(ms_b[:, intersection, :], ms_b[:, intersection, :].transpose(-1, -2)) + lambda_r * ddt[None, :, :].repeat(bs, 1, 1)
     r = mldivide(torch.bmm(ms_b[:, intersection, :], pan_b_down.transpose(-2, -1)), to_inv)
-    R = r.transpose(-2, -1)
+    R[:, :, intersection] = r.transpose(-2, -1)
 
     # Data denoising
 
