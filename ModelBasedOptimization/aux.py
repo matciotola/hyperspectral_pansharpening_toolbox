@@ -115,21 +115,52 @@ def vca(R, p=0, snr_input=False, verbose='off'):
 
     return Ae, index, Rp
 
+def weights_pan_from_hs_calculation(hs, pan):
+    from Utils.pansharpening_aux_tools import mldivide
+    hs = hs.permute(1, 0, 2, 3).flatten(1).unsqueeze(0).transpose(1, 2)
+    pan = pan.permute(1, 0, 2, 3).flatten(1).unsqueeze(0).transpose(1, 2)
+
+    weights = torch.linalg.lstsq(pan, hs).solution.squeeze()
+
+    weights = weights / torch.sum(weights)
+
+    return weights
+
+
+
 
 # Example usage
 if __name__ == "__main__":
-    # Create a sample R matrix (replace with your actual data)
-    L = 6  # Number of bands (channels)
-    N = 100  # Number of pixels
-    R = torch.rand(L, N)
+    from Utils.load_save_tools import open_mat
+    from Utils.dl_tools import generate_paths
+    import matplotlib
+    matplotlib.use('TkAgg')
+    import matplotlib.pyplot as plt
+    ds_root = '/media/matteo/T7/Datasets/HyperSpectral/'
+    dataset = 'PRISMA'
+    experiment_folder = 'Reduced_Resolution'
+    ds_paths = generate_paths(ds_root, dataset, 'Test', experiment_folder)
 
-    # Call the vca function
-    Ae, indice, Rp = vca(R, p=3, snr_input=False, verbose='on')
+    gt = []
+    pan = []
 
-    # Print the results
-    print("Estimated Mixing Matrix (Ae):")
-    print(Ae)
-    print("Indices of Most Pure Pixels:")
-    print(indice)
-    print("Data R Projected on Signal Subspace (Rp):")
-    print(Rp)
+    for path in ds_paths:
+        pan_single, _, _, gt_single, _, _ = open_mat(path)
+        pan.append(pan_single.float())
+        gt.append(gt_single.float())
+
+    pan = torch.cat(pan, 0)
+    gt = torch.cat(gt, 0)
+
+    weights = weights_pan_from_hs_calculation(gt, pan)
+
+    weights = torch.round(weights, decimals=4)
+
+    pan_tilde = weights[None, :, None, None] * gt
+    pan_tilde = torch.sum(pan_tilde, dim=1, keepdim=True)
+
+    plt.figure()
+    plt.imshow(pan_tilde[0, 0, :, :].cpu().numpy())
+    plt.figure()
+    plt.imshow(pan[0, 0, :, :].cpu().numpy())
+    plt.show()

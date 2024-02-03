@@ -9,7 +9,7 @@ import csv
 
 from CS.PRACS import PRACS
 from CS.Brovey import BT_H
-from CS.BDSD import BDSD
+from CS.BDSD import BDSD, BDSD_PC
 from CS.GS import GS, GSA
 from MRA.GLP import MTF_GLP, MTF_GLP_FS, MTF_GLP_HPM, MTF_GLP_HPM_H, MTF_GLP_HPM_R
 from MRA.AWLP import AWLP
@@ -34,7 +34,7 @@ from Utils.load_save_tools import open_mat
 from Utils import load_save_tools as ut
 
 
-pansharpening_algorithm_dict = {'BDSD': BDSD, 'GS': GS, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS,  # Component substitution
+pansharpening_algorithm_dict = {'BDSD': BDSD, 'BDSD-PC': BDSD_PC,'GS': GS, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS,  # Component substitution
                                 'AWLP': AWLP, 'MTF-GLP': MTF_GLP, 'MTF-GLP-FS': MTF_GLP_FS,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM': MTF_GLP_HPM, 'MTF-GLP-HPM-H': MTF_GLP_HPM_H,  # Multi-Resolution analysis
                                 'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF,  # Multi-Resolution analysis
