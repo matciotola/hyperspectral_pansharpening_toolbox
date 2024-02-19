@@ -27,15 +27,16 @@ def HyperDSNet(ordered_dict):
 
     net = Hyper_DSNet(ms.shape[1])
 
-    if not config.train or config.resume:
+    if not (config.train and ordered_dict.img_number == 0) or config.resume:
         if not model_weights_path:
             model_weights_path = os.path.join(os.path.dirname(inspect.getfile(Hyper_DSNet)), 'weights', ordered_dict.dataset + '.tar')
         if os.path.exists(model_weights_path):
             net.load_state_dict(torch.load(model_weights_path))
+            print('Weights loaded from: ' + model_weights_path)
 
     net = net.to(device)
 
-    if config.train:
+    if (config.train or config.resume) and ordered_dict.img_number == 0:
         if config.training_img_root == '':
             training_img_root = ordered_dict.root
         else:
@@ -122,12 +123,13 @@ def train(device, net, train_loader, config, val_loader=None):
             net.eval()
             with torch.no_grad():
                 for i, data in enumerate(val_loader):
-                    pan, _, ms, gt = data
+                    pan, ms_lr, ms, gt = data
                     pan = pan.to(device)
+                    ms_lr = ms_lr.to(device)
                     ms = ms.to(device)
                     gt = gt.to(device)
 
-                    outputs = net(pan, ms)
+                    outputs = net(pan, ms, ms_lr)
 
                     val_loss = criterion(outputs, gt)
 

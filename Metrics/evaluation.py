@@ -76,7 +76,8 @@ def evaluation_fr_old(out, pan, ms_lr, ratio, sensor):
             )
 
 
-def evaluation_fr(out, pan, ms_lr, ms, ratio, sensor):
+def evaluation_fr(out, pan, ms_lr, ms, ratio, sensor, overlap):
+
 
     sigma = ratio
 
@@ -119,13 +120,38 @@ def evaluation_fr(out, pan, ms_lr, ms, ratio, sensor):
     d_sr_index = d_sr(out, pan)
     d_rho_index, _ = d_rho(out, pan)
 
+    # Separate Spatial Assessment
+    last_band = overlap[-1]
+
+    d_s = fr.D_s(ms_lr[:, :last_band, :, :].shape[1], ratio).to(out.device)
+    d_sr = fr.D_sR().to(out.device)
+    d_rho = fr.D_rho(sigma).to(out.device)
+
+    overlapped_d_s_index = d_s(out[:, :last_band, :, :], pan, ms_lr[:, :last_band, :, :])
+    overlapped_d_sr_index = d_sr(out[:, :last_band, :, :], pan)
+    overlapped_d_rho_index, _ = d_rho(out[:, :last_band, :, :], pan)
+
+    d_s = fr.D_s(ms_lr[:, last_band:, :, :].shape[1], ratio).to(out.device)
+    d_sr = fr.D_sR().to(out.device)
+    d_rho = fr.D_rho(sigma).to(out.device)
+
+    not_overlapped_d_s_index = d_s(out[:, last_band:, :, :], pan, ms_lr[:, last_band:, :, :])
+    not_overlapped_d_sr_index = d_sr(out[:, last_band:, :, :], pan)
+    not_overlapped_d_rho_index, _ = d_rho(out[:, last_band:, :, :], pan)
+
     return (ergas_index.item(),
             sam_index.item(),
             d_lambda_index.item(),
             d_lambda_khan_index.item(),
             d_s_index.item(),
             d_sr_index.item(),
-            d_rho_index.item()
+            d_rho_index.item(),
+            overlapped_d_s_index.item(),
+            overlapped_d_sr_index.item(),
+            overlapped_d_rho_index.item(),
+            not_overlapped_d_s_index.item(),
+            not_overlapped_d_sr_index.item(),
+            not_overlapped_d_rho_index.item()
             )
 
 

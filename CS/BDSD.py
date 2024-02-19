@@ -6,6 +6,8 @@ from Utils.spectral_tools import mtf, mtf_pan
 from tqdm import tqdm
 import cvxpy as cp
 
+from Utils.dl_tools import normalize, denormalize
+
 def lsqlin(C, d, A, b):
     A = A.squeeze(0).detach().cpu().numpy()
     b = b.squeeze().detach().cpu().numpy()
@@ -14,11 +16,11 @@ def lsqlin(C, d, A, b):
 
     x = cp.Variable(C.shape[1])
 
-    constraints = [A @ x <= 0]
+    constraints = [A @ x <= b]
     objective = cp.Minimize(cp.sum_squares(C @ x - d))
     prob = cp.Problem(objective, constraints)
 
-    result = prob.solve(solver='SCS', verbose=False)
+    result = prob.solve(solver='SCS', verbose=False, warm_start=False)
 
     x = torch.tensor(x.value)
 
@@ -27,6 +29,9 @@ def lsqlin(C, d, A, b):
 def BDSD_PC(ordered_dict):
 
     ms, pan, ratio, sensor = ordered_dict.ms, ordered_dict.pan, ordered_dict.ratio, ordered_dict.sensor
+
+    ms = normalize(ms)
+    pan = normalize(pan)
 
     gt = imresize(ms, scale=1/ratio)
     ms_lr = mtf(gt, sensor, ratio)
@@ -45,6 +50,8 @@ def BDSD_PC(ordered_dict):
         gamma = lsqlin(h, h1 - h2, A, b)
         fused.append(ms[:, i:i+1, :, :] + torch.reshape(torch.cat([pan, ms], dim=1).transpose(2,3).flatten(2).transpose(1, 2) @ gamma, (ms.shape[0], 1, ms.shape[3], ms.shape[2])).transpose(2, 3))
     fused = torch.cat(fused, dim=1)
+
+    fused = denormalize(fused)
 
     return fused
 

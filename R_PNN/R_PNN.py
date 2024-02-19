@@ -31,15 +31,16 @@ def R_PNN(ordered_dict):
 
     net = R_PNN_model()
 
-    if not config.train or config.resume:
+    if not (config.train and ordered_dict.img_number == 0) or config.resume:
         if not model_weights_path:
             model_weights_path = os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'weights', ordered_dict.dataset + '.tar')
         if os.path.exists(model_weights_path):
             net.load_state_dict(torch.load(model_weights_path))
+            print('Weights loaded from: ' + model_weights_path)
 
     net = net.to(device)
 
-    if config.train:
+    if (config.train or config.resume) and ordered_dict.img_number == 0:
         if config.training_img_root == '':
             training_img_root = ordered_dict.root
         else:
@@ -204,7 +205,9 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
     net_scope = config.net_scope
     pad = nn.ReflectionPad2d(net_scope)
 
-    for band_number in range(ms.shape[1]):
+    pbar = tqdm(range(ms.shape[1]))
+
+    for band_number in pbar:
 
         band = ms[:, band_number:band_number + 1, :, :].to(device)
         band_lr = ms_lr[:, band_number:band_number + 1, :, :].to(device)
@@ -223,12 +226,12 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
         else:
             ft_epochs = int(min(((wl[band_number].item() - wl[band_number - 1].item()) // 10 + 1) * config.epoch_nm, config.sat_val))
         min_loss = torch.inf
-        print('Band {} / {}'.format(band_number + 1, ms.shape[1]))
-        pbar = tqdm(range(ft_epochs))
+        # print('Band {} / {}'.format(band_number + 1, ms.shape[1]))
 
-        for epoch in pbar:
 
-            pbar.set_description('Epoch %d/%d' % (epoch + 1, ft_epochs))
+        for epoch in range(ft_epochs):
+
+           # pbar.set_description('Epoch %d/%d' % (epoch + 1, ft_epochs))
 
             net.train()
             optim.zero_grad()

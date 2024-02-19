@@ -26,12 +26,12 @@ phase: 0.5
 
 # Training settings
 
-train: True
-validation: False
+train: False
+validation: True
 resume: False
 save_weights: True
 save_weights_path: 'weights'
-save_training_stats: False
+save_training_stats: True
 
 # Kite Training hyperparameters
 

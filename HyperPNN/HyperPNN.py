@@ -27,15 +27,17 @@ def HyperPNN(ordered_dict):
 
     net = HyperPNN_model(ms.shape[1])
 
-    if not config.train or config.resume:
+    if not (config.train and ordered_dict.img_number == 0) or config.resume:
+        model_weights_path = os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), 'weights', ordered_dict.dataset + '.tar')
         if not model_weights_path:
-            model_weights_path = os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), 'weights', ordered_dict.dataset + '.tar')
+            pass
         if os.path.exists(model_weights_path):
             net.load_state_dict(torch.load(model_weights_path))
+            print('Weights loaded from: ' + model_weights_path)
 
     net = net.to(device)
 
-    if config.train:
+    if (config.train or config.resume) and ordered_dict.img_number == 0:
         if config.training_img_root == '':
             training_img_root = ordered_dict.root
         else:
@@ -59,9 +61,9 @@ def HyperPNN(ordered_dict):
             torch.save(net.state_dict(), os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), config.save_weights_path, ordered_dict.dataset + '.tar'))
 
         if config.save_training_stats:
-            if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), 'Stats', 'HSpeNet')):
-                os.makedirs(os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), 'Stats', 'HSpeNet'))
-            io.savemat(os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), 'Stats', 'HSpeNet', 'Training_HyperPNN_' + ordered_dict.dataset + '.mat'), history)
+            if not os.path.exists(os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), 'Stats', 'HyperPNN')):
+                os.makedirs(os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), 'Stats', 'HyperPNN'))
+            io.savemat(os.path.join(os.path.dirname(inspect.getfile(HyperPNN_model)), 'Stats', 'HyperPNN', 'Training_HyperPNN_' + ordered_dict.dataset + '.mat'), history)
 
     pan = normalize(pan)
     ms = normalize(ms)

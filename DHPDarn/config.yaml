@@ -15,7 +15,7 @@ epochs: 10000
 
 # Training settings
 
-train: True
+train: False
 validation: True
 resume: False
 save_weights: True

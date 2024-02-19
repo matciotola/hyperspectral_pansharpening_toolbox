@@ -1,14 +1,14 @@
-train: True
-validation: False
-
-gpu_number: '0'
+gpu_number: '3'
 training_img_root: ''
+
+train: False
+validation: True
 
 # Training settings
 resume: False
-save_weights: False
+save_weights: True
 save_weights_path: 'weights'
-save_training_stats: False
+save_training_stats: True
 
 # Training hyperparameters
 learning_rate: 0.0001

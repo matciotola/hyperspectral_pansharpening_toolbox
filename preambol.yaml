@@ -3,15 +3,17 @@ ds_root: '/media/matteo/T7/Datasets/HyperSpectral/'
 datasets: ['PRISMA']
 sensor: 'PRISMA'
 
+# experiment_folders: ['Full_Resolution', 'Reduced_Resolution']
 experiment_folders: ['Reduced_Resolution']
 
-# pansharpening_based_algorithms: ['BDSD', 'GS', 'GSA', 'BT-H', 'PRACS', 'AWLP',
-                                 'MTF-GLP', 'MTF-GLP-FS', 'MTF-GLP-HPM', 'MTF-GLP-HPM-H', 'MTF-GLP-HPM-R', 'MF',
-                                 'BayesianSparse', 'BayesianNaive', 'HySURE',
-                                 'HyperPNN', 'HSpeNet', 'DIP-HyperKite', 'DHP-DARN', 'Hyper-DSNet'
-                                 'R-PNN', 'PCA-Z-PNN']
+
+# pansharpening_based_algorithms: ['BDSD', 'BDSD-PC', 'GS', 'GSA', 'BT-H', 'PRACS', 'AWLP',
+#                                 'MTF-GLP', 'MTF-GLP-FS', 'MTF-GLP-HPM', 'MTF-GLP-HPM-H', 'MTF-GLP-HPM-R', 'MF',
+#                                 'BayesianSparse', 'BayesianNaive', 'HySURE', 'SR-D', 'TV',
+#                                 'HyperPNN', 'HSpeNet', 'DIP-HyperKite', 'DHP-DARN', 'Hyper-DSNet',
+#                                 'R-PNN', 'PCA-Z-PNN']
 # pansharpening_based_algorithms: ['GS', 'GSA', 'AWLP', 'MTF-GLP', 'MF']
-pansharpening_based_algorithms: ['BayesianSparse', 'BayesianNaive']
+pansharpening_based_algorithms: ['R-PNN']
 
 
 ad_hoc_algorithms: []
@@ -19,3 +21,4 @@ ad_hoc_algorithms: []
 save_results: True
 
 save_root: './Results'
+save_assessment: './Assessment'
