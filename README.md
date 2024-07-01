@@ -6,47 +6,20 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/68906119170e489cbf98512fac6b9571)](https://app.codacy.com/gh/matciotola/hyperspectral_pansharpening_toolbox/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 
-[Hyperspectral Pansharpening: Critical Review, Tools and Future Perspectives](https://github.com/matciotola/hyperspectral_pansharpening_toolbox) ([ArXiv](https://github.com/matciotola/hyperspectral_pansharpening_toolbox)): In this paper, 
-state-of-the-art methods for hyperspectral pansharpening, 
-comprising both model- and deep learning-based ones, 
-are reviewed, reimplemented/trained in a shared framework, and critically compared on a benchmark dataset designed to test the methods under challenging conditions. 
-Compared to traditional multispectral pansharpening,
-for which the well-known Wald's protocol has been a polar reference for the related community
-both for solutions design and for quality assessment,
-the hyperspectral case presents additional problems to be properly taken into account.
-First, 
-the much larger number of bands poses non-trivial computational issues, 
-especially for data demanding techniques such as deep learning ones.
-Second, 
-the hyperspectral imaging processes are characterized by high noise levels and acquisition errors
-that impact on the quality of the fused products.
-Finally, the spectral coverage of the panchromatic image spans from the visible spectrum to the near infrared,
-leaving out the most of the hyperspectral range.
-This makes hard to infer about the spatial details in those uncovered bands 
-for which the spatial guidance of the panchromatic image is unreliable.
-In addition,
-deep learning solutions, 
-nowadays the most promising research line,
-are highly data-dependent which makes their assessment very hard. 
-
-In light of the above considerations,
-this work moves from the roots, 
-designing a sufficiently large and rich dataset
-for the purposes of training and/or validation and test
-of all compared methods.
-Then, all selected solutions, representative of the state-of-the-art,
-have been reimplemented, and optimized where needed, 
-in a unique PyTorch framework.
-Finally, a thorough critical comparative analysis has been carried out,
-leveraging on the most credited quality indicators and criteria for the given task.
-The experimental analysis allowed to 
-highlight the main limits of the given methods in terms of spectral and/or spatial quality and of computational efficiency.
-Besides,
-to ensure full reproducibility of the results and pave a solid and reliable road for 
-future researches on this topic,
-the framework 
-(codes for methods and assessment, and links to retrieve the dataset)
-as a unique Python-based benchmark toolbox.
+[Hyperspectral Pansharpening: Critical Review, Tools and Future Perspectives](https://github.com/matciotola/hyperspectral_pansharpening_toolbox) ([ArXiv](https://github.com/matciotola/hyperspectral_pansharpening_toolbox)): Hyperspectral pansharpening consists of fusing a high-resolution panchromatic band and a low-resolution hyperspectral image to obtain a new image with high resolution in both the spatial and spectral domains.
+These remote sensing products are valuable for a wide range of applications, driving ever growing research efforts.
+Nonetheless, results still do not meet application demands.
+In part, this comes from the technical complexity of the task: compared to multispectral pansharpening, many more bands are involved, in a spectral range only partially covered by the panchromatic component and with overwhelming noise.
+However, another major limiting factor is the absence of a comprehensive framework for the rapid development and accurate evaluation of new methods.
+This paper attempts to address this issue.
+ 
+We started by designing a dataset large and diverse enough to allow reliable training (for data-driven methods) and testing of new methods.
+Then, we selected a set of state-of-the-art methods, following different approaches, characterized by promising performance, and reimplemented them in a single PyTorch framework.
+Finally, we carried out a critical comparative analysis of all methods,  using the most accredited quality indicators.
+The analysis highlights the main limitations of current solutions in terms of spectral/spatial quality and computational efficiency, and suggests promising research directions.
+ 
+To ensure full reproducibility of the results and support future research,
+the framework (including codes, evaluation procedures and links to the dataset) is shared as a single Python-based reference benchmark toolbox.
 
 ## Cite HS Toolbox
 If you use this toolbox in your research, please use the following BibTeX entry.
