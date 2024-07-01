@@ -138,8 +138,8 @@ def omp_rec_detile(dl, dh, y_tilde_k, hr_shapes, resize_factor, ol, ts, n_atoms)
             alpha, inds = omp(dl, y_cur, c_ms, iatom, n_atoms)
 
             for iband in range(c_ms):
-                reconstructed_path = torch.matmul(dh[:, iband * ts ** 2 * resize_factor ** 2:(iband + 1) * ts ** 2 * resize_factor ** 2, inds], alpha[:, :, iband:iband+1])
-                residual[:, iband, blockr_ini:blockr_end, blockc_ini:blockc_end] += reconstructed_path.reshape((bs, lc, lr)).transpose(1, 2)
+                reconstructed_patch = torch.matmul(dh[:, iband * ts ** 2 * resize_factor ** 2:(iband + 1) * ts ** 2 * resize_factor ** 2, inds], alpha[:, :, iband:iband+1])
+                residual[:, iband, blockr_ini:blockr_end, blockc_ini:blockc_end] += reconstructed_patch.reshape((bs, lc, lr)).transpose(1, 2)
                 countpx[:, iband, blockr_ini:blockr_end, blockc_ini:blockc_end] += 1
 
             alpha_count += 1
