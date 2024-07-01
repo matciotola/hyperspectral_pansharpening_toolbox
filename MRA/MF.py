@@ -28,7 +28,7 @@ def MF(ordered_dict):
 
     p_lp = p[:, :, :, :, - 1]
 
-    fused = ms * (p[:, :, :, :, 0] / (p_lp + torch.finfo(torch.float64).eps))
+    fused = ms * torch.clip((p[:, :, :, :, 0] / (p_lp + torch.finfo(torch.float64).eps)), 0, 10.0)
 
     return fused
 
