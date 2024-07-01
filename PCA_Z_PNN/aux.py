@@ -86,7 +86,7 @@ def pca(ms_lr):
     cov_matrix = torch.matmul(centered, centered.t()) / (H * W - 1)
 
     # Perform PCA using SVD
-    U, S, _ = torch.svd(cov_matrix)
+    U, _, _ = torch.svd(cov_matrix)
 
     # PCA-transformed image
     pca_image = torch.matmul(-U.t(), centered).view(1, B, H, W)
