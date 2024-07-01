@@ -72,7 +72,6 @@ def fir_filter_wind(f1, f2):
     t1, t2 = np.meshgrid(t, t)
     t12 = np.sqrt(t1 ** 2 + t2 ** 2)
 
-    d = np.asarray(((t12 < t[0]) + (t12 > t[-1])).flatten()).nonzero()
     dd = (t12 < t[0]) + (t12 > t[-1])
 
     t12[dd] = 0
