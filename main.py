@@ -30,7 +30,7 @@ from DHPDarn.DHPDarn import DHP_Darn
 
 from Metrics.evaluation import evaluation_rr, evaluation_fr
 
-from Utils.dl_tools import generate_paths
+from Utils.dl_tools import generate_paths, open_config
 from Utils.load_save_tools import open_mat
 from Utils import load_save_tools as ut
 
