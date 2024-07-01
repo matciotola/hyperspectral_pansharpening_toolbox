@@ -7,36 +7,6 @@ from Utils.pansharpening_aux_tools import batch_cov, estimation_alpha
 from Utils.interpolator_tools import ideal_interpolator
 
 
-def MTF_GLP(ordered_dict):
-    ms = torch.clone(ordered_dict.ms)
-    pan = torch.clone(ordered_dict.pan)
-    sensor = ordered_dict.sensor
-    ratio = ordered_dict.ratio
-
-    bs, c, h, w = ms.shape
-
-    bands_hr = pan.repeat(1, c, 1, 1)
-    bands_hr = (bands_hr - torch.mean(bands_hr, dim=(2, 3), keepdim=True)) * (
-            torch.std(ms, dim=(2, 3), keepdim=True) / torch.std(LPfilterGauss(bands_hr, ratio), dim=(2, 3),
-                                                                       keepdim=True)) + torch.mean(ms,
-                                                                                                   dim=(2, 3),
-                                                                                                   keepdim=True)
-
-    pan_lp = mtf(bands_hr, sensor, ratio)
-
-    if ratio == 6:
-        pan_lr = pan_lp
-    else:
-        pan_lr_lr = resize(pan_lp, [h // ratio, w // ratio], interpolation=Inter.NEAREST_EXACT,
-                              antialias=False)
-        # pan_lr = interp23tap_torch(pan_lr_lr, ratio)
-        pan_lr = ideal_interpolator(pan_lr_lr, ratio)
-
-    fused = ms + bands_hr - pan_lr
-
-    return fused
-
-
 def MTF_GLP_FS(ordered_dict):
     ms = torch.clone(ordered_dict.ms)
     pan = torch.clone(ordered_dict.pan)
@@ -98,45 +68,6 @@ def MTF_GLP_HPM(ordered_dict):
     bands_hr_lr = ideal_interpolator(bands_hr_lr_lr, ratio)
 
     fused = ms * torch.clip((bands_hr / (bands_hr_lr + torch.finfo(ms.dtype).eps)), 0, 10.0)
-    return fused
-
-
-def MTF_GLP_HPM_H(ordered_dict, decimation=True):
-    ms = torch.clone(ordered_dict.ms)
-    pan = torch.clone(ordered_dict.pan)
-    sensor = ordered_dict.sensor
-    ratio = ordered_dict.ratio
-
-    bs, c, h, w = ms.shape
-
-    min_ms = torch.amin(ms, dim=(2, 3), keepdim=True)
-    pan_lp = LPfilterGauss(pan, ratio)
-
-    inp = torch.cat([torch.ones(pan_lp.shape, dtype=pan_lp.dtype, device=pan_lp.device),
-                     ms],
-                    dim=1)
-
-    alpha = estimation_alpha(inp, pan_lp)
-
-    alpha_p = torch.bmm(torch.squeeze(alpha, -1).transpose(1, 2), torch.squeeze(
-        torch.cat([torch.ones((bs, 1, 1, 1), device=alpha.device, dtype=alpha.dtype), min_ms], dim=1),
-        -1).float())[:, :, :, None]
-
-    bands_hr = pan.repeat(1, c, 1, 1)
-
-    bands_hr_lp = mtf(bands_hr, sensor, ratio)
-
-    if decimation:
-        bands_hr_lr_lr = resize(bands_hr_lp, [h // ratio, w // ratio], interpolation=Inter.NEAREST_EXACT)
-        # bands_hr_lr = interp23tap_torch(bands_hr_lr_lr, ratio)
-        bands_hr_lp = ideal_interpolator(bands_hr_lr_lr, ratio)
-
-    bands_hr_pl = (bands_hr - alpha_p) / (bands_hr_lp - alpha_p + torch.finfo(bands_hr_lp.dtype).eps)
-
-    ms_l = ms - min_ms
-
-    fused = ms_l * bands_hr_pl + min_ms
-
     return fused
 
 
