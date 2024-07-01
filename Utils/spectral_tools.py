@@ -54,9 +54,9 @@ def fir_filter_wind(f1, f2):
         Compute fir filter with window method
         Parameters
         ----------
-        hd : float
+        f1 : float
             Desired frequency response (2D)
-        w : Numpy Array
+        f2 : Numpy Array
             The filter kernel (2D)
         Return
         ------
