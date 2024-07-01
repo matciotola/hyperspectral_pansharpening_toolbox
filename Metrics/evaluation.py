@@ -27,13 +27,7 @@ def evaluation_rr(out_lr, ms_lr, ratio, flag_cut=True, dim_cut=11, L=16):
 
 def evaluation_fr(out, pan, ms_lr, ms, ratio, sensor, overlap):
 
-    sigma = ratio
-
-    if sensor == 'PRISMA' or sensor == 'WV3':
-        starting = 1
-    elif sensor == 'Pavia':
-        starting = 3
-    else:
+    if sensor == 'PRISMA':
         starting = 3
     elif sensor == 'Pavia':
         starting = 3
