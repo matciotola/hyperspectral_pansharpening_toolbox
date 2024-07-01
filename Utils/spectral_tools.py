@@ -76,7 +76,7 @@ def fir_filter_wind(f1, f2):
 
     t12[dd] = 0
 
-    w = np.interp(t12.flatten(),t, w1).reshape(t12.shape)
+    w = np.interp(t12.flatten(), t, w1).reshape(t12.shape)
     w[dd] = 0
     h = fsamp2(hd) * w
 
