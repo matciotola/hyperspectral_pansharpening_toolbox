@@ -166,8 +166,6 @@ def gen_mtf(ratio, sensor='none', kernel_size=41, nbands=3):
 
     if sensor == 'PRISMA':
         GNyq = [0.3] * nbands
-    elif sensor == 'WV3':
-        GNyq = [0.325, 0.355, 0.360, 0.350, 0.365, 0.360, 0.335, 0.315] ## TO REMOVE
     else:
         GNyq = [0.3] * nbands
 
