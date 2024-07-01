@@ -114,7 +114,7 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
 
         net.train()
 
-        for i, data in enumerate(train_loader):
+        for data in train_loader:
             optim.zero_grad()
 
             pan, ms_lr, ms = data
@@ -148,7 +148,7 @@ def train(device, net, train_loader, config, ordered_dict, val_loader=None):
         if val_loader is not None:
             net.eval()
             with torch.no_grad():
-                for i, data in enumerate(val_loader):
+                for data in val_loader:
                     pan, ms_lr, ms = data
                     pan = pan.to(device)
                     ms = ms[:, 0:1, :, :].to(device)
@@ -226,12 +226,9 @@ def target_adaptation_and_prediction(device, net, ms_lr, ms, pan, config, ordere
         else:
             ft_epochs = int(min(((wl[band_number].item() - wl[band_number - 1].item()) // 10 + 1) * config.epoch_nm, config.sat_val))
         min_loss = torch.inf
-        # print('Band {} / {}'.format(band_number + 1, ms.shape[1]))
 
 
-        for epoch in range(ft_epochs):
-
-           # pbar.set_description('Epoch %d/%d' % (epoch + 1, ft_epochs))
+        for _ in range(ft_epochs):
 
             net.train()
             optim.zero_grad()
