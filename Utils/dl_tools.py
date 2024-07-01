@@ -105,4 +105,3 @@ class TrainingDatasetFR(Dataset):
 
     def __getitem__(self, index):
         return self.pan[index], self.ms_lr[index], self.ms[index]
-
