@@ -1,6 +1,5 @@
 import torch
 import math
-import torch.nn.functional as F
 
 
 def vca(R, p=0, snr_input=False, verbose='off'):
