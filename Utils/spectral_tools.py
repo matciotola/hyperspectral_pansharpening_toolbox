@@ -29,6 +29,7 @@ def mtf_kernel_to_torch(h):
     h = torch.from_numpy(h).type(torch.float32)
     return h
 
+
 def fsamp2(hd):
     """
         Compute fir filter with window method
@@ -36,8 +37,6 @@ def fsamp2(hd):
         ----------
         hd : float
             Desired frequency response (2D)
-        w : Numpy Array
-            The filter kernel (2D)
         Return
         ------
         h : Numpy array
