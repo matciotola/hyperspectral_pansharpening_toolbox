@@ -9,7 +9,7 @@ def AWLP(ordered_dict):
     pan = torch.clone(ordered_dict.pan)
     ratio = ordered_dict.ratio
 
-    bs, c, h, w = ms.shape
+    _, c, h, w = ms.shape
 
     mean_low = torch.mean(ms, dim=1, keepdim=True)
 

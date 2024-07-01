@@ -3,7 +3,7 @@ from torchvision.transforms.functional import resize
 from torchvision.transforms import InterpolationMode as Inter
 
 from Utils.spectral_tools import mtf, LPfilterGauss
-from Utils.pansharpening_aux_tools import batch_cov, estimation_alpha
+from Utils.pansharpening_aux_tools import batch_cov
 from Utils.interpolator_tools import ideal_interpolator
 
 
