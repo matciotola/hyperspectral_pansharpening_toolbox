@@ -234,8 +234,6 @@ def starck_and_murtagh_filters():
 
 
 def LPFilterPlusDec(img, ratio):
-    from math import log2, ceil
-    from torchvision.transforms.functional import resize
     img_lr = []
     for i in range(img.shape[0]):
 
