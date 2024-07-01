@@ -11,20 +11,18 @@ import csv
 from Utils.EXP import EXP
 from CS.PRACS import PRACS
 from CS.Brovey import BT_H
-from CS.BDSD import BDSD, BDSD_PC
-from CS.GS import GS, GSA
-from MRA.GLP import MTF_GLP, MTF_GLP_FS, MTF_GLP_HPM, MTF_GLP_HPM_H, MTF_GLP_HPM_R
+from CS.BDSD import BDSD_PC
+from CS.GS import GSA
+from MRA.GLP import MTF_GLP_FS, MTF_GLP_HPM, MTF_GLP_HPM_R
 from MRA.AWLP import AWLP
 from MRA.MF import MF
 
 from ModelBasedOptimization.SR_D import SR_D
 from ModelBasedOptimization.TV import TV
-from ModelBasedOptimization.Bayesian import BayesianNaive, BayesianSparse
 from ModelBasedOptimization.HySURE import HySURE
 from HyperPNN.HyperPNN import HyperPNN
 from HSpeNet.HSpeNet import HSpeNet
 from R_PNN.R_PNN import R_PNN
-from ReRaNet.ReRaNet import ReRaNet
 from PCA_Z_PNN.PCA_Z_PNN import PCA_Z_PNN
 from DIPHyperKite.DIP_HyperKite import DIP_HyperKite
 from HyperDSNet.HyperDSNet import HyperDSNet
@@ -37,16 +35,17 @@ from Utils.load_save_tools import open_mat
 from Utils import load_save_tools as ut
 
 
-pansharpening_algorithm_dict = {'BDSD': BDSD, 'BDSD-PC': BDSD_PC,'GS': GS, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS,  # Component substitution
-                                'AWLP': AWLP, 'MTF-GLP': MTF_GLP, 'MTF-GLP-FS': MTF_GLP_FS,  # Multi-Resolution analysis
-                                'MTF-GLP-HPM': MTF_GLP_HPM, 'MTF-GLP-HPM-H': MTF_GLP_HPM_H,  # Multi-Resolution analysis
+algorithm_dict = {
+                                'EXP': EXP,  # Baseline
+                                'BDSD-PC': BDSD_PC, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS,  # Component substitution
+                                'AWLP': AWLP, 'MTF-GLP-FS': MTF_GLP_FS, 'MTF-GLP-HPM': MTF_GLP_HPM, # Multi-Resolution analysis
                                 'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF,  # Multi-Resolution analysis
                                 'SR-D': SR_D, 'TV': TV,  # Model-Based Optimization
-                                'BayesianNaive': BayesianNaive, 'BayesianSparse': BayesianSparse, 'HySURE': HySURE, # Model-Based Optimization
+                                'HySURE': HySURE,  # Model-Based Optimization
                                 'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet,  # Deep Learning Supervised
                                 'DIP-HyperKite': DIP_HyperKite, 'Hyper-DSNet': HyperDSNet, 'DHP-DARN': DHP_Darn,  # Deep Learning Supervised
-                                'ReRaNet': ReRaNet, 'R-PNN': R_PNN, 'PCA-Z-PNN': PCA_Z_PNN # Deep Learning Unsupervised
-                                }
+                                'R-PNN': R_PNN, 'PCA-Z-PNN': PCA_Z_PNN  # Deep Learning Unsupervised
+                  }
 
 fieldnames_rr = ['Method', 'ERGAS', 'SAM', 'Q', 'Q2n', 'Elapsed_time']
 fieldnames_fr = ['Method', 'R-ERGAS', 'R-SAM', 'D_lambda_V', 'D_lambda_K', 'D_s', 'D_sR', 'D_rho', 'Overlapped_D_s', 'Overlapped_D_sR', 'Overlapped_D_rho', 'Not_Overlapped_D_s', 'Not_Overlapped_D_sR', 'Not_Overlapped_D_rho', 'Elapsed_time']
