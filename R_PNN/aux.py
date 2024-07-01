@@ -3,7 +3,7 @@ import numpy as np
 from torch import nn
 from Utils.spectral_tools import gen_mtf
 from math import floor
-from Metrics.cross_correlation import xcorr_torch
+from Utils.cross_correlation import xcorr_torch
 
 
 def local_corr_mask(img_in, ratio, sensor, device, kernel=8):
