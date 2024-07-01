@@ -47,7 +47,6 @@ class TestDatasetDHP(Dataset):
 
 def get_lanczos_kernel(factor, phase, kernel_width, support):
 
-    # factor  = float(factor)
     if phase == 0.5:
         kernel = np.zeros([kernel_width - 1, kernel_width - 1])
     else:
@@ -64,8 +63,6 @@ def get_lanczos_kernel(factor, phase, kernel_width, support):
             else:
                 di = abs(i - center) / factor
                 dj = abs(j - center) / factor
-
-            pi_sq = np.pi * np.pi
 
             val = 1
             if di != 0:
