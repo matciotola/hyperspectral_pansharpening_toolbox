@@ -13,7 +13,7 @@ def MTF_GLP_FS(ordered_dict):
     sensor = ordered_dict.sensor
     ratio = ordered_dict.ratio
 
-    bs, c, h, w = ms.shape
+    _, c, h, w = ms.shape
 
     bands_hr = pan.repeat(1, c, 1, 1)
 
@@ -51,7 +51,7 @@ def MTF_GLP_HPM(ordered_dict):
     sensor = ordered_dict.sensor
     ratio = ordered_dict.ratio
 
-    bs, c, h, w = ms.shape
+    _, c, h, w = ms.shape
 
     bands_hr = pan.repeat(1, c, 1, 1)
 
@@ -75,7 +75,7 @@ def MTF_GLP_HPM_R(ordered_dict):
     sensor = ordered_dict.sensor
     ratio = ordered_dict.ratio
 
-    bs, c, h, w = ms.shape
+    _, c, h, w = ms.shape
 
     bands_hr = pan.repeat(1, c, 1, 1)
 
