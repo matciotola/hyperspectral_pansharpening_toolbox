@@ -126,7 +126,7 @@ def nyquist_filter_generator(nyquist_freq, ratio, kernel_size):
     assert isinstance(nyquist_freq, (np.ndarray, list)), 'Error: GNyq must be a list or a ndarray'
     if isinstance(nyquist_freq, list):
         nyquist_freq = np.asarray(nyquist_freq)
-        nyquist_freq = np.reshape(nyquist_freq, (1,nyquist_freq.shape[0]))
+        nyquist_freq = np.reshape(nyquist_freq, (1, nyquist_freq.shape[0]))
 
     nbands = nyquist_freq.shape[1]
 
@@ -135,15 +135,12 @@ def nyquist_filter_generator(nyquist_freq, ratio, kernel_size):
 
     for j in range(nbands):
         alpha = np.sqrt(((kernel_size - 1) * (fcut / 2)) ** 2 / (-2 * np.log(nyquist_freq[0, j])))
-        H = fspecial_gauss((kernel_size, kernel_size), alpha)
-        Hd = H / np.max(H)
+        hh = fspecial_gauss((kernel_size, kernel_size), alpha)
+        hd = hh / np.max(hh)
         h = np.kaiser(kernel_size, 0.5)
-        h = np.real(fir_filter_wind(Hd, h))
-        if ratio != 6: # TO DO: Delete for HyperSpectral
-            h = np.clip(h, a_min=0, a_max=np.max(h))
-            h = h / np.sum(h)
-        else:
-            h = np.real(h)
+        h = np.real(fir_filter_wind(hd, h))
+
+        h = np.real(h)
         kernel[:, :, j] = h
 
     return kernel
