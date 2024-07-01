@@ -3,9 +3,7 @@ import numpy as np
 from torch import nn
 from Utils.spectral_tools import gen_mtf
 from math import floor
-from Metrics.cross_correlation import xcorr_torch
-from skimage import transform
-from scipy import linalg
+from Utils.cross_correlation import xcorr_torch
 
 
 def normalize(img, nbits, nbands):
