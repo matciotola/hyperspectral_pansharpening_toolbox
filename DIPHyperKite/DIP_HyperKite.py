@@ -113,8 +113,6 @@ def DIP_HyperKite(ordered_dict):
     pan = normalize(pan)
     ms_lr = normalize(ms_lr)
 
-    #pan = pan.to(device)
-    #ms_lr = ms_lr.to(device)
     net.eval()
 
     if config.split_test_image_for_prior:
