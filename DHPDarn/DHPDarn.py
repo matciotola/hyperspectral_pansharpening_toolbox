@@ -117,34 +117,42 @@ def DHP_Darn(ordered_dict):
 
 
     net.eval()
-    kc, kh, kw = ms_lr.shape[1], 100, 100  # kernel size
-    dc, dh, dw = ms_lr.shape[1], 100, 100  # stride
-    ms_lr_patches = ms_lr.unfold(1, kc, dc).unfold(2, kh, dh).unfold(3, kw, dw)
-    pan_patches = pan.unfold(1, 1, 1).unfold(2, kh * ordered_dict.ratio, dh * ordered_dict.ratio).unfold(3,
-                                                                                                         kw * ordered_dict.ratio,
-                                                                                                         dw * ordered_dict.ratio)
-    unfold_shape = list(pan_patches.shape)
-    unfold_shape_ms_lr = list(ms_lr_patches.shape)
-    unfold_shape[4] = unfold_shape_ms_lr[4]
 
-    ms_lr_patches = ms_lr_patches.contiguous().view(-1, kc, kh, kw).to(device)
-    pan_patches = pan_patches.contiguous().view(-1, 1, kh * ordered_dict.ratio, kw * ordered_dict.ratio).to(device)
+    if config.split_test_image_for_prior:
+        kc, kh, kw = ms_lr.shape[1], 102, 102  # kernel size
+        dc, dh, dw = ms_lr.shape[1], 102, 102  # stride
+        ms_lr_patches = ms_lr.unfold(1, kc, dc).unfold(2, kh, dh).unfold(3, kw, dw)
+        pan_patches = pan.unfold(1, 1, 1).unfold(2, kh * ordered_dict.ratio, dh * ordered_dict.ratio).unfold(3,
+                                                                                                             kw * ordered_dict.ratio,
+                                                                                                             dw * ordered_dict.ratio)
+        unfold_shape = list(pan_patches.shape)
+        unfold_shape_ms_lr = list(ms_lr_patches.shape)
+        unfold_shape[4] = unfold_shape_ms_lr[4]
 
-    test_ds = TestDatasetDHP(pan_patches, ms_lr_patches)
-    test_loader = DataLoader(test_ds, batch_size=1, shuffle=False)
-    prior_patches = prior_execution(device, test_loader, config, ordered_dict)
+        ms_lr_patches = ms_lr_patches.contiguous().view(-1, kc, kh, kw).to(device)
+        pan_patches = pan_patches.contiguous().view(-1, 1, kh * ordered_dict.ratio, kw * ordered_dict.ratio).to(device)
 
-    unfold_shape[4] = unfold_shape[4]
-    prior = prior_patches.view(unfold_shape)
-    output_c = unfold_shape[1] * unfold_shape[4]
-    output_h = unfold_shape[2] * unfold_shape[5]
-    output_w = unfold_shape[3] * unfold_shape[6]
-    prior = prior.permute(0, 1, 4, 2, 5, 3, 6).contiguous()
-    prior = prior.view(1, output_c, output_h, output_w)
+        test_ds = TestDatasetDHP(pan_patches, ms_lr_patches)
+        test_loader = DataLoader(test_ds, batch_size=1, shuffle=False)
+        prior_patches = prior_execution(device, test_loader, config, ordered_dict)
 
-    del test_ds, test_loader, ms_lr
-    gc.collect()
-    torch.cuda.empty_cache()
+        unfold_shape[4] = unfold_shape[4]
+        prior = prior_patches.view(unfold_shape)
+        output_c = unfold_shape[1] * unfold_shape[4]
+        output_h = unfold_shape[2] * unfold_shape[5]
+        output_w = unfold_shape[3] * unfold_shape[6]
+        prior = prior.permute(0, 1, 4, 2, 5, 3, 6).contiguous()
+        prior = prior.view(1, output_c, output_h, output_w)
+
+        del test_ds, test_loader, ms_lr
+        gc.collect()
+        torch.cuda.empty_cache()
+
+    else:
+        test_ds = TestDatasetDHP(pan, ms_lr)
+        test_loader = DataLoader(test_ds, batch_size=1, shuffle=False)
+        prior = prior_execution(device, test_loader, config, ordered_dict)
+
 
     with torch.no_grad():
         fused = net(pan.to(device), prior.to(device))

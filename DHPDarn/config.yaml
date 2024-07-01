@@ -6,6 +6,8 @@ training_img_root: ''
 load_priors: True
 save_priors: True
 
+split_test_image_for_prior: False
+
 # DHP Training hyperparameters
 dhp_learning_rate: 0.01
 beta_1: 0.9
