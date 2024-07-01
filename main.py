@@ -37,14 +37,14 @@ from Utils import load_save_tools as ut
 
 algorithm_dict = {
                     'EXP': EXP,  # Baseline
-                    'BDSD-PC': BDSD_PC, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS,  # Component substitution
+                    'BDSD-PC': BDSD_PC, 'GSA': GSA, 'BT-H': BT_H, 'PRACS': PRACS, # Component substitution
                     'AWLP': AWLP, 'MTF-GLP-FS': MTF_GLP_FS, 'MTF-GLP-HPM': MTF_GLP_HPM, # Multi-Resolution analysis
-                    'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF,  # Multi-Resolution analysis
-                    'SR-D': SR_D, 'TV': TV,  # Model-Based Optimization
-                    'HySURE': HySURE,  # Model-Based Optimization
-                    'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet,  # Deep Learning Supervised
-                    'DIP-HyperKite': DIP_HyperKite, 'Hyper-DSNet': HyperDSNet, 'DHP-DARN': DHP_Darn,  # Deep Learning - Supervised
-                    'R-PNN': R_PNN, 'PCA-Z-PNN': PCA_Z_PNN  # Deep Learning - Unsupervised
+                    'MTF-GLP-HPM-R': MTF_GLP_HPM_R, 'MF': MF, # Multi-Resolution analysis
+                    'SR-D': SR_D, 'TV': TV, # Model-Based Optimization
+                    'HySURE': HySURE, # Model-Based Optimization
+                    'HyperPNN': HyperPNN, 'HSpeNet': HSpeNet, # Deep Learning Supervised
+                    'DIP-HyperKite': DIP_HyperKite, 'Hyper-DSNet': HyperDSNet, 'DHP-DARN': DHP_Darn, # Deep Learning - Supervised
+                    'R-PNN': R_PNN, 'PCA-Z-PNN': PCA_Z_PNN # Deep Learning - Unsupervised
                   }
 
 fieldnames_rr = ['Method', 'ERGAS', 'SAM', 'Q2n', 'Elapsed_time']
