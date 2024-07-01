@@ -18,7 +18,7 @@ def normalize_block(im):
 
 
 def cayley_dickson_property_1d(onion1, onion2):
-    bs, N = onion1.size()
+    _, N = onion1.size()
 
     if N > 1:
         L = int(N / 2)
@@ -49,7 +49,7 @@ def cayley_dickson_property_1d(onion1, onion2):
 
 
 def cayley_dickson_property_2d(onion1, onion2):
-    bs, dim3, _, _ = onion1.size()
+    _, dim3, _, _ = onion1.size()
     if dim3 > 1:
         L = int(dim3 / 2)
 
@@ -147,7 +147,6 @@ class Q2n(nn.Module):
     def forward(self, outputs, labels, channels=0):
 
         bs, dim3, dim1, dim2 = labels.size()
-        _, _, ddim1, ddim2 = outputs.size()
 
         if channels == 0:
             channels = 2 ** math.ceil(math.log2(dim3))
@@ -171,7 +170,7 @@ class Q2n(nn.Module):
             labels = padding(labels)
             outputs = padding(outputs)
 
-        bs, dim3, dim1, dim2 = labels.size()
+        _, dim3, dim1, dim2 = labels.size()
 
         if channels - math.log2(dim3) != 0:
             exp_difference = channels - dim3
@@ -180,7 +179,7 @@ class Q2n(nn.Module):
             labels = torch.cat((labels, diff), dim=1)
             outputs = torch.cat((outputs, diff), dim=1)
 
-        bs, dim3, dim1, dim2 = labels.size()
+        _, dim3, dim1, dim2 = labels.size()
         values = torch.zeros((bs, dim3, stepx, stepy), device=outputs.device, requires_grad=False)
 
         for j in range(stepx):
