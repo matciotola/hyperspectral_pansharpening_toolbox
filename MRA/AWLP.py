@@ -9,13 +9,11 @@ def AWLP(ordered_dict):
     pan = torch.clone(ordered_dict.pan)
     ratio = ordered_dict.ratio
 
-    _, c, h, w = ms.shape
-
     mean_low = torch.mean(ms, dim=1, keepdim=True)
 
     img_intensity = ms / (mean_low + torch.finfo(ms.dtype).eps)
 
-    pan = pan.repeat(1, c, 1, 1)
+    pan = pan.repeat(1, ms.shape[1], 1, 1)
 
     pan_lp = imresize(imresize(pan, 1 / ratio), ratio)
 

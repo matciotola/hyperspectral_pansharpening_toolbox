@@ -360,8 +360,6 @@ def get_kernel(factor, kernel_type, phase, kernel_width, support=None, sigma=Non
                     di = abs(i - center) / factor
                     dj = abs(j - center) / factor
 
-                pi_sq = np.pi * np.pi
-
                 val = 1
                 if di != 0:
                     val = val * support * np.sin(np.pi * di) * np.sin(np.pi * di / support)
