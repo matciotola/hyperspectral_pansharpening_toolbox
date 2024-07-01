@@ -67,8 +67,7 @@ def fir_filter_wind(f1, f2):
     hd = f1
     w1 = f2
     n = w1.shape[0]
-    m = n
-    t = np.arange(start=-(n-1)/2, stop=(n-1)/2 + 1) * 2/(n-1)
+    t = np.arange(start=-(n - 1) / 2, stop=(n - 1) / 2 + 1) * 2 / (n - 1)
     t1, t2 = np.meshgrid(t, t)
     t12 = np.sqrt(t1 ** 2 + t2 ** 2)
 
