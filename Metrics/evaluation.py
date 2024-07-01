@@ -35,11 +35,11 @@ def evaluation_fr(out, pan, ms_lr, ms, ratio, sensor, overlap):
 
     kernel = mtf_kernel_to_torch(gen_mtf(ratio, sensor, nbands=out.shape[1]))
 
-    filter = torch.nn.Conv2d(out.shape[1], out.shape[1], kernel_size=kernel.shape[2], groups=out.shape[1], padding='same', padding_mode='replicate', bias=False)
-    filter.weight = torch.nn.Parameter(kernel.type(out.dtype).to(out.device))
-    filter.weight.requires_grad = False
+    mtf_filter = torch.nn.Conv2d(out.shape[1], out.shape[1], kernel_size=kernel.shape[2], groups=out.shape[1], padding='same', padding_mode='replicate', bias=False)
+    mtf_filter.weight = torch.nn.Parameter(kernel.type(out.dtype).to(out.device))
+    mtf_filter.weight.requires_grad = False
 
-    out_lp = filter(out)
+    out_lp = mtf_filter(out)
     out_lr = out_lp[:, :, starting::ratio, starting::ratio]
 
     q2n = rr.Q2n().to(out.device)
