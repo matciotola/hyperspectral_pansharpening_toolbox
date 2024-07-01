@@ -3,9 +3,7 @@ ds_root: '/media/matteo/T7/Datasets/HyperSpectral/'
 datasets: ['PRISMA']
 sensor: 'PRISMA'
 
-# experiment_folders: ['Full_Resolution', 'Reduced_Resolution']
-experiment_folders: ['Reduced_Resolution']
-
+experiment_folders: ['Full_Resolution', 'Reduced_Resolution']
 
 algorithms: ['EXP',
              'GSA', 'BT-H', 'BDSD-PC', 'PRACS',
