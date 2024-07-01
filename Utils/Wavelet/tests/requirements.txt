@@ -1,8 +1,0 @@
-numpy
-torch
-dtcwt
-pytest>=4.6
-py3nvml
-coverage
-pytest-cov
-PyWavelets
