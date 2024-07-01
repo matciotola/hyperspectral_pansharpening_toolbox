@@ -183,20 +183,3 @@ def omp(d, y, nbands, iatom, n_atoms):
         curr_delta = torch.sum(res ** 2, dim=1, keepdim=True)
 
     return a, indx
-
-
-
-if __name__ == '__main__':
-    import numpy as np
-    from scipy import io
-    from Utils.interpolator_tools import interp23tap
-    temp = io.loadmat('/home/matteo/Desktop/Datasets/WV3_Adelaide_crops/Adelaide_1_zoom.mat')
-
-    ratio = 4
-    sensor = 'WV3'
-
-    ms = torch.from_numpy(interp23tap(temp['I_MS_LR'], ratio).astype(np.float64)).permute(2, 0, 1).unsqueeze(0).double()
-    pan = torch.from_numpy(temp['I_PAN'].astype(np.float64)).unsqueeze(0).double()
-
-
-    fused = SR_D(ms, pan, ratio, sensor)
