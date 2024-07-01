@@ -1,5 +1,4 @@
 import torch
-import torch.nn.functional as F
 from Utils.spectral_tools import gen_mtf, mtf_kernel_to_torch
 
 from . import metrics_rr as rr
