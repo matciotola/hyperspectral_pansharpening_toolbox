@@ -34,7 +34,6 @@ def MF(ordered_dict):
 
 
 def pyr_dec(I, textse, lev, int_meth):
-    from torchvision.transforms.functional import pad
     p = []
     p.append(torch.unsqueeze(I, -1))
 
