@@ -359,7 +359,6 @@ def ndwt2_working(X, level, filters):
 
         dec = torch.cat(dec1, 1)
 
-
         if k > 1:
             cfs[0] = cfs[0][:, 1:, :, :]
             cfs.insert(0, dec)
