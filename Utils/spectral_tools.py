@@ -572,9 +572,7 @@ def recFUNC(dec, sINI, Lo, Hi, perFLAG):
     F_1 = (sREC[-1] - sINI[-1]) // 2
     C_0 = (sREC[-2] - sINI[-2] + 1) // 2
     C_1 = (sREC[-1] - sINI[-1] + 1) // 2
-    # F = (sREC - sINI) // 2
-    # C = (sREC - sINI + 1) // 2
-    X = X[:, :, F_0:X.shape[-2]-C_0, F_1:X.shape[-1]-C_1]
+    X = X[:, :, F_0:X.shape[-2] - C_0, F_1:X.shape[-1] - C_1]
 
     return X
 
