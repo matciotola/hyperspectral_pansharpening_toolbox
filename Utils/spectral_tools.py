@@ -202,14 +202,17 @@ def mtf(img, sensor, ratio, mode='replicate'):
     h = gen_mtf(ratio, sensor, nbands=img.shape[1])
 
     h = mtf_kernel_to_torch(h).type(img.dtype).to(img.device)
-    img_lp = conv2d(pad(img, (h.shape[-2] // 2, h.shape[-2] // 2, h.shape[-1] // 2, h.shape[-1] // 2), mode=mode), h, padding='valid', groups=img.shape[1])
+    img_lp = conv2d(pad(img, (h.shape[-2] // 2, h.shape[-2] // 2, h.shape[-1] // 2, h.shape[-1] // 2), mode=mode), h,
+                    padding='valid', groups=img.shape[1])
 
     return img_lp
+
 
 def mtf_pan(img, sensor, ratio, mode='replicate'):
     h = gen_mtf_pan(ratio, sensor)
     h = mtf_kernel_to_torch(h).type(img.dtype).to(img.device)
-    img_lp = conv2d(pad(img, (h.shape[-2] // 2, h.shape[-2] // 2, h.shape[-1] // 2, h.shape[-1] // 2), mode=mode), h, padding='valid', groups=img.shape[1])
+    img_lp = conv2d(pad(img, (h.shape[-2] // 2, h.shape[-2] // 2, h.shape[-1] // 2, h.shape[-1] // 2), mode=mode), h,
+                    padding='valid', groups=img.shape[1])
 
     return img_lp
 
