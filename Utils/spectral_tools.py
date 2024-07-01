@@ -1,8 +1,13 @@
 import torch
+from math import log2, ceil, sqrt
 import numpy as np
 from torch.nn.functional import conv2d
 from torch.nn.functional import pad
+from torchvision.transforms.functional import resize
 from torchvision.transforms import InterpolationMode as Inter
+from torchvision.transforms.functional import pad as pad_vision
+import pywt
+
 
 def mtf_kernel_to_torch(h):
     """
@@ -213,9 +218,6 @@ def mtf_pan(img, sensor, ratio, mode='replicate'):
 
 
 def starck_and_murtagh_filters():
-
-    from math import sqrt
-
     h1 = torch.tensor([1, 4, 6, 4, 1]) / 16
     h2 = torch.clone(h1)
     g = torch.zeros(5)
@@ -290,10 +292,6 @@ def LPFilterPlusDec(img, ratio):
 
 
 def LPFilterPlusDecTorch(img, ratio):
-    from math import log2, ceil
-    from torchvision.transforms.functional import resize
-    from Utils.Wavelet.SWT import SWTForward, SWTInverse
-    import pywt
     levels = ceil(log2(ratio))
 
     h1, g1, h2, g2 = starck_and_murtagh_filters()
@@ -318,11 +316,7 @@ def LPFilterPlusDecTorch(img, ratio):
     return img_lr
 
 def LPFilter(img, ratio):
-    from math import log2, ceil
-    from Utils.Wavelet.SWT import SWTForward, SWTInverse
-    import pywt
     levels = ceil(log2(ratio))
-    filters = pywt.Wavelet(filter_bank=tuple(starck_and_murtagh_filters()))
 
     # wave = SWTForward(J=levels, wave=filters)
     # wave_img = wave(img)
