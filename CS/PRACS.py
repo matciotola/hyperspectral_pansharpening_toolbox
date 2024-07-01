@@ -13,10 +13,7 @@ def PRACS(ordered_dict, beta=0.95):
 
     ms_hm = (ms - torch.mean(ms, dim=(2, 3), keepdim=True) + torch.mean(pan, dim=(2, 3),
                                                                                              keepdim=True) / torch.std(
-        pan, dim=(2, 3), keepdim=True) * torch.std(ms, dim=(2, 3), keepdim=True)) * torch.std(pan,
-                                                                                                            dim=(2, 3),
-                                                                                                            keepdim=True) / torch.std(
-        ms, dim=(2, 3), keepdim=True)
+        pan, dim=(2, 3), keepdim=True) * torch.std(ms, dim=(2, 3), keepdim=True)) * torch.std(pan, dim=(2, 3), keepdim=True) / torch.std(ms, dim=(2, 3), keepdim=True)
     ms_hm = torch.clip(ms_hm, 0, ms_hm.max())
 
     pan_lp = imresize(imresize(pan, scale=1 / ratio), scale=ratio)
