@@ -244,7 +244,7 @@ def LPFilterPlusDec(img, ratio):
         (a, b), (c, d) = pywt.swt2(img_n, filters, level=levels)
 
         b = np.asarray(b)
-        c[:,:] = 0
+        c[:, :] = 0
         d = np.asarray(d)
         b = list(np.zeros(b.shape))
         d = list(np.zeros(d.shape))
@@ -266,11 +266,7 @@ def LPFilterPlusDecTorch(img, ratio):
 
     wave_img = ndwt2_working(img, level=levels, filters=tuple(starck_and_murtagh_filters()))
     for i in range(1, len(wave_img['dec'])):
-        wave_img['dec'][i][:,:,:,:] = 0
-        # wave_img[1][:, 1:, :, :] = 0
-
-    # iwave = SWTInverse(wave=filters)
-    # img_lr = iwave(wave_img)
+        wave_img['dec'][i][:, :, :, :] = 0
 
     img_lr = indwt2_working(wave_img, 'c')
 
@@ -284,11 +280,7 @@ def LPFilter(img, ratio):
 
     wave_img = ndwt2_working(img, level=levels, filters=tuple(starck_and_murtagh_filters()))
     for i in range(1, len(wave_img['dec'])):
-        wave_img['dec'][i][:,:,:,:] = 0
-        # wave_img[1][:, 1:, :, :] = 0
-
-    # iwave = SWTInverse(wave=filters)
-    # img_lr = iwave(wave_img)
+        wave_img['dec'][i][:, :, :, :] = 0
 
     img_lr = indwt2_working(wave_img, 'c')
 
@@ -317,15 +309,13 @@ def gen_mtf_pan(ratio, sensor, kernel_size=41):
     GNyq = []
 
     if sensor == 'PRISMA':
-        GNyq = np.asarray([0.2]) # https://www.asi.it/wp-content/uploads/2021/02/PRISMA-Mission-Status-v1f-1.pdf
-    elif sensor == 'WV3':
-        GNyq = np.asarray([0.14])
+        GNyq = np.asarray([0.2])  # https://www.asi.it/wp-content/uploads/2021/02/PRISMA-Mission-Status-v1f-1.pdf
     else:
         GNyq = np.asarray([0.15])
 
     fcut = 1 / np.double(ratio)
 
-    alpha = np.sqrt(((kernel_size-1) * (fcut / 2)) ** 2 / (-2 * np.log(GNyq)))
+    alpha = np.sqrt(((kernel_size - 1) * (fcut / 2)) ** 2 / (-2 * np.log(GNyq)))
     H = fspecial_gauss((kernel_size, kernel_size), alpha)
     Hd = H / np.max(H)
     h = np.kaiser(kernel_size, 0.5)
@@ -429,7 +419,7 @@ def wdec1D(X, Lo, Hi, perm, dwtEXTM):
     if dwtEXTM == 'zpd':
         pass
     elif dwtEXTM in ['sym', 'symh']:
-        X = pad_vision(X, (lf-1, 0, lf, 0), padding_mode='symmetric')
+        X = pad_vision(X, (lf - 1, 0, lf, 0), padding_mode='symmetric')
     elif dwtEXTM == 'sp0':
         X = torch.cat(
             (X[:, 0:lf - 1].unsqueeze(1).expand(-1, lf - 1, -1), X, X[:, -lx:].unsqueeze(1).expand(-1, lf - 1, -1)),
@@ -462,8 +452,8 @@ def wdec1D(X, Lo, Hi, perm, dwtEXTM):
     Lo = Lo[None, None, None, :].type(X.dtype)
     Hi = Hi[None, None, None, :].type(X.dtype)
 
-    L = torch.conv2d(X, Lo, padding=(0,Lo.shape[-1] - 1))
-    H = torch.conv2d(X, Hi, padding=(0,Hi.shape[-1] - 1))
+    L = torch.conv2d(X, Lo, padding=(0, Lo.shape[-1] - 1))
+    H = torch.conv2d(X, Hi, padding=(0, Hi.shape[-1] - 1))
 
     if dwtEXTM != 'zpd':
         lenL = L.size(-1)
@@ -556,8 +546,8 @@ def indwt2_working(W, *args):
     idxBeg = 0
     for k in range(maxloop):
         idxEnd = idxBeg + 3
-        dec = cfs[idxBeg:idxEnd+1]
-        sizerec = sizes[k+1]
+        dec = cfs[idxBeg:idxEnd + 1]
+        sizerec = sizes[k + 1]
         X = recFUNC(dec, sizerec, Lo, Hi, perFLAG)
         cfs[idxBeg:idxEnd] = [None] * 3
         cfs[idxEnd] = X
@@ -575,7 +565,7 @@ def recFUNC(dec, sINI, Lo, Hi, perFLAG):
     perm = [0, 1, 3, 2]
     W = []
     for i in range(2):
-        W.append(wrec1D(dec[i*2], Lo[1], perm, perFLAG) + wrec1D(dec[(i*2)+1], Hi[1], perm, perFLAG))
+        W.append(wrec1D(dec[i * 2], Lo[1], perm, perFLAG) + wrec1D(dec[(i * 2) + 1], Hi[1], perm, perFLAG))
 
     X = (wrec1D(W[0], Lo[0], [], perFLAG) + wrec1D(W[1], Hi[0], [], perFLAG)) / 4
 
