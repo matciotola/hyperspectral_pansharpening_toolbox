@@ -49,6 +49,7 @@ def fsamp2(hd):
 
     return h
 
+
 def fir_filter_wind(f1, f2):
     """
         Compute fir filter with window method
@@ -81,6 +82,7 @@ def fir_filter_wind(f1, f2):
 
     return h
 
+
 def fspecial_gauss(size, sigma):
     """
         Function to mimic the 'fspecial' gaussian MATLAB function
@@ -103,6 +105,7 @@ def fspecial_gauss(size, sigma):
     if sumh != 0:
         h /= sumh
     return h
+
 
 def nyquist_filter_generator(nyquist_freq, ratio, kernel_size):
     """
@@ -144,6 +147,7 @@ def nyquist_filter_generator(nyquist_freq, ratio, kernel_size):
         kernel[:, :, j] = h
 
     return kernel
+
 
 def gen_mtf(ratio, sensor='none', kernel_size=41, nbands=3):
     """
@@ -312,6 +316,7 @@ def LPFilterPlusDecTorch(img, ratio):
 
     return img_lr
 
+
 def LPFilter(img, ratio):
     levels = ceil(log2(ratio))
 
@@ -328,6 +333,7 @@ def LPFilter(img, ratio):
     img_lr = indwt2_working(wave_img, 'c')
 
     return img_lr
+
 
 def gen_mtf_pan(ratio, sensor, kernel_size=41):
     """
