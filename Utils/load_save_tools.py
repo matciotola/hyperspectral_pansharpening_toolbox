@@ -33,3 +33,9 @@ def open_mat(path):
 def save_mat(image, path):
     io.savemat(path, {'I_MS': image})
     return
+
+def create_csv_if_not_exists(file_path, fieldnames):
+    if not os.path.exists(file_path):
+        with open(file_path, 'w', encoding='UTF8', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
