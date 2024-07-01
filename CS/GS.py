@@ -35,13 +35,6 @@ def GSA(ordered_dict):
         cc = torch.cov(torch.flatten(torch.cat([ms_minus_int[0], h[0]], dim=0), start_dim=-2))
         g[:, i + 1, :] = cc[0, 1] / ms_minus_int.var()
 
-    # chain = torch.cat([torch.flatten(ms_minus_int.repeat(1, ms_lr.shape[1], 1, 1), start_dim=-2),
-    #                   torch.flatten(ms_interp_minus_avg, start_dim=-2)], dim=1)
-    # cc = batch_cov(chain.transpose(1, 2))
-    #cc = torch.cov(chain[0])[None, :, :]
-    #g = torch.ones(1, ms_lr.shape[1] + 1, 1)
-    #g[:, 1:, :] = cc[:, 0, 1] / ms_minus_int.var(dim=(1, 2, 3))
-
     pan = pan - torch.mean(pan, dim=(2, 3))
 
     delta = pan - ms_minus_int
