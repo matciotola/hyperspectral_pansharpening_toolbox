@@ -2,7 +2,6 @@ import torch
 from torch import nn
 import torch.nn.functional as func
 import math
-from kornia import filters
 
 
 def AddWeighted(img1, alpha, img2, beta, lambda_=0.0):
@@ -17,8 +16,6 @@ def laplacian_kernels():
 def sobel_kernels():
     kernel_x = torch.tensor([[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]], dtype=torch.float32)[None, None, :, :]
     kernel_y = torch.tensor([[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]], dtype=torch.float32)[None, None, :, :]
-    # kernel_x = torch.tensor([[-3., -10., -3.], [0., 0., 0.], [3., 10., 3.]], dtype=torch.float32)[None, None, :, :]
-    # kernel_y = torch.tensor([[-3., 0., 3.], [-10., 0., 10.], [-3., 0., 3.]], dtype=torch.float32)[None, None, :, :]
     return kernel_x, kernel_y
 
 
