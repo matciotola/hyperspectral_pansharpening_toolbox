@@ -236,8 +236,7 @@ def starck_and_murtagh_filters():
 def LPFilterPlusDec(img, ratio):
     img_lr = []
     for i in range(img.shape[0]):
-
-        img_n = torch.squeeze(img[i,:,:,:]).numpy()
+        img_n = torch.squeeze(img[i, :, :, :]).numpy()
         levels = ceil(log2(ratio))
         filters = pywt.Wavelet(filter_bank=tuple(starck_and_murtagh_filters()))
 
