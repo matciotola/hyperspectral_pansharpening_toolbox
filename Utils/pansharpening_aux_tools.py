@@ -31,12 +31,6 @@ def regress(y, X):
     X = X.double()
 
     Q, R = torch.linalg.qr(X)
-    """
-    p = torch.sum(torch.abs(R.diagonal(dim1=1, dim2=2)) > max(n, ncolX)*eps(R[:,0,0]), dim=1)
-    P = torch.bmm(torch.pinverse(X), Q)
-    P = torch.bmm(P, R)
-    _, perm = torch.max(P, 1)
-    """
     b = torch.linalg.lstsq(R, torch.bmm(Q.transpose(1, 2), y)).solution
 
     return b
@@ -48,11 +42,5 @@ def mldivide(y, X):
     X = X.double()
 
     Q, R = torch.linalg.qr(X)
-    """
-    p = torch.sum(torch.abs(R.diagonal(dim1=1, dim2=2)) > max(n, ncolX)*eps(R[:,0,0]), dim=1)
-    P = torch.bmm(torch.pinverse(X), Q)
-    P = torch.bmm(P, R)
-    _, perm = torch.max(P, 1)
-    """
     b = torch.linalg.solve(R, Q.transpose(1, 2) @ y)
     return b
