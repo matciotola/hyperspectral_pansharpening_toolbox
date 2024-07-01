@@ -240,7 +240,6 @@ def LPFilterPlusDec(img, ratio):
         levels = ceil(log2(ratio))
         filters = pywt.Wavelet(filter_bank=tuple(starck_and_murtagh_filters()))
 
-
         (a, b), (c, d) = pywt.swt2(img_n, filters, level=levels)
 
         b = np.asarray(b)
@@ -256,7 +255,6 @@ def LPFilterPlusDec(img, ratio):
     img_lr = torch.vstack(img_lr)
 
     img_lr = resize(img_lr, [img_lr.shape[-2] // ratio, img_lr.shape[-1] // ratio], interpolation=Inter.NEAREST)
-
 
     return img_lr
 
