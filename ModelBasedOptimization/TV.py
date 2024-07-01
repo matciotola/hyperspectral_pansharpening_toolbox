@@ -123,24 +123,3 @@ def compute_b(yms, ypan, ratio, xk, alpha, w):
     h_xms, h_xpan = compute_h(xk, w, ratio)
     b = alpha * xk + adjoint_h(yms - h_xms, ypan - h_xpan, ratio, w)
     return b
-
-
-if __name__ == '__main__':
-    import numpy as np
-    from scipy import io
-    import matplotlib
-    matplotlib.use('TkAgg')
-    from matplotlib import pyplot as plt
-    temp = io.loadmat('/home/matteo/Desktop/Datasets/WV3_Adelaide_crops/Adelaide_1_zoom.mat')
-
-    ratio = 4
-    sensor = 'WV3'
-
-    ms_lr = torch.from_numpy(temp['I_MS_LR'].astype(np.float64)).permute(2, 0, 1).unsqueeze(0).double()
-    pan = torch.from_numpy(temp['I_PAN'].astype(np.float64)).unsqueeze(0).unsqueeze(0).double()
-
-
-    fused = TV(ms_lr, pan, ratio, sensor)
-    plt.figure()
-    plt.imshow(fused[0, 0, :, :].detach().cpu().numpy(), cmap='gray')
-    plt.show()
