@@ -232,33 +232,6 @@ def starck_and_murtagh_filters():
 
     return h1.numpy(), g1.numpy(), h2.numpy(), g2.numpy()
 
-# def LPFilterPlusDec(img, ratio):
-#     from math import log2, ceil
-#     from torchvision.transforms.functional import resize
-#     img_n = torch.squeeze(img).numpy()
-#     levels = ceil(log2(ratio))
-#     filters = pywt.Wavelet(filter_bank=tuple(starck_and_murtagh_filters()))
-#
-#
-#     (a, b), (c, d) = pywt.swt2(img_n, filters, level=levels)
-#
-#     b = np.asarray(b)
-#     c[:,:] = 0
-#     d = np.asarray(d)
-#     b = list(np.zeros(b.shape))
-#     d = list(np.zeros(d.shape))
-#
-#     coeff = ((a, b), (c, d))
-#
-#     img_lr = pywt.iswt2(coeff, filters)[None, None, :, :]
-#
-#     img_lr = torch.tensor(img_lr)
-#
-#     img_lr = resize(img_lr, [img_lr.shape[-2] // ratio, img_lr.shape[-1] // ratio], interpolation=Inter.NEAREST)
-#
-#
-#     return img_lr
-
 
 def LPFilterPlusDec(img, ratio):
     from math import log2, ceil
