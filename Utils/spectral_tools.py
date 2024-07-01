@@ -294,12 +294,6 @@ def LPFilterPlusDec(img, ratio):
 def LPFilterPlusDecTorch(img, ratio):
     levels = ceil(log2(ratio))
 
-    h1, g1, h2, g2 = starck_and_murtagh_filters()
-    filter_bank = (h1.astype(np.float64), g1.astype(np.float64), h2.astype(np.float64), g2.astype(np.float64))
-    filters = pywt.Wavelet(filter_bank=filter_bank)
-
-    # wave = SWTForward(J=levels, wave=filters)
-    # wave_img = wave(img)
     wave_img = ndwt2_working(img, level=levels, filters=tuple(starck_and_murtagh_filters()))
     for i in range(1, len(wave_img['dec'])):
         wave_img['dec'][i][:,:,:,:] = 0
@@ -312,15 +306,12 @@ def LPFilterPlusDecTorch(img, ratio):
 
     img_lr = resize(img_lr, [img_lr.shape[-2] // ratio, img_lr.shape[-1] // ratio], interpolation=Inter.NEAREST_EXACT)
 
-
     return img_lr
 
 
 def LPFilter(img, ratio):
     levels = ceil(log2(ratio))
 
-    # wave = SWTForward(J=levels, wave=filters)
-    # wave_img = wave(img)
     wave_img = ndwt2_working(img, level=levels, filters=tuple(starck_and_murtagh_filters()))
     for i in range(1, len(wave_img['dec'])):
         wave_img['dec'][i][:,:,:,:] = 0
@@ -374,14 +365,10 @@ def gen_mtf_pan(ratio, sensor, kernel_size=41):
 
 
 def ndwt2_working(X, level, filters):
-    # Error handling
-
-
     LoD = [None, None]
     HiD = [None, None]
     LoR = [None, None]
     HiR = [None, None]
-
 
     LoD[0] = torch.tensor(filters[0])
     HiD[0] = torch.tensor(filters[1])
@@ -457,8 +444,6 @@ def decFUNC(X, LoD, HiD, dwtEXTM):
 
 
 def wdec1D(X, Lo, Hi, perm, dwtEXTM):
-    from torchvision.transforms.functional import pad as pad_vision
-
     if perm:
         X = X.permute(perm)
 
