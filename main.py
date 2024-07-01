@@ -60,7 +60,7 @@ if __name__ == '__main__':
                     for path in generate_paths(config.ds_root, dataset, 'Test', exp_folder)]
 
         for i, path in enumerate(ds_paths):
-            print(path)
+            print(f'{i + 1} / {len(ds_paths)}:', path)
             name = os.path.basename(path).split('.')[0]
             pan, ms_lr, ms, gt, wavelenghts, overlap = open_mat(path)
             experiment_type = 'FR' if gt is None else 'RR'
