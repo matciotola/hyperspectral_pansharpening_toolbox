@@ -20,7 +20,7 @@ def lsqlin(C, d, A, b):
     objective = cp.Minimize(cp.sum_squares(C @ x - d))
     prob = cp.Problem(objective, constraints)
 
-    result = prob.solve(solver='SCS', verbose=False, warm_start=False)
+    result = prob.solve(solver='PIQP', verbose=False, warm_start=False)
 
     x = torch.tensor(x.value)
 
