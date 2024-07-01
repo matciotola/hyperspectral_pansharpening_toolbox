@@ -14,18 +14,15 @@ def evaluation_rr(out_lr, ms_lr, ratio, flag_cut=True, dim_cut=11, L=16):
 
     out_lr = torch.clip(out_lr, 0, 2 ** L)
 
-
     ergas = rr.ERGAS(ratio).to(out_lr.device)
     sam = rr.SAM().to(out_lr.device)
-    q = rr.Q(out_lr.shape[1]).to(out_lr.device)
     q2n = rr.Q2n().to(out_lr.device)
 
     ergas_index, _ = ergas(out_lr, ms_lr)
     sam_index, _ = sam(out_lr, ms_lr)
-    q_index = torch.mean(q(out_lr, ms_lr))
     q2n_index, _ = q2n(out_lr, ms_lr)
 
-    return ergas_index.item(), sam_index.item(), q_index.item(), q2n_index.item()
+    return ergas_index.item(), sam_index.item(), q2n_index.item()
 
 
 def evaluation_fr_old(out, pan, ms_lr, ratio, sensor):
