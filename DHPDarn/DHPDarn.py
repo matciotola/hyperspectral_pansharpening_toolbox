@@ -186,7 +186,7 @@ def prior_execution(device, train_loader, config, ordered_dict):
 
         net.train()
 
-        for epoch in range(config.epochs):
+        for _ in range(config.epochs):
 
             optim.zero_grad()
 
