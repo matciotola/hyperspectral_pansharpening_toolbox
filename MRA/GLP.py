@@ -20,7 +20,6 @@ def MTF_GLP_FS(ordered_dict):
     bands_hr_lp = mtf(bands_hr, sensor, ratio)
     bands_hr_lr_lr = resize(bands_hr_lp, [h // ratio, w // ratio], interpolation=Inter.NEAREST_EXACT)
 
-    # bands_hr_lr = interp23tap_torch(bands_hr_lr_lr, ratio)
     bands_hr_lr = ideal_interpolator(bands_hr_lr_lr, ratio)
 
     low_covs = []
@@ -64,7 +63,6 @@ def MTF_GLP_HPM(ordered_dict):
 
     bands_hr_lp = mtf(bands_hr, sensor, ratio)
     bands_hr_lr_lr = resize(bands_hr_lp, [h // ratio, w // ratio], interpolation=Inter.NEAREST_EXACT)
-    # bands_hr_lr = interp23tap_torch(bands_hr_lr_lr, ratio)
     bands_hr_lr = ideal_interpolator(bands_hr_lr_lr, ratio)
 
     fused = ms * torch.clip((bands_hr / (bands_hr_lr + torch.finfo(ms.dtype).eps)), 0, 10.0)
@@ -83,7 +81,6 @@ def MTF_GLP_HPM_R(ordered_dict):
 
     bands_hr_lp = mtf(bands_hr, sensor, ratio)
     bands_hr_lr_lr = resize(bands_hr_lp, [h // ratio, w // ratio], interpolation=Inter.NEAREST_EXACT)
-    # bands_hr_lr = interp23tap_torch(bands_hr_lr_lr, ratio)
     bands_hr_lr = ideal_interpolator(bands_hr_lr_lr, ratio)
 
     g = []
