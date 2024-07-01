@@ -96,7 +96,7 @@ def MTF_GLP_HPM_R(ordered_dict):
     g = torch.cat(g, dim=1)[:, :, None, None]
     cb = torch.mean(ms, dim=(2, 3), keepdim=True) / g - torch.mean(bands_hr, dim=(2, 3), keepdim=True)
 
-    fused = ms * (bands_hr + cb) / (bands_hr_lr + cb + torch.finfo(ms.dtype).eps)
+    fused = ms * torch.clip((bands_hr + cb) / (bands_hr_lr + cb + torch.finfo(ms.dtype).eps), 0, 10)
 
     return fused
 
