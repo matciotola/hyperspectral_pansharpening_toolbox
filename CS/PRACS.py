@@ -87,6 +87,7 @@ def PRACS(ordered_dict, beta=0.95):
         L_i_bands = torch.cat(L_i_bands, 1)
         L_i.append(L_i_bands)
     L_i = torch.cat(L_i, 0)
+    L_i = torch.clip(L_i, - 10, 10)
 
     det = w * L_i * delta
     fused = ms + det
