@@ -1,5 +1,5 @@
 import torch
-from torch.nn.functional import pad, interpolate
+from torch.nn.functional import interpolate
 
 from Utils.imresize_bicubic import imresize
 from Utils.spectral_tools import mtf, mtf_pan
@@ -20,7 +20,7 @@ def lsqlin(C, d, A, b):
     objective = cp.Minimize(cp.sum_squares(C @ x - d))
     prob = cp.Problem(objective, constraints)
 
-    result = prob.solve(solver='PIQP', verbose=False, warm_start=False)
+    _ = prob.solve(solver='PIQP', verbose=False, warm_start=False)
 
     x = torch.tensor(x.value)
 
@@ -48,7 +48,11 @@ def BDSD_PC(ordered_dict):
         b = torch.zeros((1, h.shape[2], 1), dtype=h.dtype, device=h.device).repeat(h.shape[0], 1, 1)
 
         gamma = lsqlin(h, h1 - h2, A, b)
-        fused.append(ms[:, i:i+1, :, :] + torch.reshape(torch.cat([pan, ms], dim=1).transpose(2,3).flatten(2).transpose(1, 2) @ gamma, (ms.shape[0], 1, ms.shape[3], ms.shape[2])).transpose(2, 3))
+        fused.append(ms[:, i:i+1, :, :] +
+                     torch.reshape(torch.cat([pan, ms], dim=1).transpose(2,3).flatten(2).transpose(1, 2)
+                     @
+                     gamma, (ms.shape[0], 1, ms.shape[3], ms.shape[2])).transpose(2, 3))
+
     fused = torch.cat(fused, dim=1)
 
     fused = denormalize(fused)
