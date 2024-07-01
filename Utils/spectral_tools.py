@@ -646,24 +646,3 @@ def wrec1D(X, F, perm, perFLAG):
         X = X.permute(perm)
 
     return X
-
-
-if __name__ == '__main__':
-
-    import scipy.io as io
-    import pywt
-    from matplotlib import pyplot as plt
-
-    temp = io.loadmat('/home/matteo/Desktop/Datasets/WV3_Adelaide_crops/Adelaide_3.mat')
-    pan = torch.tensor(temp['I_PAN'].astype(np.float32))[None, None, :, :]
-    pan_n = temp['I_PAN'].astype(np.float32)
-    ratio = 4
-
-    aaa = LPFilterPlusDecTorch(pan, ratio)
-
-    plt.figure()
-    plt.imshow(pan.numpy()[0,0,:,:])
-
-    plt.figure()
-    plt.imshow(aaa.numpy()[0,0,:,:])
-
