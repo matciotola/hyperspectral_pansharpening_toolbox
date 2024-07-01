@@ -96,7 +96,7 @@ def train(device, net, train_loader, config, val_loader=None):
 
         net.train()
 
-        for i, data in enumerate(train_loader):
+        for data in train_loader:
             optim.zero_grad()
 
             pan, _, ms, gt = data
@@ -118,7 +118,7 @@ def train(device, net, train_loader, config, val_loader=None):
         if val_loader is not None:
             net.eval()
             with torch.no_grad():
-                for i, data in enumerate(val_loader):
+                for data in val_loader:
                     pan, _, ms, gt = data
                     pan = pan.to(device)
                     ms = ms.to(device)
