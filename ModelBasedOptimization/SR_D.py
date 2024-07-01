@@ -112,8 +112,6 @@ def omp_rec_detile(dl, dh, y_tilde_k, hr_shapes, resize_factor, ol, ts, n_atoms)
         shift_c_glob = int(ts - ol - (l_pan / resize_factor - ol) % (ts - ol))
 
     alpha_count = 0
-    latom = dl.shape[2]
-    dict_sizer = y_tilde_k.shape[2]
     iatom = 0
 
     for irow in range(nr):
@@ -152,7 +150,6 @@ def omp_rec_detile(dl, dh, y_tilde_k, hr_shapes, resize_factor, ol, ts, n_atoms)
 def omp(d, y, nbands, iatom, n_atoms):
     bs, l_atom_x, l_atom_y = d.shape
     n_x = round(l_atom_x / nbands)
-    n_y = round(l_atom_y / nbands)
 
     res = torch.clone(y)
     delta = 0

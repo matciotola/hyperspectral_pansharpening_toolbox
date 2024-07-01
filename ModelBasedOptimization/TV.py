@@ -37,7 +37,7 @@ def TV(ordered_dict):
     z = torch.zeros((yms.shape[0], yms.shape[1] * 2, ypan.shape[2], ypan.shape[3]), dtype=yms.dtype, device=yms.device)
     x = torch.zeros((yms.shape[0], yms.shape[1], ypan.shape[2], ypan.shape[3]), dtype=yms.dtype, device=yms.device)
 
-    for k in range(maxiter):
+    for _ in range(maxiter):
         b = compute_b(yms, ypan, ratio, x, alpha, w)
         z = znext(z,x,b,alpha,lambda_,c)
         x = xnext(z, b, alpha)

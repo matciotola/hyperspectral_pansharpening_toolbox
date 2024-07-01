@@ -75,7 +75,6 @@ def vca(R, p=0, snr_input=False, verbose='off'):
         else:
             Rp = torch.mm(Ud, x_p[:d]) + r_m.view(-1, 1)
 
-        cos_angles = torch.sum(Rp * R, dim=0) / (torch.norm(Rp, dim=0) * torch.norm(R, dim=0))
         c = torch.norm(x_p, dim=0).max()
         y = torch.cat([x_p, c * torch.ones(1, N)], dim=0)
     else:
@@ -107,7 +106,7 @@ def vca(R, p=0, snr_input=False, verbose='off'):
         f = w - A @ torch.pinverse(A) @  w
         f = f / torch.norm(f)
         v = torch.mm(f[None, :], y)
-        v_max, index[i] = torch.max(torch.abs(v), dim=1)
+        _, index[i] = torch.max(torch.abs(v), dim=1)
         A[:, i] = y[:, index[i]]
 
     Ae = Rp[:, index]
@@ -115,7 +114,6 @@ def vca(R, p=0, snr_input=False, verbose='off'):
     return Ae, index, Rp
 
 def weights_pan_from_hs_calculation(hs, pan):
-    from Utils.pansharpening_aux_tools import mldivide
     hs = hs.permute(1, 0, 2, 3).flatten(1).unsqueeze(0).transpose(1, 2)
     pan = pan.permute(1, 0, 2, 3).flatten(1).unsqueeze(0).transpose(1, 2)
 
