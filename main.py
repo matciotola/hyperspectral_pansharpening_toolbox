@@ -47,8 +47,8 @@ algorithm_dict = {
                                 'R-PNN': R_PNN, 'PCA-Z-PNN': PCA_Z_PNN  # Deep Learning Unsupervised
                   }
 
-fieldnames_rr = ['Method', 'ERGAS', 'SAM', 'Q', 'Q2n', 'Elapsed_time']
-fieldnames_fr = ['Method', 'R-ERGAS', 'R-SAM', 'D_lambda_V', 'D_lambda_K', 'D_s', 'D_sR', 'D_rho', 'Overlapped_D_s', 'Overlapped_D_sR', 'Overlapped_D_rho', 'Not_Overlapped_D_s', 'Not_Overlapped_D_sR', 'Not_Overlapped_D_rho', 'Elapsed_time']
+fieldnames_rr = ['Method', 'ERGAS', 'SAM', 'Q2n', 'Elapsed_time']
+fieldnames_fr = ['Method', 'D_lambda', 'D_sR', 'QNR', 'Elapsed_time']
 
 
 if __name__ == '__main__':
