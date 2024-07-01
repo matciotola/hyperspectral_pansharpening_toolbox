@@ -116,38 +116,35 @@ def DIP_HyperKite(ordered_dict):
     #pan = pan.to(device)
     #ms_lr = ms_lr.to(device)
     net.eval()
-    # try:
-    #     test_ds = TestDatasetKite(pan, ms_lr)
-    #     test_loader = DataLoader(test_ds, batch_size=1, shuffle=False)
-    #     prior = prior_execution(device, test_loader, config)
-    # except:
-    #     print('Priors generation failed due to memory issues. Prior generation will be done in patches.')
-    #     del test_ds, test_loader
-    #     torch.cuda.empty_cache()
-    #     torch.cuda.synchronize()
-    #     gc.collect()
-    kc, kh, kw = ms_lr.shape[1], 100, 100  # kernel size
-    dc, dh, dw = ms_lr.shape[1], 100, 100  # stride
-    ms_lr_patches = ms_lr.unfold(1, kc, dc).unfold(2, kh, dh).unfold(3, kw, dw)
-    pan_patches = pan.unfold(1, 1, 1).unfold(2, kh * ordered_dict.ratio, dh * ordered_dict.ratio).unfold(3, kw * ordered_dict.ratio, dw * ordered_dict.ratio)
-    unfold_shape = list(pan_patches.shape)
-    unfold_shape_ms_lr = list(ms_lr_patches.shape)
-    unfold_shape[4] = unfold_shape_ms_lr[4]
 
-    ms_lr_patches = ms_lr_patches.contiguous().view(-1, kc, kh, kw).to(device)
-    pan_patches = pan_patches.contiguous().view(-1, 1, kh * ordered_dict.ratio, kw * ordered_dict.ratio).to(device)
+    if config.split_test_image_for_prior:
+        kc, kh, kw = ms_lr.shape[1], 100, 100  # kernel size
+        dc, dh, dw = ms_lr.shape[1], 100, 100  # stride
+        ms_lr_patches = ms_lr.unfold(1, kc, dc).unfold(2, kh, dh).unfold(3, kw, dw)
+        pan_patches = pan.unfold(1, 1, 1).unfold(2, kh * ordered_dict.ratio, dh * ordered_dict.ratio).unfold(3, kw * ordered_dict.ratio, dw * ordered_dict.ratio)
+        unfold_shape = list(pan_patches.shape)
+        unfold_shape_ms_lr = list(ms_lr_patches.shape)
+        unfold_shape[4] = unfold_shape_ms_lr[4]
 
-    test_ds = TestDatasetKite(pan_patches, ms_lr_patches)
-    test_loader = DataLoader(test_ds, batch_size=1, shuffle=False)
-    prior_patches = prior_execution(device, test_loader, config)
+        ms_lr_patches = ms_lr_patches.contiguous().view(-1, kc, kh, kw).to(device)
+        pan_patches = pan_patches.contiguous().view(-1, 1, kh * ordered_dict.ratio, kw * ordered_dict.ratio).to(device)
 
-    unfold_shape[4] = unfold_shape[4]
-    prior = prior_patches.view(unfold_shape)
-    output_c = unfold_shape[1] * unfold_shape[4]
-    output_h = unfold_shape[2] * unfold_shape[5]
-    output_w = unfold_shape[3] * unfold_shape[6]
-    prior = prior.permute(0, 1, 4, 2, 5, 3, 6).contiguous()
-    prior = prior.view(1, output_c, output_h, output_w)
+        test_ds = TestDatasetKite(pan_patches, ms_lr_patches)
+        test_loader = DataLoader(test_ds, batch_size=1, shuffle=False)
+        prior_patches = prior_execution(device, test_loader, config)
+
+        unfold_shape[4] = unfold_shape[4]
+        prior = prior_patches.view(unfold_shape)
+        output_c = unfold_shape[1] * unfold_shape[4]
+        output_h = unfold_shape[2] * unfold_shape[5]
+        output_w = unfold_shape[3] * unfold_shape[6]
+        prior = prior.permute(0, 1, 4, 2, 5, 3, 6).contiguous()
+        prior = prior.view(1, output_c, output_h, output_w)
+
+    else:
+        test_ds = TestDatasetKite(pan, ms_lr)
+        test_loader = DataLoader(test_ds, batch_size=1, shuffle=False)
+        prior = prior_execution(device, test_loader, config)
 
     del test_ds, test_loader, ms_lr
     gc.collect()
