@@ -7,16 +7,11 @@ sensor: 'PRISMA'
 experiment_folders: ['Reduced_Resolution']
 
 
-# pansharpening_based_algorithms: ['BDSD', 'BDSD-PC', 'GS', 'GSA', 'BT-H', 'PRACS', 'AWLP',
-#                                 'MTF-GLP', 'MTF-GLP-FS', 'MTF-GLP-HPM', 'MTF-GLP-HPM-H', 'MTF-GLP-HPM-R', 'MF',
-#                                 'BayesianSparse', 'BayesianNaive', 'HySURE', 'SR-D', 'TV',
-#                                 'HyperPNN', 'HSpeNet', 'DIP-HyperKite', 'DHP-DARN', 'Hyper-DSNet',
-#                                 'R-PNN', 'PCA-Z-PNN']
-# pansharpening_based_algorithms: ['GS', 'GSA', 'AWLP', 'MTF-GLP', 'MF']
-pansharpening_based_algorithms: ['R-PNN']
-
-
-ad_hoc_algorithms: []
+algorithms: ['EXP',
+             'GSA', 'BT-H', 'BDSD-PC', 'PRACS',
+             'MTF-GLP-FS', 'MTF-GLP-HPM', 'MTF-GLP-HPM-R', 'AWLP', 'MF',
+             'HySURE', 'SR-D', 'TV',
+             'HyperPNN', 'HSpeNet', 'DHP-DARN', 'DIP-HyperKite', 'Hyper-DSNet', 'R-PNN', 'PCA-Z-PNN']
 
 save_results: True
 
