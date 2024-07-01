@@ -1,7 +1,5 @@
 import torch
-from Utils.spectral_tools import mtf
 from torch.nn import functional as func
-import math
 
 
 def TV(ordered_dict):
