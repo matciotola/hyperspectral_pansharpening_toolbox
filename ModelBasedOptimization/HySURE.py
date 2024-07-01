@@ -7,8 +7,8 @@ def HySURE(ordered_dict):
     ms_lr = torch.clone(ordered_dict.ms_lr)
     pan = torch.clone(ordered_dict.pan)
     ratio = ordered_dict.ratio
-    bs, _, nl, nc = pan.shape
-    bs, nb, nlh, nch = ms_lr.shape
+    _, _, nl, nc = pan.shape
+    bs, nb, _, _ = ms_lr.shape
 
     intersection = ordered_dict.overlap.long()
     contigous = torch.clone(intersection)
@@ -336,7 +336,7 @@ def data_fusion(y_him, y_mim, downsampling_factor, R, B, p, basis_type, lambda_p
     v4 = torch.clone(x)
     d4 = torch.clone(x)
 
-    for i in range(iters):
+    for _ in range(iters):
 
         x = conv_c(v1 + d1, idb_b, nl, nc, p) + conv_c(v2 + d2, idb_ii, nl, nc, p) + conv_c(v3 + d3, idb_dh, nl, nc, p) + conv_c(v4 + d4, idb_dv, nl, nc, p)
         nu1 = conv_c(x, fb, nl, nc, p) - d1
