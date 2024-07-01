@@ -148,7 +148,7 @@ def omp_rec_detile(dl, dh, y_tilde_k, hr_shapes, resize_factor, ol, ts, n_atoms)
 
 
 def omp(d, y, nbands, iatom, n_atoms):
-    bs, l_atom_x, l_atom_y = d.shape
+    bs, l_atom_x, _ = d.shape
     n_x = round(l_atom_x / nbands)
 
     res = torch.clone(y)
