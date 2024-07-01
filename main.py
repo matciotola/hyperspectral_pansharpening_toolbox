@@ -52,106 +52,60 @@ fieldnames_fr = ['Method', 'D_lambda', 'D_sR', 'QNR', 'Elapsed_time']
 
 
 if __name__ == '__main__':
-    from Utils.dl_tools import open_config
-
     config_path = 'preambol.yaml'
     config = open_config(config_path)
 
     for dataset in config.datasets:
-        ds_paths = []
-        for experiment_folder in config.experiment_folders:
-            ds_paths += generate_paths(config.ds_root, dataset, 'Test', experiment_folder)
-
+        ds_paths = [path for exp_folder in config.experiment_folders
+                    for path in generate_paths(config.ds_root, dataset, 'Test', exp_folder)]
 
         for i, path in enumerate(ds_paths):
             print(path)
-            name = path.split(os.sep)[-1].split('.')[0]
+            name = os.path.basename(path).split('.')[0]
             pan, ms_lr, ms, gt, wavelenghts, overlap = open_mat(path)
-
-            if gt is None:
-                experiment_type = 'FR'
-            else:
-                experiment_type = 'RR'
-
-            save_assessment = os.path.join(config.save_assessment, dataset)
+            experiment_type = 'FR' if gt is None else 'RR'
+            save_assessment = os.path.join(config.save_assessment, dataset, experiment_type)
             save_root = os.path.join(config.save_root, dataset, name)
 
-            if not os.path.exists(os.path.join(save_assessment, experiment_type)):
-                os.makedirs(os.path.join(save_assessment, experiment_type))
+            os.makedirs(save_assessment, exist_ok=True)
+            file_suffix = '_FR.csv' if experiment_type == 'FR' else '_RR.csv'
+            ut.create_csv_if_not_exists(os.path.join(save_assessment, name + file_suffix), fieldnames_fr if experiment_type == 'FR' else fieldnames_rr)
 
-            if experiment_type == 'RR':
-                if not os.path.exists(os.path.join(save_assessment, experiment_type, name + '_RR.csv')):
-                    with open(os.path.join(save_assessment, experiment_type, name + '_RR.csv'), 'w', encoding='UTF8', newline='') as f:
-                        writer = csv.DictWriter(f, fieldnames=fieldnames_rr)
-                        writer.writeheader()
-                    f.close()
-
-            else:
-                if not os.path.exists(os.path.join(save_assessment, experiment_type, name + '_FR.csv')):
-                    with open(os.path.join(save_assessment, experiment_type, name + '_FR.csv'), 'w', encoding='UTF8', newline='') as f:
-                        writer = csv.DictWriter(f, fieldnames=fieldnames_fr)
-                        writer.writeheader()
-                    f.close()
-
-
-            exp_info = {'ratio': pan.shape[-2] // ms_lr.shape[-2]}
-            exp_info['ms_lr'] = ms_lr
-            exp_info['ms'] = ms
-            exp_info['pan'] = pan
-            exp_info['wavelenghts'] = wavelenghts
-            exp_info['overlap'] = overlap
-            exp_info['dataset'] = dataset
-            exp_info['sensor'] = config.sensor
-            exp_info['name'] = name
-            exp_info['root'] = config.ds_root
-            exp_info['img_number'] = i
-
+            exp_info = {
+                'ratio': pan.shape[-2] // ms_lr.shape[-2],
+                'ms_lr': ms_lr, 'ms': ms, 'pan': pan, 'wavelenghts': wavelenghts,
+                'overlap': overlap, 'dataset': dataset, 'sensor': config.sensor,
+                'name': name, 'root': config.ds_root, 'img_number': i
+            }
             exp_input = recordclass('exp_info', exp_info.keys())(*exp_info.values())
 
-            metrics_rr = []
-            metrics_fr = []
-
-            for algorithm in config.pansharpening_based_algorithms:
-
-
-                print('Running algorithm: ' + algorithm)
-
-                method = pansharpening_algorithm_dict[algorithm]
+            for algorithm in config.algorithms:
+                print(f'Running algorithm: {algorithm}')
+                method = algorithm_dict[algorithm]
                 start_time = time.time()
                 fused = method(exp_input)
-                end_time = time.time()
-                elapsed_time = end_time - start_time
-                print('Elapsed time for executing the algorithm: ' + str(elapsed_time))
+                elapsed_time = time.time() - start_time
+                print(f'Elapsed time for executing the algorithm: {elapsed_time}')
+
                 with torch.no_grad():
                     if experiment_type == 'RR':
-                        metrics_values_rr = list(evaluation_rr(fused, torch.clone(gt), ratio=exp_info['ratio']))
-                        metrics_values_rr.insert(0, algorithm)
-                        metrics_values_rr.append(elapsed_time)
-                        metrics_values_rr_dict = dict(zip(fieldnames_rr, metrics_values_rr))
-                        print(metrics_values_rr_dict)
-                        metrics_rr.append(metrics_values_rr_dict)
-                        with open(os.path.join(save_assessment, experiment_type, name + '_RR.csv'), 'a', encoding='UTF8', newline='') as f:
-                            writer = csv.DictWriter(f, fieldnames=fieldnames_rr)
-                            writer.writerow(metrics_values_rr_dict)
+                        metrics_values = evaluation_rr(fused, gt.clone(), ratio=exp_info['ratio'])
+                        fieldnames, metrics_dict = fieldnames_rr, dict(zip(fieldnames_rr, [algorithm, *metrics_values, elapsed_time]))
                     else:
-                        metrics_values_fr = list(evaluation_fr(fused, torch.clone(pan), torch.clone(ms_lr), torch.clone(ms), ratio=exp_info['ratio'], sensor=exp_info['sensor'], overlap=torch.clone(overlap)))
-                        metrics_values_fr.insert(0, algorithm)
-                        metrics_values_fr.append(elapsed_time)
-                        metrics_values_fr_dict = dict(zip(fieldnames_fr, metrics_values_fr))
-                        print(metrics_values_fr_dict)
-                        metrics_fr.append(metrics_values_fr_dict)
-                        with open(os.path.join(save_assessment, experiment_type, name + '_FR.csv'), 'a', encoding='UTF8', newline='') as f:
-                            writer = csv.DictWriter(f, fieldnames=fieldnames_fr)
-                            writer.writerow(metrics_values_fr_dict)
+                        metrics_values = evaluation_fr(fused, pan.clone(), ms_lr.clone(), ms.clone(), ratio=exp_info['ratio'], sensor=exp_info['sensor'], overlap=overlap.clone())
+                        fieldnames, metrics_dict = fieldnames_fr, dict(zip(fieldnames_fr, [algorithm, *metrics_values, elapsed_time]))
+
+                    print(metrics_dict)
+                    csv_path = os.path.join(save_assessment, name + file_suffix)
+                    with open(csv_path, 'a', encoding='UTF8', newline='') as f:
+                        writer = csv.DictWriter(f, fieldnames=fieldnames)
+                        writer.writerow(metrics_dict)
+
                 if config.save_results:
-                    if not os.path.exists(save_root):
-                        os.makedirs(save_root)
-                    ut.save_mat(np.round(np.squeeze(fused.numpy(), axis=0)).astype(np.uint16), os.path.join(save_root, algorithm + '.mat'))
+                    os.makedirs(save_root, exist_ok=True)
+                    result_path = os.path.join(save_root, f'{algorithm}.mat')
+                    ut.save_mat(np.round(np.clip(fused.permute(0, 2, 3, 1).numpy().squeeze(0), 0, 2**16 - 1)).astype(np.uint16), result_path)
 
                 del fused
                 torch.cuda.empty_cache()
                 gc.collect()
-
-
-
-
