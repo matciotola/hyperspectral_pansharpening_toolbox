@@ -1,0 +1,22 @@
+name: hs_pan_toolbox_env
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - torchvision
+  - torchaudio
+  - pytorch
+  - h5py
+  - scipy
+  - matplotlib
+  - numpy
+  - scikit-image
+  - tqdm
+  - cvxpy
+  - piqp
+  - pip
+  - pip:
+       - recordclass
+       - kornia
