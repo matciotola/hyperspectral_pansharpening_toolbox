@@ -62,8 +62,11 @@ the operation is not guaranteed with other configurations.
 *   Create the virtual environment with the `hs_pan_toolbox_environment.yml`
 
 <!---->
-
+    # For Windows/Linux users
     conda env create -n hs_pan_toolbox_environment -f hs_pan_toolbox_environment.yml
+
+    # For MacOS users
+    conda env create -n hs_pan_toolbox_environment -f hs_pan_toolbox_environment_mac.yml 
 
 *   Activate the Conda Environment
 
