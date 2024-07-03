@@ -6,7 +6,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/68906119170e489cbf98512fac6b9571)](https://app.codacy.com/gh/matciotola/hyperspectral_pansharpening_toolbox/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 
-[Hyperspectral Pansharpening: Critical Review, Tools and Future Perspectives](https://github.com/matciotola/hyperspectral_pansharpening_toolbox) ([ArXiv](https://github.com/matciotola/hyperspectral_pansharpening_toolbox)): Hyperspectral pansharpening consists of fusing a high-resolution panchromatic band and a low-resolution hyperspectral image to obtain a new image with high resolution in both the spatial and spectral domains.
+[Hyperspectral Pansharpening: Critical Review, Tools and Future Perspectives](https://github.com/matciotola/hyperspectral_pansharpening_toolbox) ([ArXiv](https://arxiv.org/abs/2407.01355)): Hyperspectral pansharpening consists of fusing a high-resolution panchromatic band and a low-resolution hyperspectral image to obtain a new image with high resolution in both the spatial and spectral domains.
 These remote sensing products are valuable for a wide range of applications, driving ever growing research efforts.
 Nonetheless, results still do not meet application demands.
 In part, this comes from the technical complexity of the task: compared to multispectral pansharpening, many more bands are involved, in a spectral range only partially covered by the panchromatic component and with overwhelming noise.
@@ -24,9 +24,15 @@ the framework (including codes, evaluation procedures and links to the dataset) 
 ## Cite HS Toolbox
 If you use this toolbox in your research, please use the following BibTeX entry.
 
-    @article{
-     ** AVAILABLE SOON **
-     }
+    @article{ciotola2024HSToolbox,
+      title={Hyperspectral Pansharpening: Critical Review, Tools and Future Perspectives}, 
+      author={Matteo Ciotola and Giuseppe Guarino and Gemine Vivone and Giovanni Poggi and Jocelyn Chanussot and Antonio Plaza and Giuseppe Scarpa},
+      year={2024},
+      eprint={2407.01355},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2407.01355}, 
+    }
 
 
 ## License
