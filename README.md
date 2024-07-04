@@ -1,6 +1,6 @@
 # Hyperspectral Pansharpening: Critical Review, Tools and Future Perspectives
 
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2307.14403)
+[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2407.01355)
 [![GitHub Stars](https://img.shields.io/github/stars/matciotola/hyperspectral_pansharpening_toolbox?style=social)](https://github.com/matciotola/hyperspectral_pansharpening_toolbox)
 ![Visitors Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fhits.dwyl.com%2Fmatciotola%2Fhyperspectral_pansharpening_toolbox.json&style=flat&color=blue)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/68906119170e489cbf98512fac6b9571)](https://app.codacy.com/gh/matciotola/hyperspectral_pansharpening_toolbox/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
@@ -42,7 +42,7 @@ All rights reserved.
 This software should be used, reproduced and modified only for informational and nonprofit purposes.
 
 By downloading and/or using any of these files, you implicitly agree to all the
-terms of the license, as specified in the document [`LICENSE`](https://github.com/matciotola/Lambda-PNN/LICENSE.txt)
+terms of the license, as specified in the document [`LICENSE`](https://github.com/matciotola/hyperspectral_pansharpening_toolbox/LICENSE.md)
 (included in this package)
 
 ## Prerequisites
