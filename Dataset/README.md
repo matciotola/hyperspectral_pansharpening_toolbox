@@ -36,15 +36,10 @@ To have access to PRISMAs data, please follow the instructions at the following 
 
 Once you have registered to the PRISMA portal, you can download the images from the ASI server. You can download the images at the following link: [PRISMA Data](https://prisma.asi.it/)
 The list of images used in this work is available in [`list_images.csv`](https://github.com/matciotola/hyperspectral_pansharpening_toolbox/tree/main/Dataset/list_images.csv) file.
-The steps for downloading the images are summarized in the following guide:
-
-
-<object data="https://github.com/matciotola/hyperspectral_pansharpening_toolbox/blob/main/Dataset/HowTo_download_PRISMA_images.pdf" type="application/pdf" width="100%">
-    <embed src="https://github.com/matciotola/hyperspectral_pansharpening_toolbox/blob/main/Dataset/HowTo_download_PRISMA_images.pdf" type="application/pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/matciotola/hyperspectral_pansharpening_toolbox/blob/main/Dataset/HowTo_download_PRISMA_images.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
+The steps for downloading the images are summarized in this [**GUIDE**](https://github.com/matciotola/hyperspectral_pansharpening_toolbox/blob/main/Dataset/HowTo_download_PRISMA_images.pdf):
 
 
 
-    
+## Elaborate PRISMA Images
+
+To elaborate the PRISMA images correctly, you can use the script [`elaborate_PRISMA_images.py`]() available in this repository.
