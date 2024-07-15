@@ -29,7 +29,7 @@ requesting the ORIGINAL Products, the Main User acknowledges the characteristics
 Products and the restrictions to which their provision and use may be subject to, as specified in these General
 Conditions and in the attached License to Use. (Source: [PRISMA Portal](https://prisma.asi.it/))
 
-To have access to PRISMAs data, please follow the instructions at the following link: [PRISMA User Registration](https://prismauserregistration.asi.it/)
+To have access to PRISMA data, please follow the instructions at the following link: [PRISMA User Registration](https://prismauserregistration.asi.it/)
 
 
 ## Download PRISMA Images
