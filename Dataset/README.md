@@ -39,7 +39,7 @@ The list of images used in this work is available in [`list_images.csv`](https:/
 The steps for downloading the images are summarized in the following guide:
 
 
-<object data="https://github.com/matciotola/hyperspectral_pansharpening_toolbox/tree/main/Dataset/HowTo_download_PRISMA_images.pdf" type="application/pdf" width="700px" height="700px">
+<object data="https://github.com/matciotola/hyperspectral_pansharpening_toolbox/tree/main/Dataset/HowTo_download_PRISMA_images.pdf" type="application/pdf" width="100%">
     <embed src="https://github.com/matciotola/hyperspectral_pansharpening_toolbox/tree/main/Dataset/HowTo_download_PRISMA_images.pdf">
         <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/matciotola/hyperspectral_pansharpening_toolbox/tree/main/Dataset/HowTo_download_PRISMA_images.pdf">Download PDF</a>.</p>
     </embed>
