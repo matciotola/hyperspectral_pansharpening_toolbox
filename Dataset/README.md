@@ -42,4 +42,54 @@ The steps for downloading the images are summarized in this [**GUIDE**](https://
 
 ## Elaborate PRISMA Images
 
-To elaborate the PRISMA images correctly, you can use the script [`elaborate_PRISMA_images.py`]() available in this repository.
+To elaborate the PRISMA images correctly, unzip all the files in a specif folder. 
+Then, you can use the script [`elaborate_PRISMA_images.py`](https://github.com/matciotola/hyperspectral_pansharpening_toolbox/blob/main/elaborate_PRISMA_images.py) available in this repository to produce the final dataset.
+<!---->
+
+    python elaborate_PRISMA_images.py -i /path/to/folder/with/unzipped/files -o /path/to/output/folder
+
+If no output folder is provided, the script will save the dataset in the Dataset folder of the toolbox.
+
+If everything is done correctly, you have a dataset folder with the following structure:
+
+```
+Dataset
+    ├──  Training
+    │       ├──  Full_Resolution
+    │       │       ├──  PRS_L2D_STD_20200627102358_20200627102402_0001_01.mat
+    │       │       ├──  PRS_L2D_STD_20200627102358_20200627102402_0001_02.mat
+    │       │       ├──  ...
+    │       │       └──  PRS_L2D_STD_20231120165641_20231120165646_0001_16.mat
+    │       ├──  Reduced_Resolution
+    │       │       ├──  PRS_L2D_STD_20200627102358_20200627102402_0001_01.mat
+    │       │       ├──  PRS_L2D_STD_20200627102358_20200627102402_0001_02.mat
+    │       │       ├──  ...
+    │       │       └──  PRS_L2D_STD_20231120165641_20231120165646_0001_16.mat
+    ├──  Validation
+    │       ├──  Full_Resolution
+    │       │       ├──  PRS_L2D_STD_20200627102358_20200627102402_0001_01.mat
+    │       │       ├──  PRS_L2D_STD_20200627102358_20200627102402_0001_02.mat
+    │       │       ├──  ...
+    │       │       └──  PRS_L2D_STD_20231120165641_20231120165646_0001_02.mat
+    │       ├──  Reduced_Resolution
+    │       │       ├──  PRS_L2D_STD_20200627102358_20200627102402_0001_01.mat
+    │       │       ├──  PRS_L2D_STD_20200627102358_20200627102402_0001_02.mat
+    │       │       ├──  ...
+    │       │       └──  PRS_L2D_STD_20231120165641_20231120165646_0001_02.mat
+    ├──  Test
+    │       ├──  Full_Resolution
+    │       │       ├──  PRS_L2D_STD_20220905101901_20220905101905_0001_CAGLIARI_FR.mat
+    │       │       ├──  PRS_L2D_STD_20230824100356_20230824100400_0001_UDINE_FR.mat
+    │       │       ├──  PRS_L2D_STD_20230908173127_20230908173131_0001_KANSAS_FR.mat
+    │       │       └──  PRS_L2D_STD_20231120102229_20231120102233_0001_TABASCO_FR.mat
+    │       ├──  Reduced_Resolution
+    │       │       ├──  PRS_L2D_STD_20220905101901_20220905101905_0001_CAGLIARI_FR.mat
+    │       │       ├──  PRS_L2D_STD_20230824100356_20230824100400_0001_UDINE_FR.mat
+    │       │       ├──  PRS_L2D_STD_20230908173127_20230908173131_0001_KANSAS_FR.mat
+    │       │       └──  PRS_L2D_STD_20231120102229_20231120102233_0001_TABASCO_FR.mat
+    
+```
+
+## Problems or Questions
+
+If you have any problems or questions, please contact me by email ([matteo.ciotola@unina.it](mailto:matteo.ciotola@unina.it?subject=[Hyperspectral Toolbox]PRISMA Dataset Issues)).
