@@ -50,16 +50,16 @@ terms of the license, as specified in the document [`LICENSE`](https://github.co
 All the functions and scripts were tested on Windows and Ubuntu O.S., with these constrains:
 
 *   Python 3.10.10
-*   PyTorch 2.0.0
-*   Cuda 11.7 or 11.8 (For GPU acceleration).
+*   PyTorch >= 2.0.0
+*   Cuda  11.8 (For GPU acceleration).
 
 the operation is not guaranteed with other configurations.
 
 ## Installation
 
 *   Install [Anaconda](https://www.anaconda.com/products/individual) and [git](https://git-scm.com/downloads)
-*   Create a folder in which save the algorithm
-*   Download the algorithm and unzip it into the folder or, alternatively, from CLI:
+*   Create a folder in which save the toolbox
+*   Download the toolbox and unzip it into the folder or, alternatively, from CLI:
 
 <!---->
 
