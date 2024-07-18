@@ -50,7 +50,7 @@ terms of the license, as specified in the document [`LICENSE`](https://github.co
 Considering the restrictive data-sharing policies widespread in the remote sensing field, we decided to use the PRISMA (PRecursore IperSpettrale della Missione Applicativa) images,
 shared on-demand by the Italian Space Agency (ASI) for research purposes only. Due to ASI Data Policy, we cannot share the images directly.
 However, we provide extensive instructions on how to download and elaborate the images correctly in the [`Dataset`](https://github.com/matciotola/hyperspectral_pansharpening_toolbox/tree/main/Dataset) folder of this repository.
-For any problem or question, please contact me at If you have any problems or questions, please contact me by email ([matteo.ciotola@unina.it](mailto:matteo.ciotola@unina.it?subject=[Hyperspectral Toolbox]PRISMA Dataset Issues)).
+For any problem or question, please contact me at If you have any problems or questions, please contact me by email ([matteo.ciotola@unina.it](mailto:matteo.ciotola@unina.it)).
 
 
 ## Prerequisites
