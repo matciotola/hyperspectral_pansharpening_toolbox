@@ -92,4 +92,4 @@ Dataset
 
 ## Problems or Questions
 
-If you have any problems or questions, please contact me by email ([matteo.ciotola@unina.it](mailto:matteo.ciotola@unina.it?subject=[Hyperspectral Toolbox]PRISMA Dataset Issues)).
+If you have any problems or questions, please contact me by email ([matteo.ciotola@unina.it](mailto:matteo.ciotola@unina.it)).
