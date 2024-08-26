@@ -190,7 +190,7 @@ def prior_execution(device, train_loader, config):
 
     pbar = tqdm(train_loader)
 
-    for i, data in pbar:
+    for i, data in enumerate(pbar):
         pbar.set_description('Applying Prior: %d/%d' % (i + 1, len(train_loader)))
         pan, ms_lr, _, _ = data
         pan = pan.to(device)
