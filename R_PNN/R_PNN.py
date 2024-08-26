@@ -20,8 +20,8 @@ def R_PNN(ordered_dict):
     config_path = os.path.join(os.path.dirname(inspect.getfile(R_PNN_model)), 'config.yaml')
 
     config = open_config(config_path)
-    os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu_number
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    #os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu_number
+    device = torch.device("cuda:" + config.gpu_number if torch.cuda.is_available() else "cpu")
 
     pan = torch.clone(ordered_dict.pan).float()
     ms = torch.clone(ordered_dict.ms).float()
