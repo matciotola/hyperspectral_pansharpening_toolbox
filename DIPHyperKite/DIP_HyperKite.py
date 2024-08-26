@@ -152,8 +152,8 @@ def DIP_HyperKite(ordered_dict):
         gc.collect()
         torch.cuda.empty_cache()
         outputs_patches = []
-        kc, kh, kw = prior.shape[1] + 1, 102, 102  # kernel size
-        dc, dh, dw = prior.shape[1] + 1, 102, 102  # stride
+        kc, kh, kw = prior.shape[1] + 1, 100, 100  # kernel size
+        dc, dh, dw = prior.shape[1] + 1, 100, 100  # stride
         patches = torch.cat([prior.cpu(), pan.cpu()], 1).unfold(1, kc, dc).unfold(2, kh, dh).unfold(3, kw, dw)
         unfold_shape = list(patches.shape)
         patches = patches.contiguous().view(-1, kc, kh, kw).to(device)
