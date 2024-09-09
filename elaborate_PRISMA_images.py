@@ -12,13 +12,8 @@ from Utils.spectral_tools import mtf, mtf_pan
 from Utils.interpolator_tools import ideal_interpolator
 
 # Constants
+random.seed(3)
 LIST_BANDS = np.concatenate([list(range(7, 63)), list(range(71, 86)), list(range(89, 107)), list(range(120, 150)), list(range(176, 216))])
-# TEST_FILES = [
-#     {'name': 'PRS_L2D_STD_20230908173127_20230908173131_0001.he5', 'init_row': 500, 'init_col': 384, 'init_row_rr': 30, 'init_col_rr': 40, 'zone': 'Kansas'},
-#     {'name': 'PRS_L2D_STD_20230824100356_20230824100400_0001.he5', 'init_row': 428, 'init_col': 692, 'init_row_rr': 228, 'init_col_rr': 492, 'zone': 'Udine'},
-#     {'name': 'PRS_L2D_STD_20220905101901_20220905101905_0001.he5', 'init_row': 800, 'init_col': 120, 'init_row_rr': 68, 'init_col_rr': 30, 'zone': 'Cagliari'},
-#     {'name': 'PRS_L2D_STD_20231120102229_20231120102233_0001.he5', 'init_row': 338, 'init_col': 216, 'init_row_rr': 50, 'init_col_rr': 36, 'zone': 'Tabasco'}
-# ]
 
 TEST_FILES = ['PRS_L2D_STD_20230908173127_20230908173131_0001.he5',
               'PRS_L2D_STD_20230824100356_20230824100400_0001.he5',
@@ -41,12 +36,12 @@ INIT_COLS = {'PRS_L2D_STD_20230908173127_20230908173131_0001.he5': 384,
              'PRS_L2D_STD_20231120102229_20231120102233_0001.he5': 216}
 
 INIT_ROWS_RR = {'PRS_L2D_STD_20230908173127_20230908173131_0001.he5': 30,
-                'PRS_L2D_STD_20230824100356_20230824100400_0001.he5': 228,
+                'PRS_L2D_STD_20230824100356_20230824100400_0001.he5': 38,
                 'PRS_L2D_STD_20220905101901_20220905101905_0001.he5': 68,
                 'PRS_L2D_STD_20231120102229_20231120102233_0001.he5': 50}
 
 INIT_COLS_RR = {'PRS_L2D_STD_20230908173127_20230908173131_0001.he5': 40,
-                'PRS_L2D_STD_20230824100356_20230824100400_0001.he5': 492,
+                'PRS_L2D_STD_20230824100356_20230824100400_0001.he5': 82,
                 'PRS_L2D_STD_20220905101901_20220905101905_0001.he5': 30,
                 'PRS_L2D_STD_20231120102229_20231120102233_0001.he5': 36}
 
@@ -135,7 +130,7 @@ def create_dataset(raw_dataset_dir, save_dir, create_train=True, create_test=Tru
     patch_size_lr = 32
     patch_size = patch_size_lr * ratio
     test_patch_size = 200
-    test_patch_size_rr = 600
+    test_patch_size_rr = 100
     num_val_patches = 2
 
     dirs = {
@@ -204,7 +199,7 @@ def create_dataset(raw_dataset_dir, save_dir, create_train=True, create_test=Tru
             del hs_patches, pan_patches, hs_exp_patches, hs_lr_patches, pan_lr_patches, hs_lr_exp_patches, hs_gt_patches
             gc.collect()
 
-        elif create_test:
+        elif (name in test_names) and create_test:
             # for test_file in TEST_FILES:
             filename = os.path.join(raw_dataset_dir, name)
             zone = ZONES[name]
@@ -222,9 +217,9 @@ def create_dataset(raw_dataset_dir, save_dir, create_train=True, create_test=Tru
             })
             io.savemat(os.path.join(dirs['rr_test'], f"{name[:-4]}_{zone.upper()}_RR.mat"), {
                 "I_MS_LR": hs_lr[INIT_ROWS_RR[name]:INIT_ROWS_RR[name]+test_patch_size_rr, INIT_COLS_RR[name]:INIT_COLS_RR[name]+test_patch_size_rr, :],
-                "I_PAN": pan_lr[INIT_ROWS_RR[name] * ratio:(INIT_ROWS_RR[name]+test_patch_size_rr)*ratio, INIT_COLS_RR[name]:(INIT_COLS_RR[name]+test_patch_size_rr)*ratio],
-                "I_MS": hs_lr_exp[INIT_ROWS_RR[name] * ratio:(INIT_ROWS_RR[name]+test_patch_size_rr)*ratio, INIT_COLS_RR[name]:(INIT_COLS_RR[name]+test_patch_size_rr)*ratio, :],
-                "I_GT": hs[INIT_ROWS_RR[name] * ratio:(INIT_ROWS_RR[name]+test_patch_size_rr)*ratio, INIT_COLS_RR[name]:(INIT_COLS_RR[name]+test_patch_size_rr)*ratio, :],
+                "I_PAN": pan_lr[INIT_ROWS_RR[name] * ratio:(INIT_ROWS_RR[name]+test_patch_size_rr)*ratio, INIT_COLS_RR[name]*ratio:(INIT_COLS_RR[name]+test_patch_size_rr)*ratio],
+                "I_MS": hs_lr_exp[INIT_ROWS_RR[name] * ratio:(INIT_ROWS_RR[name]+test_patch_size_rr)*ratio, INIT_COLS_RR[name]*ratio:(INIT_COLS_RR[name]+test_patch_size_rr)*ratio, :],
+                "I_GT": hs[INIT_ROWS_RR[name] * ratio:(INIT_ROWS_RR[name]+test_patch_size_rr)*ratio, INIT_COLS_RR[name]*ratio:(INIT_COLS_RR[name]+test_patch_size_rr)*ratio, :],
                 'wavelengths': wl, 'overlap': overlap
             })
 
