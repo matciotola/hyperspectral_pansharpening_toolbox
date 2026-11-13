@@ -4,6 +4,8 @@ from torch import nn
 import numpy as np
 from torchvision.transforms import Pad
 
+from .hypercomplex import cayley_dickson_property_1d, cayley_dickson_property_2d
+
 
 def normalize_block(im):
     m = torch.mean(im)
@@ -15,68 +17,6 @@ def normalize_block(im):
     y = ((im - m) / s) + 1
 
     return y, m, s
-
-
-def cayley_dickson_property_1d(onion1, onion2):
-    _, N = onion1.size()
-
-    if N > 1:
-        L = int(N / 2)
-        a = onion1[:, :L]
-        b = onion1[:, L:]
-        neg = - torch.ones(b.shape, dtype=b.dtype, device=b.device)
-        neg[:, 0] = 1
-        b = b * neg
-        c = onion2[:, :L]
-        d = onion2[:, L:]
-        d = d * neg
-
-        if N == 2:
-            ris = torch.cat(((a * c) - (d * b), (a * d) + (c * b)), dim=1)
-        else:
-            ris1 = cayley_dickson_property_1d(a, c)
-            ris2 = cayley_dickson_property_1d(d, torch.cat((torch.unsqueeze(b[:, 0], 1), -b[:, 1:]), dim=1))
-            ris3 = cayley_dickson_property_1d(torch.cat((torch.unsqueeze(a[:, 0], 1), -a[:, 1:]), dim=1), d)
-            ris4 = cayley_dickson_property_1d(c, b)
-
-            aux1 = ris1 - ris2
-            aux2 = ris3 + ris4
-            ris = torch.cat((aux1, aux2), dim=1)
-    else:
-        ris = onion1 * onion2
-
-    return ris
-
-
-def cayley_dickson_property_2d(onion1, onion2):
-    _, dim3, _, _ = onion1.size()
-    if dim3 > 1:
-        L = int(dim3 / 2)
-
-        a = onion1[:, 0:L, :, :]
-        b = onion1[:, L:, :, :]
-        neg = - torch.ones(b.shape, dtype=b.dtype, device=b.device)
-        neg[:, 0, :, :] = 1
-        b = b * neg
-        c = onion2[:, 0:L, :, :]
-        d = onion2[:, L:, :, :]
-        d = d * neg
-        if dim3 == 2:
-            ris = torch.cat(((a * c) - (d * b), (a * d) + (c * b)), dim=1)
-        else:
-            ris1 = cayley_dickson_property_2d(a, c)
-            ris2 = cayley_dickson_property_2d(d, b * neg)
-            ris3 = cayley_dickson_property_2d(a * neg, d)
-            ris4 = cayley_dickson_property_2d(c, b)
-
-            aux1 = ris1 - ris2
-            aux2 = ris3 + ris4
-
-            ris = torch.cat((aux1, aux2), dim=1)
-    else:
-        ris = onion1 * onion2
-
-    return ris
 
 
 def q_index_metric(im1, im2, size):

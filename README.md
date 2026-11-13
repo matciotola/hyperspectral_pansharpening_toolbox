@@ -99,5 +99,12 @@ the operation is not guaranteed with other configurations.
 
     python main.py 
 
+## Faster Q2n with pyfastcd (optional)
 
+The Q2n index multiplies pixels as Cayley-Dickson numbers, of dimension 256 for the 159 bands of PRISMA. When the [pyfastcd](https://pypi.org/project/pyfastcd/) package is installed, these products are computed by its compiled kernels instead of the recursive PyTorch implementation, with the same results: on a PRISMA-sized test image a Q2n evaluation takes seconds instead of minutes (see [`benchmarks`](benchmarks/README.md)). The package is listed in the environment files; in an existing environment install it with
 
+    pip install "pyfastcd>=1.4.0"
+
+Without it the toolbox works as before. The checks comparing the two implementations are in [`tests`](tests) and run with
+
+    python -m unittest discover -s tests -v
